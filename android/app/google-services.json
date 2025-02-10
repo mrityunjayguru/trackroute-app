@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "855209405678",
+    "project_id": "trackroutepro-e12a1",
+    "storage_bucket": "trackroutepro-e12a1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:855209405678:android:97bc2427df05e237f497ff",
+        "android_client_info": {
+          "package_name": "com.example.track_route_pro"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBOrSA22lp4GcPhGpxIWzV4SP_aui13mI4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,183 @@
+import 'NotificationPermission.dart';
+import 'CreatedBy.dart';
+import 'UpdatedBy.dart';
+
+/// notificationPermission : {"ignitionOn":false,"ignitionOff":true,"geoFenceIn":true,"geoFenceOut":true,"overSpeed":true,"powerCut":true,"vibration":true,"lowBattery":true}
+/// _id : "6787df3c08f5a267333d03a2"
+/// Name : "Chitresh Chaudhary"
+/// emailAddress : "chitreshchaudhary@gmail.com"
+/// phone : "1234567890"
+/// password : "U2FsdGVkX18kYBVzrfjJyUNzecH3jkc5RbU6TyY+JeQ="
+/// dob : "1998-01-08T00:00:00.000Z"
+/// gender : "Male"
+/// address : "Seawoods Navi Mumbai"
+/// country : "India"
+/// state : "maharashtra"
+/// city : "Navi Mumbai"
+/// pinCode : "222202"
+/// dealerCode : "6787de7308f5a267333d0376"
+/// idno : "1111111111"
+/// notification : true
+/// idDocument : "Aadhar Card"
+/// Document : "15173695775618156_Car-Top-Red-icon (1).png"
+/// role : "User"
+/// subscribeType : "Individual"
+/// status : true
+/// isAppCreated : false
+/// createdBy : {"id":"6787dbdc7ccb4ee0862703f8","_id":"6787df3c08f5a267333d03a3","time":"2025-01-15T16:15:56.917Z"}
+/// createdAt : "2025-01-15T16:15:56.916Z"
+/// updatedAt : "2025-01-18T09:48:57.132Z"
+/// updatedBy : [{"id":"6787df3c08f5a267333d03a2","time":"2025-01-15T16:26:59.325Z","_id":"6787e1d32b1958c8a466751a"},{"id":"6787df3c08f5a267333d03a2","time":"2025-01-16T05:05:13.782Z","_id":"678893892b1958c8a466823f"},{"id":"6787df3c08f5a267333d03a2","time":"2025-01-16T05:48:22.581Z","_id":"67889da62b1958c8a466894f"},{"id":"6787df3c08f5a267333d03a2","time":"2025-01-16T05:55:08.472Z","_id":"67889f3c2b1958c8a4668a42"},{"id":"6787df3c08f5a267333d03a2","time":"2025-01-16T05:55:08.480Z","_id":"67889f3c2b1958c8a4668a48"},{"id":"6787df3c08f5a267333d03a2","time":"2025-01-16T06:35:30.747Z","_id":"6788a8b22b1958c8a4668d7e"},{"id":"6787df3c08f5a267333d03a2","time":"2025-01-16T06:43:12.050Z","_id":"6788aa802b1958c8a4668e89"},{"id":"6787df3c08f5a267333d03a2","time":"2025-01-16T06:43:12.069Z","_id":"6788aa802b1958c8a4668e9c"},{"id":"6787df3c08f5a267333d03a2","time":"2025-01-16T07:11:07.609Z","_id":"6788b10b2b1958c8a466909c"},{"id":"6787df3c08f5a267333d03a2","time":"2025-01-16T07:36:02.202Z","_id":"6788b6e22b1958c8a4669217"},{"id":"6787df3c08f5a267333d03a2","time":"2025-01-16T07:36:02.218Z","_id":"6788b6e22b1958c8a4669223"},{"id":"6787df3c08f5a267333d03a2","time":"2025-01-16T08:48:51.324Z","_id":"6788c7f32b1958c8a46695d3"},{"id":"6787df3c08f5a267333d03a2","time":"2025-01-16T08:48:51.330Z","_id":"6788c7f32b1958c8a46695e1"},{"id":"6787df3c08f5a267333d03a2","time":"2025-01-16T09:01:06.990Z","_id":"6788cad22b1958c8a4669904"},{"id":"6787df3c08f5a267333d03a2","time":"2025-01-16T09:01:06.994Z","_id":"6788cad22b1958c8a4669914"},{"id":"6787df3c08f5a267333d03a2","time":"2025-01-16T09:01:17.831Z","_id":"6788cadd2b1958c8a4669991"},{"id":"6787df3c08f5a267333d03a2","time":"2025-01-16T09:01:39.121Z","_id":"6788caf32b1958c8a46699dd"},{"id":"6787df3c08f5a267333d03a2","time":"2025-01-16T10:24:28.481Z","_id":"6788de5c2b1958c8a466a136"},{"id":"6787df3c08f5a267333d03a2","time":"2025-01-16T10:24:28.485Z","_id":"6788de5c2b1958c8a466a14a"},{"id":"6787df3c08f5a267333d03a2","time":"2025-01-16T10:26:00.085Z","_id":"6788deb82b1958c8a466a23d"},{"id":"6787df3c08f5a267333d03a2","time":"2025-01-16T10:26:00.094Z","_id":"6788deb82b1958c8a466a253"},{"id":"6787df3c08f5a267333d03a2","time":"2025-01-16T10:29:51.679Z","_id":"6788df9f2b1958c8a466a443"},{"id":"6787df3c08f5a267333d03a2","time":"2025-01-16T10:29:51.683Z","_id":"6788df9f2b1958c8a466a45b"},{"id":"6787df3c08f5a267333d03a2","time":"2025-01-16T12:25:00.460Z","_id":"6788fa9c2b1958c8a466b314"},{"id":"6787df3c08f5a267333d03a2","time":"2025-01-16T12:25:00.472Z","_id":"6788fa9c2b1958c8a466b32e"},{"id":"6787df3c08f5a267333d03a2","time":"2025-01-16T12:45:45.676Z","_id":"6788ff792b1958c8a466bbc2"},{"id":"6787df3c08f5a267333d03a2","time":"2025-01-16T12:45:45.740Z","_id":"6788ff792b1958c8a466bbfb"},{"id":"6787df3c08f5a267333d03a2","time":"2025-01-17T03:19:31.925Z","_id":"6789cc432b1958c8a466f769"},{"id":"6787df3c08f5a267333d03a2","time":"2025-01-17T03:19:31.934Z","_id":"6789cc432b1958c8a466f787"},{"id":"6787dbdc7ccb4ee0862703f8","time":"2025-01-17T05:15:45.366Z","_id":"6789e7818dc2e334f9c162a5"},{"id":"6787df3c08f5a267333d03a2","time":"2025-01-17T05:16:07.954Z","_id":"6789e7972b1958c8a466fcfa"},{"id":"6787df3c08f5a267333d03a2","time":"2025-01-17T05:16:07.961Z","_id":"6789e7972b1958c8a466fd1b"},{"id":"6787df3c08f5a267333d03a2","time":"2025-01-17T06:54:14.748Z","_id":"6789fe962b1958c8a467020e"},{"id":"6787df3c08f5a267333d03a2","time":"2025-01-17T06:54:14.760Z","_id":"6789fe962b1958c8a4670255"},{"id":"6787df3c08f5a267333d03a2","time":"2025-01-17T15:55:12.759Z","_id":"678a7d60e43fad0524646a33"},{"id":"6787df3c08f5a267333d03a2","time":"2025-01-17T15:55:12.773Z","_id":"678a7d60e43fad0524646a58"},{"id":"6787df3c08f5a267333d03a2","time":"2025-01-17T15:56:11.206Z","_id":"678a7d9be43fad0524646b96"},{"id":"6787df3c08f5a267333d03a2","time":"2025-01-17T15:56:11.451Z","_id":"678a7d9be43fad0524646be5"},{"id":"6787df3c08f5a267333d03a2","time":"2025-01-17T15:56:42.804Z","_id":"678a7dbae43fad0524646cdd"},{"id":"6787df3c08f5a267333d03a2","time":"2025-01-17T15:56:42.810Z","_id":"678a7dbae43fad0524646d06"},{"id":"6787dbdc7ccb4ee0862703f8","time":"2025-01-18T05:06:33.731Z","_id":"678b36daa9a8c7c6c96b0c70"},{"id":"6787df3c08f5a267333d03a2","time":"2025-01-18T05:44:32.650Z","_id":"678b3fc0e43fad05246480bd"},{"id":"6787df3c08f5a267333d03a2","time":"2025-01-18T05:44:32.673Z","_id":"678b3fc0e43fad0524648116"},{"id":"6787df3c08f5a267333d03a2","time":"2025-01-18T06:40:38.954Z","_id":"678b4ce6521aac0803f8e712"},{"id":"6787df3c08f5a267333d03a2","time":"2025-01-18T07:10:35.480Z","_id":"678b53eb521aac0803f8e96f"},{"id":"6787df3c08f5a267333d03a2","time":"2025-01-18T07:10:35.501Z","_id":"678b53eb521aac0803f8e9ce"},{"id":"6787de7308f5a267333d0376","time":"2025-01-18T07:33:09.981Z","_id":"678b59350681cf088147ca14"},{"id":"6787de7308f5a267333d0376","time":"2025-01-18T07:33:45.064Z","_id":"678b59590681cf088147ca61"},{"id":"6787de7308f5a267333d0376","time":"2025-01-18T07:34:07.759Z","_id":"678b596f0681cf088147caaf"},{"id":"6787de7308f5a267333d0376","time":"2025-01-18T07:35:03.622Z","_id":"678b59a729bc97ef2b77d3ca"},{"id":"6787df3c08f5a267333d03a2","time":"2025-01-18T09:43:15.849Z","_id":"678b77b3060d541b64a16f89"},{"id":"6787df3c08f5a267333d03a2","time":"2025-01-18T09:43:15.907Z","_id":"678b77b3060d541b64a16ff4"},{"id":"6787de7308f5a267333d0376","time":"2025-01-18T09:47:50.217Z","_id":"678b78c6060d541b64a17499"},{"id":"6787de7308f5a267333d0376","time":"2025-01-18T09:48:57.131Z","_id":"678b7909060d541b64a17685"}]
+/// id : 3
+/// uniqueCode : "TRPU00001"
+/// __v : 0
+/// token : "U2FsdGVkX199/tbYcbU/sJ1pOp84LwGf6XImCMBzYZdZlknxa8QUCkxeHj84P//szxxFa6fY1KAFvDAw5b27c0crfiFT2VKDHcnSZKR1N/58f35/Kmz+54l9waIaAdoQ0JksVAteQilUKuRJTAigo1rbrQeTuGOIDPh9xFu67vJF4YUYMbkqDig7djngdH6Gkkl5Qc8z2zEYBShm4wmG2gw5ToRRRaOZJCd0rDUBwNk="
+/// firebaseToken : "eKFsQaIERFSiX8JRoh_tlR:APA91bGqu_s5R-1gydEX4ZtvYC0pHaLCitWGeC9xKCXo1eZjci7HWLq7J3LzDXHEFC93yFdCM7wRcyhij7A_Jp67Ga6KcES4CZpP0QSjLL7TCAIMtgiZsjs"
+
+class Data {
+  Data({
+      this.notificationPermission, 
+      this.id, 
+      this.name, 
+      this.emailAddress, 
+      this.phone, 
+      this.password, 
+      this.dob, 
+      this.gender, 
+      this.address, 
+      this.country, 
+      this.state, 
+      this.city, 
+      this.pinCode, 
+      this.dealerCode, 
+      this.idno, 
+      this.notification, 
+      this.idDocument, 
+      this.document, 
+      this.role, 
+      this.subscribeType, 
+      this.status, 
+      this.isAppCreated, 
+      this.createdBy, 
+      this.createdAt, 
+      this.updatedAt, 
+      this.updatedBy, 
+      this.id1,
+      this.uniqueCode, 
+      this.v, 
+      this.token, 
+      this.firebaseToken,});
+
+  Data.fromJson(dynamic json) {
+    // notificationPermission = json['notificationPermission'] != null ? NotificationPermission.fromJson(json['notificationPermission']) : null;
+    // id = json['_id'];
+    // name = json['Name'];
+    // emailAddress = json['emailAddress'];
+    // phone = json['phone'];
+    // password = json['password'];
+    // dob = json['dob'];
+    // gender = json['gender'];
+    // address = json['address'];
+    // country = json['country'];
+    // state = json['state'];
+    // city = json['city'];
+    // pinCode = json['pinCode'];
+    // dealerCode = json['dealerCode'];
+    // idno = json['idno'];
+    // notification = json['notification'];
+    // idDocument = json['idDocument'];
+    // document = json['Document'];
+    // role = json['role'];
+    // subscribeType = json['subscribeType'];
+    // status = json['status'];
+    // isAppCreated = json['isAppCreated'];
+    // createdBy = json['createdBy'] != null ? CreatedBy.fromJson(json['createdBy']) : null;
+    // createdAt = json['createdAt'];
+    // updatedAt = json['updatedAt'];
+    // if (json['updatedBy'] != null) {
+    //   updatedBy = [];
+    //   json['updatedBy'].forEach((v) {
+    //     updatedBy?.add(UpdatedBy.fromJson(v));
+    //   });
+    // }
+    // id1 = json['id'];
+    // uniqueCode = json['uniqueCode'];
+    // v = json['__v'];
+    // token = json['token'];
+    // firebaseToken = json['firebaseToken'];
+  }
+  NotificationPermission? notificationPermission;
+  String? id;
+  String? name;
+  String? emailAddress;
+  String? phone;
+  String? password;
+  String? dob;
+  String? gender;
+  String? address;
+  String? country;
+  String? state;
+  String? city;
+  String? pinCode;
+  String? dealerCode;
+  String? idno;
+  bool? notification;
+  String? idDocument;
+  String? document;
+  String? role;
+  String? subscribeType;
+  bool? status;
+  bool? isAppCreated;
+  CreatedBy? createdBy;
+  String? createdAt;
+  String? updatedAt;
+  List<UpdatedBy>? updatedBy;
+  int? id1;
+  String? uniqueCode;
+  int? v;
+  String? token;
+  String? firebaseToken;
+
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    if (notificationPermission != null) {
+      map['notificationPermission'] = notificationPermission?.toJson();
+    }
+    map['_id'] = id;
+    map['Name'] = name;
+    map['emailAddress'] = emailAddress;
+    map['phone'] = phone;
+    map['password'] = password;
+    map['dob'] = dob;
+    map['gender'] = gender;
+    map['address'] = address;
+    map['country'] = country;
+    map['state'] = state;
+    map['city'] = city;
+    map['pinCode'] = pinCode;
+    map['dealerCode'] = dealerCode;
+    map['idno'] = idno;
+    map['notification'] = notification;
+    map['idDocument'] = idDocument;
+    map['Document'] = document;
+    map['role'] = role;
+    map['subscribeType'] = subscribeType;
+    map['status'] = status;
+    map['isAppCreated'] = isAppCreated;
+    if (createdBy != null) {
+      map['createdBy'] = createdBy?.toJson();
+    }
+    map['createdAt'] = createdAt;
+    map['updatedAt'] = updatedAt;
+    if (updatedBy != null) {
+      map['updatedBy'] = updatedBy?.map((v) => v.toJson()).toList();
+    }
+    map['id'] = id1;
+    map['uniqueCode'] = uniqueCode;
+    map['__v'] = v;
+    map['token'] = token;
+    map['firebaseToken'] = firebaseToken;
+    return map;
+  }
+
+}
