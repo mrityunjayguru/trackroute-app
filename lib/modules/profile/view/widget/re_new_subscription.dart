@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:sizer/sizer.dart';
@@ -109,12 +111,12 @@ class _ReNewSubscriptionState extends State<ReNewSubscription> {
                         shrinkWrap: true,
                         itemCount: controller.expiringVehicles.length,
                         itemBuilder: (context, index) {
-                          // Get the vehicle data
+
                           Data vehicle = controller.expiringVehicles[index];
                           bool isSelected = controller
                               .selectedVehicleIndex.value
                               .contains(index);
-                          bool isApplied = vehicle.isApplied ?? false;
+                          bool isApplied = ((vehicle.isApplied ?? 50) < 48.01) ?? false;
                           return InkWell(
                             onTap: () {
                               setState(() {

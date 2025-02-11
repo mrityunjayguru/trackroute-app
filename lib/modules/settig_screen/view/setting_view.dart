@@ -237,7 +237,7 @@ class SettingView extends StatelessWidget {
                       child: Image.network(
                           height: 13.h,
                           width: context.width,
-                          fit: BoxFit.contain,
+                          fit: BoxFit.cover,
                           '${ProjectUrls.imgBaseUrl}${controller.addBanner.value.data![index].image}',
                           errorBuilder: (context, error, stackTrace) =>
                               SvgPicture.asset(
@@ -245,10 +245,10 @@ class SettingView extends StatelessWidget {
                                 color: AppColors.black,
                               )).paddingAll(0),
                     ),
-                    height: 13.h,
+
                     width: context.width,
                     decoration: BoxDecoration(
-                        color: AppColors.bannerBackground,
+                        color: AppColors.color_f6f8fc,
                         borderRadius:
                             BorderRadius.circular(AppSizes.radius_10)),
                   ).paddingOnly(bottom: 2.h),

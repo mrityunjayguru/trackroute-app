@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools"
-    tools:keep="@raw/message_alert"
-    />
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Keep these raw resources from being removed during shrinking -->
+    <raw tools:keep="@raw/message_alert" />
+    <raw tools:keep="@raw/danger_alert" />
+</resources>

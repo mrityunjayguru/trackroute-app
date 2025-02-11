@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:sizer/sizer.dart';
@@ -267,7 +269,8 @@ class _ProfileViewState extends State<ProfileView> {
                               Align(
                                 alignment: Alignment.centerLeft,
                                 child: CachedNetworkImage(
-                                  height: 50,
+                                  height: 40,
+                                  width: 150,
                                   progressIndicatorBuilder:
                                       (context, url, progress) => Center(
                                     child: CircularProgressIndicator(
@@ -320,6 +323,7 @@ class _ProfileViewState extends State<ProfileView> {
                                 onTap: () {
                                   final url =
                                       '${dataController.settings.value.websiteLink ?? ''}';
+                                  log("$url");
                                   Utils.launchLink(url);
                                 },
                                 child: Text(

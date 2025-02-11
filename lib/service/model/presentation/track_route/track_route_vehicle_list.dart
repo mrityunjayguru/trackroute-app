@@ -72,7 +72,7 @@ class Data {
   String? area; // Area
   String? course; // Area
   bool? parking; // Parking status
-  bool? isApplied; // Parking status
+  double? isApplied; // Parking status
   bool? locationStatus; // Parking status
   bool? speedStatus; // Parking status
   Location? location; // Location details
@@ -152,12 +152,12 @@ class Data {
     vehicleModel = json['vehicleModel'];
     maxSpeed = Utils.parseDouble(data: json['maxSpeed'].toString());
     fuelLevel = Utils.parseDouble(data: json['fuelLevel'].toString());
+    isApplied = Utils.parseDouble(data: json['hoursDifference'].toString());
     area = json['Area'];
     parking = json['parking'];
     immobiliser = json['immobiliser'];
     locationStatus = json['locationStatus'];
     speedStatus = json['speedStatus'];
-    isApplied = json['isApplied'];
     location = json['location'] != null ? Location.fromJson(json['location']) : null;
     displayParameters = json['displayParameters'] != null ? DisplayParameters.fromJson(json['displayParameters']) : null;
   }

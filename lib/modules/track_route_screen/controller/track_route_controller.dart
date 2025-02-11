@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/services.dart';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -78,11 +77,11 @@ class TrackRouteController extends GetxController {
     );
 
     // Set up a timer to call `devicesByOwnerID` every 30 seconds if `isEdit` is false
-    //  _refreshTimer = Timer.periodic(Duration(seconds: 20), (timer) {
-    //   if (!isedit.value) {
-    //     devicesByOwnerID(false);
-    //   }
-    // });
+     _refreshTimer = Timer.periodic(Duration(seconds: 20), (timer) {
+      if (!isedit.value) {
+        devicesByOwnerID(false);
+      }
+    });
   }
 
   Future<void> getAddressFromLatLong(double latitude, double longitude) async {
