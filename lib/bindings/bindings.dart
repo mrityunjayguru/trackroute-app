@@ -4,15 +4,16 @@ import 'package:track_route_pro/modules/alert_screen/controller/alert_controller
 import 'package:track_route_pro/modules/bottom_screen/controller/bottom_bar_controller.dart';
 import 'package:track_route_pro/modules/faqs/controller/faqs_controller.dart';
 import 'package:track_route_pro/modules/login_screen/controller/login_controller.dart';
-import 'package:track_route_pro/modules/privacy_policy/controller/privacy_policy_controller.dart';
-import 'package:track_route_pro/modules/privacy_policy/controller/privacy_policy_controller.dart';
 import 'package:track_route_pro/modules/profile/controller/profile_controller.dart';
+import 'package:track_route_pro/modules/reports/controller/reports_controller.dart';
+import 'package:track_route_pro/modules/reports/controller/reports_controller.dart';
 import 'package:track_route_pro/modules/settig_screen/controller/setting_controller.dart';
 import 'package:track_route_pro/modules/splash_screen/controller/splash_controller.dart';
 import 'package:track_route_pro/modules/support/controller/support_controller.dart';
 import 'package:track_route_pro/modules/track_route_screen/controller/track_route_controller.dart';
 import 'package:track_route_pro/modules/vehicales/controller/vehicales_controller.dart';
 
+import '../modules/privacy_policy/controller/privacy_policy_controller.dart';
 import '../modules/route_history/controller/history_controller.dart';
 import '../modules/splash_screen/controller/data_controller.dart';
 
@@ -138,6 +139,15 @@ class PrivacyPolicyBindings extends Bindings {
   void dependencies() {
     Get.lazyPut<PrivacyPolicyController>(
           () => PrivacyPolicyController(),
+    );
+  }
+}
+
+class ReportsBindings extends Bindings {
+  @override
+  void dependencies() {
+    Get.lazyPut<ReportsController>(
+          () => ReportsController(),
     );
   }
 }

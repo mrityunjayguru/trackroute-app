@@ -208,7 +208,8 @@ class TrackRouteView extends StatelessWidget {
                                         intBattery:
                                             (trackingData?.internalBattery ??
                                                     "N/A")
-                                                .toString(),
+                                                .toString(), summary: controller.deviceDetail
+                                          .value.data?[0].summary,
                                       );
                                     }
                                     return SizedBox.shrink();

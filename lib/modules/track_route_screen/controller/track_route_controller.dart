@@ -101,7 +101,7 @@ class TrackRouteController extends GetxController {
 
   Future<String> getCurrAddress({double? latitude, double? longitude}) async {
     try {
-      log("$latitude  $longitude  ====> LAT LONG");
+      // log("$latitude  $longitude  ====> LAT LONG");
       if (latitude == null || longitude == null) return "Address not available";
       List<Placemark> placemarks =
           await placemarkFromCoordinates(latitude, longitude);

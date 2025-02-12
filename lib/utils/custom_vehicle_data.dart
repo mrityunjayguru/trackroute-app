@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:sizer/sizer.dart';
+import 'package:track_route_pro/modules/reports/view/reports_page.dart';
 import 'package:track_route_pro/modules/route_history/controller/history_controller.dart';
 import 'package:track_route_pro/service/model/presentation/track_route/DisplayParameters.dart';
 import 'package:track_route_pro/utils/utils.dart';
@@ -15,6 +16,7 @@ import '../config/theme/app_textstyle.dart';
 import '../gen/assets.gen.dart';
 import '../modules/bottom_screen/controller/bottom_bar_controller.dart';
 import '../modules/track_route_screen/controller/track_route_controller.dart';
+import '../service/model/presentation/track_route/Summary.dart';
 
 class VehicleDataWidget extends StatelessWidget {
   final bool isBottomSheet, isActive;
@@ -53,8 +55,10 @@ class VehicleDataWidget extends StatelessWidget {
   final String motion;
   final String bluetooth;
   final String? expiryDate;
+  final Summary? summary;
 
   VehicleDataWidget({
+    this.summary,
     required this.odo,
     required this.isActive,
     required this.fuel,
@@ -118,7 +122,7 @@ class VehicleDataWidget extends StatelessWidget {
                           .inDays <=
                       15))
                 Text(
-                  "Expiring in ${(DateFormat('yyyy-MM-dd').parse(expiryDate!).difference(DateTime.now()).inDays +1)} Days",
+                  "Expiring in ${(DateFormat('yyyy-MM-dd').parse(expiryDate!).difference(DateTime.now()).inDays + 1)} Days",
                   style: AppTextStyles(context)
                       .display12W400
                       .copyWith(color: AppColors.color_e23226),
@@ -151,7 +155,9 @@ class VehicleDataWidget extends StatelessWidget {
                 ),
               ),
             ],
-          ).paddingOnly(bottom: 8) else SizedBox(height: 1.5.h),
+          ).paddingOnly(bottom: 8)
+        else
+          SizedBox(height: 1.5.h),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -205,7 +211,8 @@ class VehicleDataWidget extends StatelessWidget {
                   : AppColors.color_e5e7e9,
               borderRadius: BorderRadius.circular(AppSizes.radius_50)),
           child: Row(
-            mainAxisAlignment: isActive? MainAxisAlignment.start : MainAxisAlignment.center,
+            mainAxisAlignment:
+                isActive ? MainAxisAlignment.start : MainAxisAlignment.center,
             children: [
               if (isActive)
                 SvgPicture.asset('assets/images/svg/ic_location.svg'),
@@ -213,7 +220,6 @@ class VehicleDataWidget extends StatelessWidget {
                 child: Text(
                   isActive ? address : "Device Inactive",
                   style: AppTextStyles(context).display13W500,
-
                 ).paddingOnly(left: 5),
               )
             ],
@@ -429,6 +435,317 @@ class VehicleDataWidget extends StatelessWidget {
               ),
             ),
           if (displayParameters != null) SizedBox(height: 0.4.h),
+          if (isBottomSheet &&
+              summary != null &&
+              (summary?.isNotEmpty ?? false))
+            Container(
+              width: context.width,
+              padding: EdgeInsets.all(6),
+              margin: EdgeInsets.only(bottom: 1.h),
+              decoration: BoxDecoration(
+                color: AppColors.color_f6f8fc,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Today’s Trip Summary',
+                        style: AppTextStyles(context).display14W700,
+                      ),
+                      Text.rich(
+                        textAlign: TextAlign.end,
+                        TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'Latest Trip\n',
+                              style: AppTextStyles(context)
+                                  .display12W400
+                                  .copyWith(color: AppColors.grayLight),
+                            ),
+                            TextSpan(
+                              text:
+                                  '${Utils.toStringAsFixed(data: summary?.latestTripKm.toString())} KM',
+                              style: AppTextStyles(context).display14W600,
+                            ),
+                            TextSpan(
+                              text: '(${summary?.latestTripTime ?? "-"})',
+                              style: AppTextStyles(context).display14W400,
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                            height: 6.h,
+                            // constraints: BoxConstraints(maxHeight: 9.h),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 6, horizontal: 10),
+                            decoration: BoxDecoration(
+                              color: AppColors.white,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  height: context.height,
+                                  padding: EdgeInsets.all(4),
+                                  decoration: BoxDecoration(
+                                      color: AppColors.selextedindexcolor,
+                                      borderRadius: BorderRadius.circular(
+                                          AppSizes.radius_34)),
+                                  child: SvgPicture.asset(
+                                      "assets/images/svg/destination_icon.svg"),
+                                ).paddingOnly(right: 5),
+                                Flexible(
+                                  child: Text.rich(
+                                    textAlign: TextAlign.start,
+                                    overflow: TextOverflow.ellipsis,
+                                    TextSpan(
+                                      children: [
+                                        TextSpan(
+                                          text: 'Total Travel ',
+                                          style: AppTextStyles(context)
+                                              .display11W500,
+                                        ),
+                                        TextSpan(
+                                          text:
+                                              '(${summary?.totalTravelTime ?? "-"})\n',
+                                          style: AppTextStyles(context)
+                                              .display11W500
+                                              .copyWith(
+                                                  color: AppColors.grayLight),
+                                        ),
+                                        TextSpan(
+                                          text:
+                                              '${summary?.avgSpeed == null ? "-": summary?.totalTravelTime ?? "-"}', //todo
+                                          style: AppTextStyles(context)
+                                              .display22W600,
+                                        ),
+                                        TextSpan(
+                                          text: 'KM ',
+                                          style: AppTextStyles(context)
+                                              .display14W600
+                                              .copyWith(
+                                                  color: AppColors.grayLight),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              ],
+                            )).paddingSymmetric(horizontal: 3, vertical: 4),
+                      ),
+                      SizedBox(
+                        width: 5,
+                      ),
+                      Expanded(
+                        child: InkWell(
+                      /*    onTap: () => Get.to(
+                                  () => ReportsView(),
+                              transition: Transition.upToDown,
+                              duration:
+                              const Duration(milliseconds: 300)),*/ //todo
+                          child: Container(
+                            height: 6.h,
+                            padding: EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.circular(AppSizes.radius_10),
+                                color: AppColors.black),
+                            child: Center(
+                              child: Text(
+                                'Download Reports',
+                                style: AppTextStyles(context)
+                                    .display13W500
+                                    .copyWith(
+                                        color: AppColors.selextedindexcolor),
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                  IntrinsicHeight(
+                    child: Row(
+                      children: [
+                        Container(
+                            width: 55.w,
+                            padding: EdgeInsets.symmetric(
+                                vertical: 6, horizontal: 10),
+                            decoration: BoxDecoration(
+                              color: AppColors.white,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  height: 5.h,
+                                  padding: EdgeInsets.all(4),
+                                  decoration: BoxDecoration(
+                                      color: AppColors.selextedindexcolor,
+                                      borderRadius: BorderRadius.circular(
+                                          AppSizes.radius_34)),
+                                  child: Align(
+                                    alignment: Alignment.topCenter,
+                                    child: SvgPicture.asset(
+                                        "assets/images/svg/max_speed_icon.svg"),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                Flexible(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Max Speed',
+                                        style: AppTextStyles(context)
+                                            .display11W500,
+                                      ),
+                                      FutureBuilder(
+                                        future: controller.getCurrAddress(
+                                            latitude: summary
+                                                ?.maxSpeedLocation?.latitude,
+                                            longitude: summary
+                                                ?.maxSpeedLocation?.longitude),
+                                        builder: (BuildContext context,
+                                            AsyncSnapshot<dynamic> snapshot) {
+                                          return Text.rich(
+                                            textAlign: TextAlign.start,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            TextSpan(
+                                              children: [
+                                                TextSpan(
+                                                  text:
+                                                      '@ ${summary?.maxSpeedTime != null ? DateFormat("HH:MM").format(DateTime.parse(summary?.maxSpeedTime ?? "")) : "-"}  ',
+                                                  style: AppTextStyles(context)
+                                                      .display11W500,
+                                                ),
+                                                TextSpan(
+                                                  text: '${snapshot.data}\n',
+                                                  style: AppTextStyles(context)
+                                                      .display11W500
+                                                      .copyWith(
+                                                          color: AppColors
+                                                              .grayLight),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                      SizedBox(
+                                        height: 4,
+                                      ),
+                                      Text.rich(
+                                        textAlign: TextAlign.start,
+                                        TextSpan(
+                                          children: [
+                                            TextSpan(
+                                              text:
+                                                  '${summary?.maxSpeed == null ? "-":Utils.toStringAsFixed(data: summary?.maxSpeed.toString()) ?? "-"} ',
+                                              style: AppTextStyles(context)
+                                                  .display22W600,
+                                            ),
+                                            TextSpan(
+                                              text: 'KMPH',
+                                              style: AppTextStyles(context)
+                                                  .display14W600
+                                                  .copyWith(
+                                                      color:
+                                                          AppColors.grayLight),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            )).paddingSymmetric(horizontal: 3, vertical: 4),
+                        SizedBox(
+                          width: 5,
+                        ),
+                        Expanded(
+                          child: Container(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 6, horizontal: 10),
+                              decoration: BoxDecoration(
+                                color: AppColors.white,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'Average\nSpeed',
+                                        style: AppTextStyles(context)
+                                            .display11W500,
+                                      ),
+                                      SizedBox(
+                                        width: 5,
+                                      ),
+                                      Container(
+                                        padding: EdgeInsets.all(4),
+                                        decoration: BoxDecoration(
+                                            color: AppColors.selextedindexcolor,
+                                            borderRadius: BorderRadius.circular(
+                                                AppSizes.radius_50)),
+                                        child: SvgPicture.asset(
+                                            "assets/images/svg/avg_speed_icon.svg"),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  Text.rich(
+                                    textAlign: TextAlign.start,
+                                    overflow: TextOverflow.ellipsis,
+                                    TextSpan(
+                                      children: [
+                                        TextSpan(
+                                          text: '${summary?.avgSpeed == null ? "-":Utils.toStringAsFixed(data: summary?.avgSpeed)}',
+                                          style: AppTextStyles(context)
+                                              .display22W600,
+                                        ),
+                                        TextSpan(
+                                          text: 'KMPH',
+                                          style: AppTextStyles(context)
+                                              .display14W600
+                                              .copyWith(
+                                                  color: AppColors.grayLight),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              )).paddingSymmetric(horizontal: 3, vertical: 4),
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
           if (isBottomSheet)
             Container(
               width: context.width,

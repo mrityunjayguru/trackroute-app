@@ -9,6 +9,7 @@ import 'package:track_route_pro/modules/vehicales/controller/vehicales_controlle
 import 'package:track_route_pro/service/model/presentation/track_route/DisplayParameters.dart';
 import 'package:track_route_pro/utils/common_import.dart';
 
+import '../../../../service/model/presentation/track_route/Summary.dart';
 import '../../../../utils/custom_vehicle_data.dart';
 
 class VehicalDetailBottomSheet extends StatelessWidget {
@@ -47,7 +48,7 @@ class VehicalDetailBottomSheet extends StatelessWidget {
     this.parking,
     this.door,
     this.geofence,
-    this.engine, this.displayParameters, this.expiryDate,
+    this.engine, this.displayParameters, this.expiryDate,  this.summary,
   });
 
   final String vehicalNo, icon, fuel, vehicleName;
@@ -62,6 +63,7 @@ class VehicalDetailBottomSheet extends StatelessWidget {
   final String temp;
   final String motion;
   final String bluetooth;
+  final Summary? summary;
   final String? expiryDate;
   final bool? ignition,
       gps,
@@ -97,6 +99,7 @@ class VehicalDetailBottomSheet extends StatelessWidget {
       child: Column(
         children: [
           VehicleDataWidget(
+            summary: summary,
             expiryDate: expiryDate,
             isActive: isActive,
             temp: temp, humid: humid, motion: motion,bluetooth: bluetooth,extBattery: extBattery,intBattery: intBattery,

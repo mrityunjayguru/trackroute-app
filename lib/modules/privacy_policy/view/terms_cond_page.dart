@@ -3,12 +3,11 @@ import 'package:sizer/sizer.dart';
 import 'package:track_route_pro/config/theme/app_colors.dart';
 import 'package:track_route_pro/config/theme/app_textstyle.dart';
 import 'package:track_route_pro/gen/assets.gen.dart';
-import 'package:track_route_pro/modules/about_us/controller/about_us_controller.dart';
-import 'package:track_route_pro/modules/privacy_policy/controller/privacy_policy_controller.dart';
 import 'package:track_route_pro/utils/common_import.dart';
 
 import '../../../constants/project_urls.dart';
 import '../../splash_screen/controller/data_controller.dart';
+import '../controller/privacy_policy_controller.dart';
 
 class TermsConditionView extends StatelessWidget {
   TermsConditionView({super.key});

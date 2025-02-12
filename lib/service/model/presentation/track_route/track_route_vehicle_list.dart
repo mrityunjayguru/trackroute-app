@@ -4,11 +4,13 @@ import 'package:track_route_pro/service/model/presentation/track_route/DisplayPa
 
 import '../../../../utils/common_import.dart';
 import '../../../../utils/utils.dart';
+import 'Summary.dart';
 
 class TrackRouteVehicleList {
   List<Data>? data;
   String? message;
   int? status;
+
 
   TrackRouteVehicleList({this.data, this.message, this.status});
 
@@ -22,8 +24,6 @@ class TrackRouteVehicleList {
 
       });
     }
-
-
 
     message = json['message'];
     status = json['status'];
@@ -77,9 +77,11 @@ class Data {
   bool? speedStatus; // Parking status
   Location? location; // Location details
   DisplayParameters? displayParameters;
+  Summary? summary;
 
   Data({
     this.speedStatus,
+    this.summary,
     this.locationStatus,
     this.sId,
     this.vehicleRegistrationNo,
@@ -119,6 +121,9 @@ class Data {
   });
 
   Data.fromJson(Map<String, dynamic> json) {
+    summary = json['summary'] != null
+        ? Summary.fromJson(json['summary'])
+        : null;
     sId = json['_id'];
     vehicleRegistrationNo = json['vehicleRegistrationNo'];
     fuel = json['fuel'];
