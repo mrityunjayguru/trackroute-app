@@ -1,6 +1,4 @@
 import 'dart:developer';
-import 'dart:io';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:track_route_pro/constants/constant.dart';
@@ -14,11 +12,6 @@ import 'package:track_route_pro/utils/app_prefrance.dart';
 import 'package:track_route_pro/utils/common_import.dart';
 import 'package:track_route_pro/utils/enums.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import '../../../service/model/auth/ManageSettingModel.dart';
-import '../../../utils/aees_helper.dart';
-import '../../splash_screen/controller/data_controller.dart';
-import '../../splash_screen/controller/splash_controller.dart';
 
 class LoginController extends GetxController {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();

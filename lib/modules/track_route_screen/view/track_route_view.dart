@@ -175,7 +175,7 @@ class TrackRouteView extends StatelessWidget {
                                         charging: ((trackingData?.internalBattery ?? 1) <= 0) ? true : false ,
                                         door: trackingData?.door,
                                         geofence: controller.deviceDetail.value
-                                                .data?[0].area != null,
+                                                .data?[0].locationStatus ?? false,
                                         immob: controller.deviceDetail.value
                                                     .data?[0].immobiliser !=
                                                 null
@@ -188,7 +188,7 @@ class TrackRouteView extends StatelessWidget {
                                         engine: controller.deviceDetail.value
                                             .data?[0].trackingData?.ignition?.status ?? false,
                                         fuel:
-                                            "${controller.deviceDetail.value.data?[0]?.fuelLevel ?? "N/A"}",
+                                        controller.deviceDetail.value.data?[0].fuelStatus != "Off" ? "${controller.deviceDetail.value.data?[0]?.fuelLevel ?? "N/A"}" : "N/A",
                                         vehicleName:
                                             "${controller.deviceDetail.value.data?[0].vehicletype?.vehicleTypeName ?? ""}",
                                         temp:

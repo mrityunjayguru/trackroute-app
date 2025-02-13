@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:track_route_pro/utils/style.dart';
@@ -33,7 +32,8 @@ class SearchDropDown<T extends SearchDropDownModel> extends StatelessWidget {
   final Color? itemBuilderUnselectedColor,
       itemBuilderSelectedColor,
       textSelectedColor,
-      textUnselectedColor, containerColor;
+      textUnselectedColor,
+      containerColor;
 
   final SearchMatch matchingPattern;
 
@@ -64,23 +64,24 @@ class SearchDropDown<T extends SearchDropDownModel> extends StatelessWidget {
     this.itemBuilderUnselectedColor = AppColors.white,
     this.itemBuilderSelectedColor = const Color(0xff3d3d3d),
     this.textSelectedColor = AppColors.white,
-    this.textUnselectedColor =const Color(0xff3d3d3d),
+    this.textUnselectedColor = const Color(0xff3d3d3d),
     this.dropDownTextStyle,
     this.itemTextStyle,
     this.width,
-    this.matchingPattern = SearchMatch.NAME, this.containerColor, required  this.hintStyle,
+    this.matchingPattern = SearchMatch.NAME,
+    this.containerColor,
+    required this.hintStyle,
   }) {
     // SystemChannels.textInput.invokeMethod('TextInput.hide');
   }
 
   @override
   Widget build(BuildContext context) {
-
-    final inputBorder =  OutlineInputBorder(
+    final inputBorder = OutlineInputBorder(
       borderSide: BorderSide(color: AppColors.textBlackColor.withOpacity(0.3)),
       borderRadius: BorderRadius.circular(16),
     );
-    final transparentBorder =  OutlineInputBorder(
+    final transparentBorder = OutlineInputBorder(
       borderSide: BorderSide(color: AppColors.transparent),
       borderRadius: BorderRadius.circular(16),
     );
@@ -103,9 +104,9 @@ class SearchDropDown<T extends SearchDropDownModel> extends StatelessWidget {
           height: height ?? 20,
           width: width,
           child: DropdownSearch<T>(
-
             onChanged: onChanged,
             popupProps: PopupProps.menu(
+
               scrollbarProps: ScrollbarProps(
                 trackVisibility: true,
                 thumbVisibility: true,
@@ -121,10 +122,14 @@ class SearchDropDown<T extends SearchDropDownModel> extends StatelessWidget {
                 return Column(
                   children: [
                     Container(
-                      color: isSelected
-                          ? (itemBuilderSelectedColor ?? AppColors.primaryColor)
-                          : (itemBuilderUnselectedColor ?? AppColors.white),
                       width: 300,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4),
+                        color: isSelected
+                            ? (itemBuilderSelectedColor ??
+                                AppColors.primaryColor)
+                            : (itemBuilderUnselectedColor ?? AppColors.white),
+                      ),
                       padding: EdgeInsets.all(8),
                       child: Text(
                         item.name ?? "",
@@ -135,7 +140,7 @@ class SearchDropDown<T extends SearchDropDownModel> extends StatelessWidget {
                                   : (textUnselectedColor ??
                                       AppColors.textBlackColor),
                             ) ??
-                            text10Medium.copyWith(
+                            text14Regular.copyWith(
                               color: isSelected
                                   ? (textSelectedColor ?? AppColors.white)
                                   : (textUnselectedColor ??
@@ -144,10 +149,10 @@ class SearchDropDown<T extends SearchDropDownModel> extends StatelessWidget {
                       ),
                     ),
                     Container(
-                    height:1,
-                width: width,
-                color:  AppColors.textBlackColor.withOpacity(0.5),
-                )
+                      height: 1,
+                      width: width,
+                      color: AppColors.textBlackColor.withOpacity(0.5),
+                    )
                   ],
                 );
               },
@@ -155,10 +160,10 @@ class SearchDropDown<T extends SearchDropDownModel> extends StatelessWidget {
                 return Container(
                   decoration: BoxDecoration(
                     border: Border.all(
-                      color: AppColors.textBlackColor.withOpacity(borderOpacity),
+                      color:
+                          AppColors.textBlackColor.withOpacity(borderOpacity),
                     ),
                     borderRadius: BorderRadius.circular(4),
-
                   ),
                   child: popupWidget,
                 );
@@ -166,7 +171,6 @@ class SearchDropDown<T extends SearchDropDownModel> extends StatelessWidget {
               searchFieldProps: TextFieldProps(
                 style: text12Medium(),
                 cursorColor: AppColors.textBlackColor,
-
                 decoration: InputDecoration(
                   border: inputBorder,
                   focusedBorder: inputBorder,
@@ -189,8 +193,7 @@ class SearchDropDown<T extends SearchDropDownModel> extends StatelessWidget {
               }
             },
             dropdownButtonProps: DropdownButtonProps(
-
-              icon:Icon(Icons.arrow_drop_down_outlined),
+              icon: Icon(Icons.arrow_drop_down_outlined),
               // iconSize: 10,
               padding: EdgeInsets.zero,
               visualDensity: VisualDensity(
@@ -203,16 +206,15 @@ class SearchDropDown<T extends SearchDropDownModel> extends StatelessWidget {
                 hintText: hint,
                 filled: true,
                 fillColor: dropDownFillColor,
-                hintStyle: hintStyle ?? text10Medium.copyWith(
-                  color: AppColors.grayLight
-                ),
-
-                border: showBorder? inputBorder : transparentBorder,
-                focusedBorder: showBorder? inputBorder : transparentBorder,
-                errorBorder: showBorder? inputBorder : transparentBorder,
-                disabledBorder: showBorder? inputBorder : transparentBorder,
-                enabledBorder: showBorder? inputBorder : transparentBorder,
-                focusedErrorBorder: showBorder? inputBorder : transparentBorder,
+                hintStyle: hintStyle ??
+                    text10Medium.copyWith(color: AppColors.grayLight),
+                border: showBorder ? inputBorder : transparentBorder,
+                focusedBorder: showBorder ? inputBorder : transparentBorder,
+                errorBorder: showBorder ? inputBorder : transparentBorder,
+                disabledBorder: showBorder ? inputBorder : transparentBorder,
+                enabledBorder: showBorder ? inputBorder : transparentBorder,
+                focusedErrorBorder:
+                    showBorder ? inputBorder : transparentBorder,
                 contentPadding: EdgeInsets.fromLTRB(10, 0, 0, 0),
               ),
             ),
@@ -224,9 +226,8 @@ class SearchDropDown<T extends SearchDropDownModel> extends StatelessWidget {
             dropdownBuilder: (context, selectedItem) => Text(
               selectedItem?.name ?? hint,
               style: selectedItem != null
-                  ? hintStyle.copyWith(
-                      color: AppColors.textBlackColor)
-                  :  hintStyle,
+                  ? hintStyle.copyWith(color: AppColors.textBlackColor)
+                  : hintStyle,
             ),
           ),
         ),

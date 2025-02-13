@@ -15,6 +15,7 @@ import '../config/theme/app_colors.dart';
 import '../config/theme/app_textstyle.dart';
 import '../gen/assets.gen.dart';
 import '../modules/bottom_screen/controller/bottom_bar_controller.dart';
+import '../modules/reports/controller/reports_controller.dart';
 import '../modules/track_route_screen/controller/track_route_controller.dart';
 import '../service/model/presentation/track_route/Summary.dart';
 
@@ -104,14 +105,22 @@ class VehicleDataWidget extends StatelessWidget {
 
   var routeHistoryController = Get.put(HistoryController());
 
-  // final scrollController = ScrollController();
-
   @override
   Widget build(BuildContext context) {
+    bool isNotExpired = (isActive &&
+        (expiryDate == null
+            ? isActive
+            : (DateFormat('yyyy-MM-dd')
+                        .parse(expiryDate!)
+                        .difference(DateTime.now())
+                        .inDays +
+                    1 >
+                0)));
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (isActive)
+        if (isNotExpired)
           Row(
             children: [
               if (expiryDate != null &&
@@ -206,19 +215,20 @@ class VehicleDataWidget extends StatelessWidget {
         SizedBox(height: 1.5.h),
         Container(
           decoration: BoxDecoration(
-              color: isActive
+              color: isNotExpired
                   ? AppColors.selextedindexcolor
                   : AppColors.color_e5e7e9,
               borderRadius: BorderRadius.circular(AppSizes.radius_50)),
           child: Row(
-            mainAxisAlignment:
-                isActive ? MainAxisAlignment.start : MainAxisAlignment.center,
+            mainAxisAlignment: isNotExpired
+                ? MainAxisAlignment.start
+                : MainAxisAlignment.center,
             children: [
-              if (isActive)
+              if (isNotExpired)
                 SvgPicture.asset('assets/images/svg/ic_location.svg'),
               Flexible(
                 child: Text(
-                  isActive ? address : "Device Inactive",
+                  isNotExpired ? address : "Device Inactive",
                   style: AppTextStyles(context).display13W500,
                 ).paddingOnly(left: 5),
               )
@@ -273,7 +283,7 @@ class VehicleDataWidget extends StatelessWidget {
             ),
             InkWell(
               onTap: () {
-                if (isActive) {
+                if (isNotExpired) {
                   final bottomController = Get.isRegistered<
                           BottomBarController>()
                       ? Get.find<
@@ -308,7 +318,7 @@ class VehicleDataWidget extends StatelessWidget {
                   child: Text(
                     'Route History',
                     style: AppTextStyles(context).display13W500.copyWith(
-                        color: isActive
+                        color: isNotExpired
                             ? AppColors.selextedindexcolor
                             : AppColors.grayLight),
                   ),
@@ -318,7 +328,7 @@ class VehicleDataWidget extends StatelessWidget {
           ],
         ),
         SizedBox(height: 1.5.h),
-        if (isActive) ...[
+        if (isNotExpired) ...[
           Container(
             decoration: BoxDecoration(
                 color: AppColors.whiteOff,
@@ -344,7 +354,7 @@ class VehicleDataWidget extends StatelessWidget {
                       Flexible(
                         child: AutoSizeText(
                           "${Utils.toStringAsFixed(data: speed)}",
-                          style: AppTextStyles(context).display13W600,
+                          style: AppTextStyles(context).display21W600,
                           maxLines: 4,
                           minFontSize: 9,
                         ).paddingOnly(left: 4, right: 6),
@@ -384,7 +394,7 @@ class VehicleDataWidget extends StatelessWidget {
                       children: [
                         CircleAvatar(
                           backgroundColor: fuel != "N/A"
-                              ? AppColors.selextedindexcolor
+                              ? AppColors.grayBright
                               : AppColors.grayBright,
                           child: SvgPicture.asset(
                             'assets/images/svg/ic_fuel.svg',
@@ -394,11 +404,13 @@ class VehicleDataWidget extends StatelessWidget {
                         ),
                         Flexible(
                           child: AutoSizeText(
-                            Utils.toStringAsFixed(data: fuel),
+                            fuel != "N/A"
+                                ? Utils.toStringAsFixed(data: fuel)
+                                : fuel,
                             maxLines: 4,
                             minFontSize: 9,
                             overflow: TextOverflow.ellipsis,
-                            style: AppTextStyles(context).display13W600,
+                            style: AppTextStyles(context).display21W600,
                           ).paddingOnly(left: 4, right: 6),
                         ),
                         Column(
@@ -440,10 +452,10 @@ class VehicleDataWidget extends StatelessWidget {
               (summary?.isNotEmpty ?? false))
             Container(
               width: context.width,
-              padding: EdgeInsets.all(6),
-              margin: EdgeInsets.only(bottom: 1.h),
+              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+              margin: EdgeInsets.only(bottom: 16),
               decoration: BoxDecoration(
-                color: AppColors.color_f6f8fc,
+                color: AppColors.color_e5e7f3,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Column(
@@ -456,110 +468,22 @@ class VehicleDataWidget extends StatelessWidget {
                         'Today’s Trip Summary',
                         style: AppTextStyles(context).display14W700,
                       ),
-                      Text.rich(
-                        textAlign: TextAlign.end,
-                        TextSpan(
-                          children: [
-                            TextSpan(
-                              text: 'Latest Trip\n',
-                              style: AppTextStyles(context)
-                                  .display12W400
-                                  .copyWith(color: AppColors.grayLight),
-                            ),
-                            TextSpan(
-                              text:
-                                  '${Utils.toStringAsFixed(data: summary?.latestTripKm.toString())} KM',
-                              style: AppTextStyles(context).display14W600,
-                            ),
-                            TextSpan(
-                              text: '(${summary?.latestTripTime ?? "-"})',
-                              style: AppTextStyles(context).display14W400,
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                            height: 6.h,
-                            // constraints: BoxConstraints(maxHeight: 9.h),
-                            padding: EdgeInsets.symmetric(
-                                vertical: 6, horizontal: 10),
-                            decoration: BoxDecoration(
-                              color: AppColors.white,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  height: context.height,
-                                  padding: EdgeInsets.all(4),
-                                  decoration: BoxDecoration(
-                                      color: AppColors.selextedindexcolor,
-                                      borderRadius: BorderRadius.circular(
-                                          AppSizes.radius_34)),
-                                  child: SvgPicture.asset(
-                                      "assets/images/svg/destination_icon.svg"),
-                                ).paddingOnly(right: 5),
-                                Flexible(
-                                  child: Text.rich(
-                                    textAlign: TextAlign.start,
-                                    overflow: TextOverflow.ellipsis,
-                                    TextSpan(
-                                      children: [
-                                        TextSpan(
-                                          text: 'Total Travel ',
-                                          style: AppTextStyles(context)
-                                              .display11W500,
-                                        ),
-                                        TextSpan(
-                                          text:
-                                              '(${summary?.totalTravelTime ?? "-"})\n',
-                                          style: AppTextStyles(context)
-                                              .display11W500
-                                              .copyWith(
-                                                  color: AppColors.grayLight),
-                                        ),
-                                        TextSpan(
-                                          text:
-                                              '${summary?.avgSpeed == null ? "-": summary?.totalTravelTime ?? "-"}', //todo
-                                          style: AppTextStyles(context)
-                                              .display22W600,
-                                        ),
-                                        TextSpan(
-                                          text: 'KM ',
-                                          style: AppTextStyles(context)
-                                              .display14W600
-                                              .copyWith(
-                                                  color: AppColors.grayLight),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                )
-                              ],
-                            )).paddingSymmetric(horizontal: 3, vertical: 4),
-                      ),
                       SizedBox(
-                        width: 5,
+                        width: 10.w,
                       ),
                       Expanded(
                         child: InkWell(
-                      /*    onTap: () => Get.to(
-                                  () => ReportsView(),
-                              transition: Transition.upToDown,
-                              duration:
-                              const Duration(milliseconds: 300)),*/ //todo
+                          onTap: () {
+                            Get.put(ReportsController()).setData();
+                            Get.to(() => ReportsView(),
+                                transition: Transition.upToDown,
+                                duration: const Duration(milliseconds: 300));
+                          },
                           child: Container(
-                            height: 6.h,
-                            padding: EdgeInsets.all(8),
+                            padding: EdgeInsets.symmetric(vertical :12, horizontal: 8),
                             decoration: BoxDecoration(
                                 borderRadius:
-                                    BorderRadius.circular(AppSizes.radius_10),
+                                    BorderRadius.circular(AppSizes.radius_50),
                                 color: AppColors.black),
                             child: Center(
                               child: Text(
@@ -575,11 +499,141 @@ class VehicleDataWidget extends StatelessWidget {
                       )
                     ],
                   ),
+                  SizedBox(
+                    height: 2,
+                  ),
+                  IntrinsicHeight(
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                              height: 6.h,
+                              // constraints: BoxConstraints(maxHeight: 9.h),
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 6, horizontal: 10),
+                              decoration: BoxDecoration(
+                                color: AppColors.white,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  /* Container(
+                                    height: context.height,
+                                    padding: EdgeInsets.all(4),
+                                    decoration: BoxDecoration(
+                                        color: AppColors.selextedindexcolor,
+                                        borderRadius: BorderRadius.circular(
+                                            AppSizes.radius_34)),
+                                    child: SvgPicture.asset(
+                                        "assets/images/svg/destination_icon.svg"),
+                                  ).paddingOnly(right: 5),*/
+                                  Flexible(
+                                    child: Text.rich(
+                                      textAlign: TextAlign.start,
+                                      overflow: TextOverflow.ellipsis,
+                                      TextSpan(
+                                        children: [
+                                          TextSpan(
+                                            text: 'Total Travel ',
+                                            style: AppTextStyles(context)
+                                                .display11W500,
+                                          ),
+                                          TextSpan(
+                                            text:
+                                                '(${summary?.totalTravelTime ?? "-"})\n',
+                                            style: AppTextStyles(context)
+                                                .display11W500
+                                                .copyWith(
+                                                    color: AppColors.grayLight),
+                                          ),
+                                          TextSpan(
+                                            text:
+                                                '${summary?.total_travel_km == null ? "-" : Utils.toStringAsFixed(data: summary?.total_travel_km.toString())}', //todo
+                                            style: AppTextStyles(context)
+                                                .display21W600,
+                                          ),
+                                          TextSpan(
+                                            text: ' KM ',
+                                            style: AppTextStyles(context)
+                                                .display14W600
+                                                .copyWith(
+                                                    color: AppColors.grayLight),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              )).paddingSymmetric(horizontal: 3, vertical: 4),
+                        ),
+                        SizedBox(
+                          width: 8,
+                        ),
+                        Expanded(
+                            child: Container(
+                                height: 6.h,
+                                // constraints: BoxConstraints(maxHeight: 9.h),
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 6, horizontal: 10),
+                                decoration: BoxDecoration(
+                                  color: AppColors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Flexible(
+                                      child: Text.rich(
+                                        textAlign: TextAlign.start,
+                                        overflow: TextOverflow.ellipsis,
+                                        TextSpan(
+                                          children: [
+                                            TextSpan(
+                                              text: 'Latest Trip ',
+                                              style: AppTextStyles(context)
+                                                  .display11W500,
+                                            ),
+                                            TextSpan(
+                                              text:
+                                                  '(${summary?.latestTripTime ?? "-"})\n',
+                                              style: AppTextStyles(context)
+                                                  .display11W500
+                                                  .copyWith(
+                                                      color:
+                                                          AppColors.grayLight),
+                                            ),
+                                            TextSpan(
+                                              text:
+                                                  '${summary?.latestTripKm == null ? "-" : Utils.toStringAsFixed(data: summary?.latestTripKm.toString())}',
+                                              style: AppTextStyles(context)
+                                                  .display21W600,
+                                            ),
+                                            TextSpan(
+                                              text: ' KM ',
+                                              style: AppTextStyles(context)
+                                                  .display14W600
+                                                  .copyWith(
+                                                      color:
+                                                          AppColors.grayLight),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                )).paddingSymmetric(horizontal: 3, vertical: 4))
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 2,
+                  ),
                   IntrinsicHeight(
                     child: Row(
                       children: [
                         Container(
-                            width: 55.w,
+                            width: 52.w,
                             padding: EdgeInsets.symmetric(
                                 vertical: 6, horizontal: 10),
                             decoration: BoxDecoration(
@@ -589,22 +643,18 @@ class VehicleDataWidget extends StatelessWidget {
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Container(
-                                  height: 5.h,
-                                  padding: EdgeInsets.all(4),
-                                  decoration: BoxDecoration(
-                                      color: AppColors.selextedindexcolor,
-                                      borderRadius: BorderRadius.circular(
-                                          AppSizes.radius_34)),
-                                  child: Align(
-                                    alignment: Alignment.topCenter,
-                                    child: SvgPicture.asset(
-                                        "assets/images/svg/max_speed_icon.svg"),
+                             /*   CircleAvatar(
+                                  maxRadius: 16,
+                                  backgroundColor: AppColors.selextedindexcolor,
+                                  child: SvgPicture.asset(
+                                    "assets/images/svg/max_speed_icon.svg",
+                                    width: 16,
+                                    height: 16,
                                   ),
                                 ),
                                 SizedBox(
                                   width: 5,
-                                ),
+                                ),*/
                                 Flexible(
                                   child: Column(
                                     crossAxisAlignment:
@@ -649,7 +699,7 @@ class VehicleDataWidget extends StatelessWidget {
                                         },
                                       ),
                                       SizedBox(
-                                        height: 4,
+                                        height: 7,
                                       ),
                                       Text.rich(
                                         textAlign: TextAlign.start,
@@ -657,9 +707,9 @@ class VehicleDataWidget extends StatelessWidget {
                                           children: [
                                             TextSpan(
                                               text:
-                                                  '${summary?.maxSpeed == null ? "-":Utils.toStringAsFixed(data: summary?.maxSpeed.toString()) ?? "-"} ',
+                                                  '${summary?.maxSpeed == null ? "-" : Utils.toStringAsFixed(data: summary?.maxSpeed.toString()) ?? "-"} ',
                                               style: AppTextStyles(context)
-                                                  .display22W600,
+                                                  .display21W600,
                                             ),
                                             TextSpan(
                                               text: 'KMPH',
@@ -678,7 +728,7 @@ class VehicleDataWidget extends StatelessWidget {
                               ],
                             )).paddingSymmetric(horizontal: 3, vertical: 4),
                         SizedBox(
-                          width: 5,
+                          width: 8,
                         ),
                         Expanded(
                           child: Container(
@@ -700,22 +750,20 @@ class VehicleDataWidget extends StatelessWidget {
                                         style: AppTextStyles(context)
                                             .display11W500,
                                       ),
-                                      SizedBox(
+                                     /* SizedBox(
                                         width: 5,
                                       ),
-                                      Container(
-                                        padding: EdgeInsets.all(4),
-                                        decoration: BoxDecoration(
-                                            color: AppColors.selextedindexcolor,
-                                            borderRadius: BorderRadius.circular(
-                                                AppSizes.radius_50)),
+                                      CircleAvatar(
+                                        maxRadius: 16,
+                                        backgroundColor:
+                                            AppColors.selextedindexcolor,
                                         child: SvgPicture.asset(
-                                            "assets/images/svg/avg_speed_icon.svg"),
-                                      ),
+                                          "assets/images/svg/avg_speed_icon.svg",
+                                          width: 16,
+                                          height: 16,
+                                        ),
+                                      ),*/
                                     ],
-                                  ),
-                                  SizedBox(
-                                    height: 5,
                                   ),
                                   Text.rich(
                                     textAlign: TextAlign.start,
@@ -723,9 +771,10 @@ class VehicleDataWidget extends StatelessWidget {
                                     TextSpan(
                                       children: [
                                         TextSpan(
-                                          text: '${summary?.avgSpeed == null ? "-":Utils.toStringAsFixed(data: summary?.avgSpeed)}',
+                                          text:
+                                              '${summary?.avgSpeed == null ? "- " : Utils.toStringAsFixed(data: summary?.avgSpeed)} ',
                                           style: AppTextStyles(context)
-                                              .display22W600,
+                                              .display21W600,
                                         ),
                                         TextSpan(
                                           text: 'KMPH',
@@ -808,7 +857,7 @@ class VehicleDataWidget extends StatelessWidget {
                   )
                 ],
               ),
-            ),
+            ).paddingOnly(bottom: 10),
         ] else
           InkWell(
             onTap: () {

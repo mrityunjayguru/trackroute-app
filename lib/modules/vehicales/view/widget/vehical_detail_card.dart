@@ -83,7 +83,7 @@ class VehicalDetailCard extends StatelessWidget {
             lastUpdate: date + " " + time,
             odo: (vehicleInfo.trackingData?.totalDistanceCovered ?? "")
                 .toString(),
-            fuel: (vehicleInfo.fuelLevel ?? "").toString(),
+            fuel:vehicleInfo.fuelStatus != "Off" ? (vehicleInfo.fuelLevel ?? "N/A").toString() : "N/A",
             speed: (vehicleInfo.trackingData?.currentSpeed ?? "").toString(),
             deviceId: vehicleInfo.deviceId ?? '',
             doorIsActive: vehicleInfo.trackingData?.door,
@@ -102,7 +102,7 @@ class VehicalDetailCard extends StatelessWidget {
             immobilizerSubTitle: vehicleInfo.immobiliser == null
                 ? "N/A"
                 : ((vehicleInfo.immobiliser! == "Stop") ? "ON" : "OFF"),
-            geofenceIsActive: vehicleInfo.area != null,
+            geofenceIsActive: vehicleInfo.locationStatus ?? false,
             geofenceSubTitle: vehicleInfo.area != null ? "ON" : "OFF",
             gpsIsActive: vehicleInfo.trackingData?.gps,
             gpsSubTitle: vehicleInfo.trackingData?.gps == null

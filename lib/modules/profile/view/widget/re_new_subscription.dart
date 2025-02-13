@@ -201,7 +201,7 @@ class _ReNewSubscriptionState extends State<ReNewSubscription> {
                                               overflow: TextOverflow.ellipsis,
                                               // Display the vehicle number
                                               style: AppTextStyles(context)
-                                                  .display10W500
+                                                  .display10W400
                                                   .copyWith(
                                                       color:
                                                           AppColors.grayLight),

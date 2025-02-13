@@ -149,10 +149,14 @@ class Utils{
     }
   }
 
-  static Future<void> launchLink(String url) async {
+  static Future<void> launchLink(String url,{bool showError = false}) async {
     if (await canLaunchUrl(Uri.parse(url))) {
     await launchUrl(Uri.parse(url));
     } else {
+      if(showError){
+        Utils.getSnackbar(
+            "Error", "Unable to fetch report, Please try later");
+      }
     throw 'Could not launch $url';
     }
   }

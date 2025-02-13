@@ -17,12 +17,14 @@ class Summary {
       this.maxSpeedTime, 
       this.maxSpeedLocation, 
       this.avgSpeed, 
+      this.total_travel_km,
       this.totalTravelTime,});
 
   Summary.fromJson(dynamic json) {
     latestTripKm = Utils.parseDouble(data: json['latest_trip_km'].toString());
     latestTripTime = json['latest_trip_time'];
     maxSpeed = Utils.parseDouble(data: json['max_speed'].toString());
+    total_travel_km = Utils.parseDouble(data: json['total_travel_km'].toString());
     maxSpeedTime = json['max_speed_time'];
     maxSpeedLocation = json['max_speed_location'] != null ? MaxSpeedLocation.fromJson(json['max_speed_location']) : null;
     avgSpeed = json['avg_speed'];
@@ -35,6 +37,7 @@ class Summary {
   MaxSpeedLocation? maxSpeedLocation;
   String? avgSpeed;
   String? totalTravelTime;
+  double? total_travel_km;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -56,6 +59,7 @@ class Summary {
         (maxSpeedTime != null && maxSpeedTime!.isNotEmpty) ||
         maxSpeedLocation != null ||
         (avgSpeed != null && avgSpeed!.isNotEmpty) ||
+        (total_travel_km != null) ||
         (totalTravelTime != null && totalTravelTime!.isNotEmpty);;
   }
 

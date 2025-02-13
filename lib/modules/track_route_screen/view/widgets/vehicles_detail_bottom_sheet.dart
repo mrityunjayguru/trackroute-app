@@ -13,9 +13,6 @@ import '../../../../service/model/presentation/track_route/Summary.dart';
 import '../../../../utils/custom_vehicle_data.dart';
 
 class VehicalDetailBottomSheet extends StatelessWidget {
-  final controller = Get.isRegistered<VehicalesController>()
-      ? Get.find<VehicalesController>()
-      : Get.put(VehicalesController());
   final trackController = Get.isRegistered<TrackRouteController>()
       ? Get.find<TrackRouteController>()
       : Get.put(TrackRouteController());

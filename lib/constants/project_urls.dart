@@ -31,4 +31,5 @@ class ProjectUrls {
   static const String routeHistory = "/trackVehicle/rootHistory";
   static const String privacyPolicy = "/privacyPolicy/get";
   static const String termsCondition = "/termAndCondition/get";
+  static const String downloadReport = "/trackVehicle/summary";
 }

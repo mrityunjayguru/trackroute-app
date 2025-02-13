@@ -21,16 +21,6 @@ class _VehicalesViewState extends State<VehicalesView> {
 
   void initState() {
     super.initState();
- /*   WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      controller.loadUser().then((_) {
-        controller.devicesByOwnerID();
-      });*/
-   /*   controller.searchController.addListener(() {
-        controller.filterVehicles(
-            controller.searchController.text); // Listen for search changes
-      });*/
-    /*  setState(() {});
-    });*/
   }
 
   @override
@@ -66,17 +56,13 @@ class _VehicalesViewState extends State<VehicalesView> {
                     itemCount: controller.filterData.length,
                     itemBuilder: (context, index) => InkWell(
                       onTap: () {
-                        controller.SelectedFilterIndex.value = index;
-                        controller
-                            .isFilterSelected.value = index ==
-                            controller
-                                .SelectedFilterIndex.value
-                            ? !controller.isFilterSelected.value
-                            : true;
                         controller.SelectedFilterIndex.value =
-                        controller.isFilterSelected.value
-                            ? index
-                            : -1; // Update the index here
+                            controller.SelectedFilterIndex.value == index
+                                ? -1
+                                : index;
+                        controller.isFilterSelected.value =
+                            controller.SelectedFilterIndex.value !=
+                                -1; // Update the index here
                         controller.updateFilteredList();
                         setState(() {});
                       },
@@ -127,11 +113,12 @@ class _VehicalesViewState extends State<VehicalesView> {
                     return InkWell(
                       onTap: () {
                         bottomController.updateIndex(2);
-                        controller.trackRouteController
-                            .devicesByDetails(vehicle.imei ?? '',showDialog: true, zoom: true);
+                        controller.trackRouteController.devicesByDetails(
+                            vehicle.imei ?? '',
+                            showDialog: true,
+                            zoom: true);
                         controller.trackRouteController
                             .isShowVehicleDetails(index, vehicle.imei ?? "");
-
                       },
                       child: VehicalDetailCard(
                         vehicleInfo: vehicle,

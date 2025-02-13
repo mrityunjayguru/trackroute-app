@@ -12,6 +12,7 @@ import 'package:track_route_pro/service/model/auth/login/login_response.dart';
 import 'package:track_route_pro/service/model/auth/reset_password/reset_password.dart';
 import 'package:track_route_pro/service/model/faq/FaqListModel.dart';
 import 'package:track_route_pro/service/model/listing_base_response.dart';
+import 'package:track_route_pro/service/model/presentation/DownloadReportResponse.dart';
 import 'package:track_route_pro/service/model/presentation/RenewResponse.dart';
 import 'package:track_route_pro/service/model/presentation/fcm_token.dart';
 import 'package:track_route_pro/service/model/presentation/setting_screen_model/about_us_model.dart';
@@ -27,6 +28,7 @@ import '../model/alerts/UpdateAlertsRequest.dart';
 import '../model/alerts/alert/AlertsResponse.dart';
 import '../model/faq/Topic.dart';
 import '../model/notification/AnnouncementResponse.dart';
+import '../model/presentation/DownloadReportRequest.dart';
 import '../model/relay/RelayStatusResponse.dart';
 import '../model/relay/relay/RelayResponse.dart';
 import '../model/update/UpdateResponse.dart';
@@ -150,4 +152,7 @@ abstract class ApiService {
 
   @POST(ProjectUrls.termsCondition)
   Future<ListingBaseResponse<PrivacyPolicyResponse>> termsCondition();
+
+  @POST(ProjectUrls.downloadReport)
+  Future<DownloadReportResponse> downloadReport(@Body(nullToAbsent: true) DownloadReportRequest request);
 }

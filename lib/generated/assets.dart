@@ -106,6 +106,7 @@ class Assets {
   static const String svgParkingIcon = 'assets/images/svg/parking_icon.svg';
   static const String svgPasteIcon = 'assets/images/svg/paste_icon.svg';
   static const String svgRedCheck = 'assets/images/svg/red_check.svg';
+  static const String svgReportIcon = 'assets/images/svg/report_icon.svg';
   static const String svgSearch = 'assets/images/svg/search.svg';
   static const String svgSelectedMarker = 'assets/images/svg/selected_marker.svg';
   static const String svgSpeedIcon = 'assets/images/svg/speed_icon.svg';

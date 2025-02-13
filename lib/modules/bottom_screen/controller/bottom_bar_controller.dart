@@ -34,6 +34,12 @@ class BottomBarController extends GetxController {
       }
 
     }
+    if(index==3){
+      final controller = Get.isRegistered<VehicalesController>()
+          ? Get.find<VehicalesController>() // Find if already registered
+          : Get.put(VehicalesController());
+      controller.onInit();
+    }
     if(index==4) {
       var controller = Get.put(ProfileController());
       controller.selectedVehicleIndex.value = {};

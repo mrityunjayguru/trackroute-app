@@ -174,13 +174,19 @@ class TrackRouteController extends GetxController {
   // Function to Filter for Active Vehicles
   List<Data> filterActiveVehicles(List<Data> vehicleList) {
     return vehicleList.where((vehicle) {
-      return vehicle.status == 'Active'; // Status is Active
+      return vehicle.status == 'Active'  && (vehicle.subscriptionExp== null ? vehicle.status == 'Active' : (DateFormat('yyyy-MM-dd')
+          .parse(vehicle.subscriptionExp!)
+          .difference(DateTime.now())
+          .inDays+1 >0)); // Status is Active
     }).toList();
   }
 
   List<Data> filterInactive(List<Data> vehicleList) {
     return vehicleList.where((vehicle) {
-      return vehicle.status != 'Active'; // Status is Active
+      return vehicle.status != "Active" || (vehicle.subscriptionExp== null ? vehicle.status != 'Active' : (DateFormat('yyyy-MM-dd')
+          .parse(vehicle.subscriptionExp!)
+          .difference(DateTime.now())
+          .inDays+1 <=0)); // Status is Active
     }).toList();
   }
 
@@ -599,11 +605,8 @@ class TrackRouteController extends GetxController {
       if (editGeofence) {
         lat = double.tryParse(latitudeUpdate.text) ?? 0.0;
         long = double.tryParse(longitudeUpdate.text) ?? 0.0;
+        geofence.value = true;
       } else {
-        // selectCurrentLocationUpdate.value = false;
-        geofence.value =
-            deviceDetail.value.data?[0].location?.latitude != null &&
-                deviceDetail.value.data?[0].location?.latitude != null;
         lat =
            deviceDetail.value.data?[0].location?.latitude ?? 0.0;
         long=
@@ -614,6 +617,9 @@ class TrackRouteController extends GetxController {
       if (!editSpeed) {
         maxSpeedUpdate.text =
             (deviceDetail.value.data?[0].maxSpeed ?? '').toString();
+      }
+      else{
+        speedUpdate.value = true;
       }
 
       if (!editGeneral) {
@@ -654,8 +660,8 @@ class TrackRouteController extends GetxController {
         "maxSpeed": maxSpeedUpdate.text.trim(),
         "parking": parkingUpdate.value,
         "Area": areaUpdate.text.trim(),
-        "speedStatus": areaUpdate.text.trim(),
-        "locationStatus": areaUpdate.text.trim(),
+        "speedStatus": speedUpdate.value,
+        "locationStatus": geofence.value,
         "location": {"longitude": long, "latitude": lat}
       };
       networkStatus.value = NetworkStatus.LOADING;
@@ -735,6 +741,8 @@ class TrackRouteController extends GetxController {
       print("Error during data update: $e");
     }
   }
+
+
 
   Future<Marker> createMarker(
       {double? lat,

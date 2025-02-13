@@ -43,6 +43,7 @@ class Data {
   String? sId;
   String? vehicleRegistrationNo;
   String? fuel;
+  String? fuelStatus;
   String? vehicleNo;
   String? deviceId;
   String? imei;
@@ -90,6 +91,7 @@ class Data {
     this.deviceId,
     this.imei,
     this.course,
+    this.fuelStatus,
     // this.vehicleType,
     this.ownerID,
     this.isDeleted,
@@ -137,6 +139,7 @@ class Data {
     createdAt = json['createdAt'];
     dateAdded = json['dateAdded'];
     updatedAt = json['updatedAt'];
+    fuelStatus = json['fuelStatus'];
     course = json['course'];
     iV = json['__v'];
     trackingData = json['trackingData'] != null

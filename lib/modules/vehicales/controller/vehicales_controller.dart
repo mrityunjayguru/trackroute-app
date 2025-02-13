@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:geocoding/geocoding.dart';
+import 'package:intl/intl.dart';
 import 'package:track_route_pro/constants/constant.dart';
 import 'package:track_route_pro/gen/assets.gen.dart';
 import 'package:track_route_pro/modules/track_route_screen/controller/track_route_controller.dart';
@@ -109,13 +110,19 @@ class VehicalesController extends GetxController {
       List<Data> finalFilteredList = filteredBySearch.where((vehicle) {
         switch (SelectedFilterIndex.value) {
           case 2: // Active
-            return vehicle.status == 'Active';
+            return vehicle.status == 'Active'  && (vehicle.subscriptionExp== null ? vehicle.status == 'Active' : (DateFormat('yyyy-MM-dd')
+                .parse(vehicle.subscriptionExp!)
+                .difference(DateTime.now())
+                .inDays+1 >0));
           case 0: // Ignition On
             return vehicle.trackingData?.ignition?.status == true;
           case 1: // Ignition Off
             return vehicle.trackingData?.ignition?.status == false;
           case 3: // Ignition Off
-            return vehicle.status != "Active";
+            return vehicle.status != "Active" || (vehicle.subscriptionExp== null ? vehicle.status != 'Active' : (DateFormat('yyyy-MM-dd')
+            .parse(vehicle.subscriptionExp!)
+            .difference(DateTime.now())
+            .inDays+1 <=0));
           default:
             return true; // No specific filter applied
         }
@@ -140,14 +147,20 @@ class VehicalesController extends GetxController {
   // Function to filter Active Vehicles
   List<Data> filterActiveVehicles(List<Data> vehicleList) {
     return vehicleList.where((vehicle) {
-      return vehicle.status == 'Active'; // Status is Active
+      return vehicle.status == 'Active'  && (vehicle.subscriptionExp== null ? vehicle.status == 'Active' : (DateFormat('yyyy-MM-dd')
+          .parse(vehicle.subscriptionExp!)
+          .difference(DateTime.now())
+          .inDays+1 >0)); // Status is Active
     }).toList();
   }
 
   List<Data> filterInactiveVehicle(List<Data> vehicleList) {
     return vehicleList.where((vehicle) {
 
-      return vehicle.status!="Active";
+      return vehicle.status != "Active" || (vehicle.subscriptionExp== null ? vehicle.status != 'Active' : (DateFormat('yyyy-MM-dd')
+          .parse(vehicle.subscriptionExp!)
+          .difference(DateTime.now())
+          .inDays+1 <=0));
     }).toList();
   }
 

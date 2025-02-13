@@ -81,6 +81,7 @@ class AppTextStyles {
   late final TextStyle display20W400;
   late final TextStyle display20W500;
   late final TextStyle display20W600;
+  late final TextStyle display21W600;
   late final TextStyle display20W700;
   late final TextStyle display22W400;
   late final TextStyle display22W600;
@@ -474,6 +475,11 @@ class AppTextStyles {
           fontSize: 20,
           fontWeight: FontWeight.w700,
         );
+    display21W600 = Theme.of(context!).textTheme.displayLarge!.copyWith(
+      fontFamily: BaseFonts.SFPro,
+      fontSize: 21,
+      fontWeight: FontWeight.w600,
+    );
     display22W400 = Theme.of(context!).textTheme.displayLarge!.copyWith(
           fontFamily: BaseFonts.SFPro,
           fontSize: 22,

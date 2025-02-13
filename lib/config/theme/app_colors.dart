@@ -35,6 +35,8 @@ class AppColors {
   static Color color_f1f2f4 = const Color(0xfff1f2f4 );
   static Color color_e5e7e9= const Color(0xffe5e7e9);
   static Color color_EBE7E4= const Color(0xffEBE7E4);
+  static Color color_239B41= const Color(0xff239B41);
+  static Color color_e5e7f3= const Color(0xffe5e7f3);
 
   //BACKGROUND
   static Color backgroundDark = const Color(0xffe8e8e8);
