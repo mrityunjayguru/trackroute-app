@@ -167,10 +167,7 @@ class _ProfileViewState extends State<ProfileView> {
                                           children: [
                                             TextSpan(
                                               text: 'Password\n',
-                                              style: TextStyle(
-                                                  color: AppColors.grayLight,
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w400),
+                                              style: AppTextStyles(context).display14W400.copyWith(color: AppColors.grayLight)
                                             ),
                                             TextSpan(
                                               text: '*' *

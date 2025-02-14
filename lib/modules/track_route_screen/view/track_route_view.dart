@@ -236,8 +236,8 @@ class TrackRouteView extends StatelessWidget {
                                     child: Row(
                                       children: [
                                         SizedBox(
-                                          height: 34,
-                                          width: 34,
+                                          height: 35,
+                                          width: 35,
                                           child: CircleAvatar(
                                             backgroundColor: isActive
                                                 ? AppColors.selextedindexcolor
@@ -255,10 +255,10 @@ class TrackRouteView extends StatelessWidget {
                                                         .selextedindexcolor
                                                     : AppColors.grayLight,
                                               ),
-                                        ).paddingOnly(left: 6, right: 6),
+                                        ).paddingOnly(left: 6, right: 16),
                                       ],
                                     ).paddingOnly(
-                                        top: 0.5.h, bottom: 0.5.h, left: 0.5.h),
+                                        top: 0.8.h, bottom: 0.8.h, left: 0.5.h),
                                   ),
                                 ),
                               ),

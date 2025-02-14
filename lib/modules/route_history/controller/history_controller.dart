@@ -5,6 +5,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:ui' as ui;
 import 'dart:typed_data';
@@ -18,6 +19,7 @@ import '../../../constants/project_urls.dart';
 import 'package:geocoding/geocoding.dart';
 
 import '../../../service/model/time_model.dart';
+import '../../track_route_screen/controller/track_route_controller.dart';
 
 class HistoryController extends GetxController {
   RxString address = ''.obs;
@@ -183,6 +185,7 @@ class HistoryController extends GetxController {
     }
     showLoader.value = false;
   }
+
   void _zoomToMarkers() {
     final bounds = _getBounds();
 
@@ -236,6 +239,13 @@ class HistoryController extends GetxController {
   }
 
   Future<void> showMapData(List<RouteHistoryResponse> data) async {
+    polylines.value = [];
+    List<LatLng> polylineCoordinates = [];
+    // int maxSpeedIndex = findIndexWithMaxSpeed(data) ?? -1;
+    final controller = Get.isRegistered<TrackRouteController>()
+        ? Get.find<TrackRouteController>() // Find if already registered
+        : Get.put(TrackRouteController());
+    // debugPrint("MAX SPEED INDEX $maxSpeedIndex");
     for (int i = 0; i < data.length; i++) {
       if (data[i].trackingData?.location?.latitude != null &&
           data[i].trackingData?.location?.longitude != null) {
@@ -248,6 +258,12 @@ class HistoryController extends GetxController {
         }
 
         Marker m = await createMarker(
+            maxSpeed: (data[i].trackingData?.currentSpeed != null ||
+                    (controller.deviceDetail.value.data?.isNotEmpty ?? false) ||
+                    controller.deviceDetail.value.data?[0].maxSpeed != null)
+                ? ((data[i].trackingData?.currentSpeed ?? 0) >
+                    (controller.deviceDetail.value.data?[0].maxSpeed ?? 0))
+                : false,
             index: i + 1,
             imei: data[i].imei ?? "",
             lat: data[i].trackingData?.location?.latitude,
@@ -256,8 +272,39 @@ class HistoryController extends GetxController {
             time: time);
 
         markers.add(m);
+        if (data[i].trackingData?.location != null) {
+          double lat = data[i].trackingData?.location?.latitude ?? 0.0;
+          double lon = data[i].trackingData?.location?.longitude ?? 0.0;
+
+          // Add the coordinate to the polyline
+          polylineCoordinates.add(LatLng(lat, lon));
+        }
+      }
+
+      Polyline polyline = Polyline(
+        polylineId: PolylineId('route'),
+        points: polylineCoordinates,
+        color: Colors.blue, // Customize polyline color
+        width: 3, // Customize polyline width
+      );
+
+      polylines.add(polyline);
+    }
+  }
+
+  int? findIndexWithMaxSpeed(List<RouteHistoryResponse> data) {
+    int? maxSpeedIndex;
+    double maxSpeed = double.negativeInfinity;
+
+    for (int i = 0; i < data.length; i++) {
+      double? currentSpeed = data[i].trackingData?.currentSpeed;
+      if (currentSpeed != null && currentSpeed > maxSpeed) {
+        maxSpeed = currentSpeed;
+        maxSpeedIndex = i;
       }
     }
+
+    return maxSpeedIndex;
   }
 
   Future<String> getAddressFromLatLong(
@@ -311,11 +358,12 @@ class HistoryController extends GetxController {
       double? long,
       double? speed,
       String? time,
+      required bool maxSpeed,
       required String imei,
       required int index}) async {
     // BitmapDescriptor markerIcon = await createMarkerIconFromAssets();
     BitmapDescriptor markerIcon = await createCustomIconWithNumber(index,
-        width: 100, height: 100, isselected: false);
+        width: 100, height: 100, isselected: false, maxSpeed: maxSpeed);
 
     final markerId = "$imei$lat$long$time";
     final marker = Marker(
@@ -327,17 +375,18 @@ class HistoryController extends GetxController {
         ),
         infoWindow: InfoWindow(
           title: 'Time: $time',
-          snippet: 'Speed: ${speed?.toStringAsFixed(2) ?? "N/A"} KMPH',
+          snippet:
+              '${maxSpeed ? "Max " : ""}Speed: ${speed?.toStringAsFixed(2) ?? "N/A"} KMPH',
         ),
         icon: markerIcon,
         // icon: await createCustomMarker('$index'),
-        onTap: () => _onMarkerTapped(index));
+        onTap: () => _onMarkerTapped(index, maxSpeed));
     return marker;
   }
 
-  void _onMarkerTapped(int index) async {
+  void _onMarkerTapped(int index, bool maxSpeed) async {
     BitmapDescriptor markerIcon = await createCustomIconWithNumber(index,
-        isselected: true, width: 100, height: 100);
+        isselected: true, width: 100, height: 100, maxSpeed: maxSpeed);
     markers[index - 1] = markers[index - 1].copyWith(iconParam: markerIcon);
     LatLng tappedMarkerPosition = markers[index - 1].position;
     // updateCameraPosition(tappedMarkerPosition.latitude, tappedMarkerPosition.longitude, zoom: 19);
@@ -347,6 +396,7 @@ class HistoryController extends GetxController {
         BitmapDescriptor markerIconFalse = await createCustomIconWithNumber(
             i + 1,
             isselected: false,
+            maxSpeed: false,
             width: 100,
             height: 100);
         markers[i] = markers[i].copyWith(iconParam: markerIconFalse);
@@ -430,10 +480,13 @@ class HistoryController extends GetxController {
   Future<BitmapDescriptor> createCustomIconWithNumber(int number,
       {required int width,
       required int height,
-      required bool isselected}) async {
-    ByteData data = await rootBundle.load(isselected
-        ? "assets/images/png/selected_marker.png"
-        : "assets/images/png/unselected_marker.png");
+      required bool isselected,
+      required bool maxSpeed}) async {
+    ByteData data = await rootBundle.load(maxSpeed
+        ? "assets/images/png/black_marker_icon.png"
+        : (isselected
+            ? "assets/images/png/selected_marker.png"
+            : "assets/images/png/unselected_marker.png"));
 
     ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
         targetWidth: width, targetHeight: height);
@@ -461,7 +514,7 @@ class HistoryController extends GetxController {
           fontSize: number.toString().length > 2
               ? ((number.toString().length > 4) ? width * 0.2 : width * 0.3)
               : width * 0.4,
-          color: isselected ? Colors.white : Colors.red,
+          color: isselected || maxSpeed ? Colors.white : Colors.red,
           fontWeight: FontWeight.bold),
     );
     textPainter.layout();
@@ -574,73 +627,6 @@ Future<XmlDocument> loadAndParseSvg(String path) async {
   final svgString = await rootBundle.loadString(path);
   return XmlDocument.parse(svgString);
 }*/
-/*  Future<void> updateRoutes() async {
-    // Clear existing polylines
-    polylines.clear();
-    PolylinePoints polylinePoints = PolylinePoints();
-
-    // Iterate through the data and generate markers and polylines
-    LatLng? previousLocation; // To store the previous location for creating polylines
-
-    for (var vehicle in data) {
-      // Check if the location data is valid
-      if (vehicle.trackingData?.location?.latitude != null &&
-          vehicle.trackingData?.location?.longitude != null) {
-        // Get the current location
-        LatLng currentLocation = LatLng(
-          vehicle.trackingData!.location!.latitude!,
-          vehicle.trackingData!.location!.longitude!,
-        );
-
-        // Create a polyline if there is a previous location
-        if (previousLocation != null) {
-          log("POINTSSSSSSSSSSSS ====>");
-          try{
-            PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-              googleApiKey: "AIzaSyChD5d2MJHsO0tWn-7c8EixTETIqauqJrw",  // Replace with your actual Google API key
-              request:  PolylineRequest(
-                origin: PointLatLng(previousLocation.latitude, previousLocation.longitude),
-                destination: PointLatLng(currentLocation.latitude, currentLocation.longitude),
-                mode: TravelMode.driving, // Change this to your preferred mode
-              ),
-            );
-            log("POINTSSSSSSSSSSSS ====> ${result.points.length}");
-            List<LatLng> points = result.points
-                .map((point) => LatLng(point.latitude, point.longitude))
-                .toList();
-            polylines.add(Polyline(
-              polylineId: PolylineId(
-                'route_${previousLocation.longitude}_${currentLocation.longitude}_${previousLocation.latitude}_${currentLocation.latitude}',
-              ),
-              color: AppColors.redColor,  // Use your preferred color
-              width: 2,
-              points: points,
-            ));
-
-          }
-          catch(e, s){
-            debugPrint("============== $e $s");
-            polylines.add(Polyline(
-              polylineId: PolylineId(
-                'route_${previousLocation.longitude}_${currentLocation.longitude}_${previousLocation.latitude}_${currentLocation.latitude}',
-              ),
-              color: AppColors.redColor,  // Use your preferred color
-              width: 2,
-              points: [previousLocation, currentLocation],
-            ));
-          }
-
-
-          // Add the polyline to the map
-
-
-        }
-
-        // Update the previous location to the current location
-        previousLocation = currentLocation;
-      }
-    }
-  }*/
 
 /*
 Future<void> updateRoutes() async {

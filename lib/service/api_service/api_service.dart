@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:track_route_pro/constants/project_urls.dart';
@@ -24,6 +26,8 @@ import 'package:track_route_pro/service/model/presentation/vehicle_type/VehicleT
 import 'package:track_route_pro/service/model/privacy_policy/PrivacyPolicyResponse.dart';
 import 'package:track_route_pro/service/model/route_history/RouteHistoryResponse.dart';
 import 'package:track_route_pro/utils/app_prefrance.dart';
+import '../../modules/login_screen/controller/login_controller.dart';
+import '../../routes/app_pages.dart';
 import '../model/alerts/UpdateAlertsRequest.dart';
 import '../model/alerts/alert/AlertsResponse.dart';
 import '../model/faq/Topic.dart';
@@ -52,6 +56,24 @@ abstract class ApiService {
         compact: kDebugMode ? true : false,
       ),
     );
+
+    dio.interceptors.add(
+      InterceptorsWrapper(
+        onResponse: (response, handler) {
+          // Pass the response if everything is fine
+          handler.next(response);
+        },
+        onError: (DioError error, handler) async {
+          if (error.response?.statusCode == 401) {
+            Get.offAllNamed(Routes.LOGIN);
+            await Get.put(LoginController()).sendTokenData(isLogout: true);
+            await AppPreference.removeLoginData();
+          }
+          // Continue error handling
+          handler.next(error);
+        },
+      ),
+    );
     //kDebugMode ? "" : dio.interceptors.clear();
     return ApiService(dio);
   }
@@ -60,18 +82,22 @@ abstract class ApiService {
   Future<LoginResponse> login(
     @Body() Map<String, dynamic> body,
   );
+
   @POST(ProjectUrls.forgotPassword)
   Future<generateOtp> forgotPassword(
     @Body() Map<String, dynamic> body,
   );
+
   @POST(ProjectUrls.verifyOTP)
   Future<VeryfyOTP> verifyOTP(
     @Body() Map<String, dynamic> body,
   );
+
   @POST(ProjectUrls.resetPassword)
   Future<ResetPassword> resetPassword(
     @Body() Map<String, dynamic> body,
   );
+
   @POST(ProjectUrls.splashAdd)
   Future<SplashAddResponse> splashAdd();
 
@@ -81,18 +107,18 @@ abstract class ApiService {
   );
 
   @POST(ProjectUrls.sendAlertsData)
-  Future sendAlertsData(
-      @Body() UpdateAlertsRequest request
-      );
+  Future sendAlertsData(@Body() UpdateAlertsRequest request);
 
   @POST(ProjectUrls.sendAlertsData)
   Future sendNotif(
-      @Body() Map<String, dynamic> body,
-      );
+    @Body() Map<String, dynamic> body,
+  );
+
   @POST(ProjectUrls.userDetails)
   Future<GetAlertsConfig> userDetails(
-      @Body() Map<String, dynamic> body,
-      );
+    @Body() Map<String, dynamic> body,
+  );
+
   @POST(ProjectUrls.settingAdd)
   Future<SettingAddResponse> settingAdd();
 
@@ -103,10 +129,12 @@ abstract class ApiService {
   Future<SupportResponse> support(
     @Body() Map<String, dynamic> body,
   );
+
   @POST(ProjectUrls.devicesByOwnerID)
   Future<TrackRouteVehicleList> devicesByOwnerID(
     @Body() Map<String, dynamic> body,
   );
+
   @POST(ProjectUrls.editdevicesByOwnerID)
   Future editDevicesByOwnerID(
     @Body() Map<String, dynamic> body,
@@ -117,8 +145,8 @@ abstract class ApiService {
 
   @POST(ProjectUrls.renewSubscription)
   Future<RenewResponse> renewSubscription(
-      @Body() Map<String, dynamic> body,
-      );
+    @Body() Map<String, dynamic> body,
+  );
 
   @POST(ProjectUrls.manageSettings)
   Future<ManageSettingModel> manageSettings();
@@ -130,22 +158,25 @@ abstract class ApiService {
   Future<ListingBaseResponse<FaqListModel>> faqList();
 
   @POST(ProjectUrls.announcements)
-  Future<ListingBaseResponse<AnnouncementResponse>> announcements( @Body() Map<String, dynamic> body);
+  Future<ListingBaseResponse<AnnouncementResponse>> announcements(
+      @Body() Map<String, dynamic> body);
 
   @POST(ProjectUrls.alerts)
-  Future<ListingBaseResponse<AlertsResponse>> alerts(@Body() Map<String, dynamic> body);
+  Future<ListingBaseResponse<AlertsResponse>> alerts(
+      @Body() Map<String, dynamic> body);
 
   @POST(ProjectUrls.relayCheckStatus)
-  Future<RelayStatusResponse> relayStatus( @Body() Map<String, dynamic> body);
+  Future<RelayStatusResponse> relayStatus(@Body() Map<String, dynamic> body);
 
   @POST(ProjectUrls.relayStartEngine)
-  Future<RelayResponse> relayStartEngine( @Body() Map<String, dynamic> body);
+  Future<RelayResponse> relayStartEngine(@Body() Map<String, dynamic> body);
 
   @POST(ProjectUrls.relayStopEngine)
   Future<RelayResponse> relayStopEngine(@Body() Map<String, dynamic> body);
 
   @POST(ProjectUrls.routeHistory)
-  Future<ListingBaseResponse<RouteHistoryResponse>> routeHistory(@Body() Map<String, dynamic> body);
+  Future<ListingBaseResponse<RouteHistoryResponse>> routeHistory(
+      @Body() Map<String, dynamic> body);
 
   @POST(ProjectUrls.privacyPolicy)
   Future<ListingBaseResponse<PrivacyPolicyResponse>> privacyPolicy();
@@ -154,5 +185,6 @@ abstract class ApiService {
   Future<ListingBaseResponse<PrivacyPolicyResponse>> termsCondition();
 
   @POST(ProjectUrls.downloadReport)
-  Future<DownloadReportResponse> downloadReport(@Body(nullToAbsent: true) DownloadReportRequest request);
+  Future<DownloadReportResponse> downloadReport(
+      @Body(nullToAbsent: true) DownloadReportRequest request);
 }

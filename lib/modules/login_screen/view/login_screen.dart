@@ -144,7 +144,7 @@ class LoginView extends StatelessWidget {
                               ),
                             ),
                           ).paddingOnly(bottom: 20),
-                          forgotPasswordMethod(localization: localizations),
+                          forgotPasswordMethod(localization: localizations, context: context),
 
                           RichText(
                             textAlign: TextAlign.center,
@@ -214,16 +214,16 @@ class LoginView extends StatelessWidget {
     );
   }
 
-  Widget forgotPasswordMethod({required AppLocalizations localization}) {
+  Widget forgotPasswordMethod({required AppLocalizations localization, required BuildContext context}) {
     return Center(
       child: RichText(
         text: TextSpan(
           text: localization.forgotPassword,
-          style: TextStyle(color: AppColors.grayLight),
+          style: AppTextStyles(context).display14W400.copyWith(color: AppColors.grayLight),
           children: [
             TextSpan(
               text: " " + localization.clickhere,
-              style: TextStyle(color: AppColors.purpleColor),
+              style: AppTextStyles(context).display14W400.copyWith(color: AppColors.purpleColor),
               // Clickable text style
               recognizer: TapGestureRecognizer()
                 ..onTap = () {

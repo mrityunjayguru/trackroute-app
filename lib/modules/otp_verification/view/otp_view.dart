@@ -208,13 +208,12 @@ class OtpView extends StatelessWidget {
                       child: RichText(
                         text: TextSpan(
                           text: "Didn't get OTP Code? ",
-                          style: const TextStyle(
-                              color: Colors.black), // Non-clickable text style
+                          style: AppTextStyles(context).display14W400, // Non-clickable text style
                           children: [
                             TextSpan(
                               text: 'Resend OTP',
 
-                              style: TextStyle(color: AppColors.purpleColor),
+                              style: AppTextStyles(context).display14W400.copyWith(color: AppColors.purpleColor),
                               // Clickable text style
                               recognizer: TapGestureRecognizer()
                                 ..onTap = () {

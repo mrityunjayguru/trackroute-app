@@ -112,77 +112,81 @@ class AlertsNotificationView extends StatelessWidget {
   }) {
 
     log("CONTROLLER ALL NOTIF ${controller.notification.value} ${ allNotif ? true : controller.notification.value}");
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 8),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(AppSizes.radius_10),
-          color: color ?? AppColors.color_f6f8fc),
-      child: Row(
-        children: [
-          CircleAvatar(
-              backgroundColor:
-                  color == null ? AppColors.color_e5e7e9 : AppColors.white,
-              child: SvgPicture.asset(
-                img,
-                colorFilter: ColorFilter.mode(AppColors.black, BlendMode.srcIn),
-              )),
-          SizedBox(
-            width: 2.w,
-          ),
-          Text(
-            '${title}',
-            style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
-          ),
-          Spacer(),
-          /*  Switch(
-            thumbIcon: thumbIcon,
-            trackOutlineWidth: WidgetStatePropertyAll(0),
-            trackOutlineColor: WidgetStatePropertyAll(Colors.transparent),
-            activeColor: AppColors.selextedindexcolor,
-            value: isOn.value,
-            inactiveThumbColor: AppColors.selextedindexcolor,
-            inactiveTrackColor: AppColors.grayLight,
-            activeTrackColor: AppColors.black,
-            onChanged: (value) {
-              isOn.value = value;
-            }
-          ),*/
-          ValueListenableBuilder(
-            valueListenable: controller.notification,
-            builder: (BuildContext context, bool value, Widget? child) {
-              return ValueListenableBuilder(
-                valueListenable: isOn,
+    return Builder(
+      builder: (context) {
+        return Container(
+          margin: EdgeInsets.symmetric(vertical: 8),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(AppSizes.radius_10),
+              color: color ?? AppColors.color_f6f8fc),
+          child: Row(
+            children: [
+              CircleAvatar(
+                  backgroundColor:
+                      color == null ? AppColors.color_e5e7e9 : AppColors.white,
+                  child: SvgPicture.asset(
+                    img,
+                    colorFilter: ColorFilter.mode(AppColors.black, BlendMode.srcIn),
+                  )),
+              SizedBox(
+                width: 2.w,
+              ),
+              Text(
+                '${title}',
+                style: AppTextStyles(context).display18W500,
+              ),
+              Spacer(),
+              /*  Switch(
+                thumbIcon: thumbIcon,
+                trackOutlineWidth: WidgetStatePropertyAll(0),
+                trackOutlineColor: WidgetStatePropertyAll(Colors.transparent),
+                activeColor: AppColors.selextedindexcolor,
+                value: isOn.value,
+                inactiveThumbColor: AppColors.selextedindexcolor,
+                inactiveTrackColor: AppColors.grayLight,
+                activeTrackColor: AppColors.black,
+                onChanged: (value) {
+                  isOn.value = value;
+                }
+              ),*/
+              ValueListenableBuilder(
+                valueListenable: controller.notification,
                 builder: (BuildContext context, bool value, Widget? child) {
+                  return ValueListenableBuilder(
+                    valueListenable: isOn,
+                    builder: (BuildContext context, bool value, Widget? child) {
 
-                  log("IS ENABLED ${allNotif ? true : controller.notification.value}");
-                  return AdvancedSwitch(
-                    controller: isOn,
-                    initialValue: isOn.value,
-                    activeColor: AppColors.black,
-                    inactiveColor: AppColors.grayLight,
-                    thumb: Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: AppColors.selextedindexcolor,
-                      ),
-                    ),
-                    borderRadius: const BorderRadius.all(Radius.circular(15)),
-                    width: 45.0,
-                    height: 25.0,
-                    enabled: allNotif ? true : controller.notification.value,
-                    disabledOpacity: 0.5,
-                    onChanged: (val){
-                      if(!allNotif){
-                        controller.setAlertsConfig();
-                      }
+                      log("IS ENABLED ${allNotif ? true : controller.notification.value}");
+                      return AdvancedSwitch(
+                        controller: isOn,
+                        initialValue: isOn.value,
+                        activeColor: AppColors.black,
+                        inactiveColor: AppColors.grayLight,
+                        thumb: Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: AppColors.selextedindexcolor,
+                          ),
+                        ),
+                        borderRadius: const BorderRadius.all(Radius.circular(15)),
+                        width: 45.0,
+                        height: 25.0,
+                        enabled: allNotif ? true : controller.notification.value,
+                        disabledOpacity: 0.5,
+                        onChanged: (val){
+                          if(!allNotif){
+                            controller.setAlertsConfig();
+                          }
+                        },
+                      ).paddingOnly(right: 6.w);
                     },
-                  ).paddingOnly(right: 6.w);
+                  );
                 },
-              );
-            },
-          ),
-        ],
-      ).paddingOnly(left: 6.w, top: 8, bottom: 8),
+              ),
+            ],
+          ).paddingOnly(left: 6.w, top: 8, bottom: 8),
+        );
+      }
     );
   }
 }

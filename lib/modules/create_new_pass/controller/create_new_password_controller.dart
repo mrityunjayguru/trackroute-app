@@ -65,7 +65,7 @@ class CreateNewPasswordController extends GetxController {
         Utils.getSnackbar("Success", "Password Changed Successfully");
 
         Get.offAllNamed(Routes.LOGIN);
-        await Get.put(LoginController()).sendTokenData();
+        await Get.put(LoginController()).sendTokenData( isLogout: true);
         await AppPreference.removeLoginData();
         networkStatus.value = NetworkStatus.SUCCESS;
       } else if (response.status == 400) {

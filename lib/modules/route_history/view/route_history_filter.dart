@@ -19,10 +19,6 @@ import '../../splash_screen/controller/data_controller.dart';
 class RouteHistoryPage extends StatelessWidget {
   RouteHistoryPage({super.key});
 
-  final trackController = Get.isRegistered<TrackRouteController>()
-      ? Get.find<TrackRouteController>() // Find if already registered
-      : Get.put(TrackRouteController());
-
   final controller = Get.isRegistered<HistoryController>()
       ? Get.find<HistoryController>() // Find if already registered
       : Get.put(HistoryController());
@@ -54,7 +50,8 @@ class RouteHistoryPage extends StatelessWidget {
                           controller.endDateController.clear();
                           controller.time2.value = null;
                           controller.imei.value = '';
-                          trackController.stackIndex.value = 0;
+                          // trackController.stackIndex.value = 0;
+                          Get.back();
                         }
                         controller.showMap.value = false;
                         controller.data.value = [];

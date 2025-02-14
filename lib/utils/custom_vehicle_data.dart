@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:sizer/sizer.dart';
 import 'package:track_route_pro/modules/reports/view/reports_page.dart';
 import 'package:track_route_pro/modules/route_history/controller/history_controller.dart';
+import 'package:track_route_pro/modules/route_history/view/route_history_filter.dart';
 import 'package:track_route_pro/service/model/presentation/track_route/DisplayParameters.dart';
 import 'package:track_route_pro/utils/utils.dart';
 
@@ -284,23 +285,28 @@ class VehicleDataWidget extends StatelessWidget {
             InkWell(
               onTap: () {
                 if (isNotExpired) {
-                  final bottomController = Get.isRegistered<
-                          BottomBarController>()
-                      ? Get.find<
-                          BottomBarController>() // Find if already registered
-                      : Get.put(BottomBarController());
-                  bottomController.updateIndex(2);
+                  // final bottomController = Get.isRegistered<
+                  //         BottomBarController>()
+                  //     ? Get.find<
+                  //         BottomBarController>() // Find if already registered
+                  //     : Get.put(BottomBarController());
+                  // bottomController.updateIndex(2);
                   // controller.isShowvehicleDetail.value = false;
                   // controller.selectedVehicleIndex.value = -1;
-                  controller.showAllVehicles();
-                  controller.stackIndex.value = 2;
+                  // controller.showAllVehicles();
+                  // controller.stackIndex.value = 2;
+                  Get.to(() => RouteHistoryPage(),
+                      transition: Transition.upToDown,
+                      duration: const Duration(milliseconds: 300));
                   routeHistoryController.name.value = vehicleName;
                   routeHistoryController.address.value = address;
                   routeHistoryController.updateDate.value = lastUpdate;
                   routeHistoryController.imei.value = imei;
                   routeHistoryController.generateTimeList();
                   routeHistoryController.showMap.value = false;
-                  routeHistoryController.dateController.text = "";
+                  String formattedDate = DateFormat('dd-MM-yyyy').format(DateTime.now());
+                  routeHistoryController.dateController.text = formattedDate;
+                  routeHistoryController.endDateController.text = DateFormat('yyyy-MM-dd').format(DateTime.now());
                   routeHistoryController.time1.value = null;
                   routeHistoryController.time2.value = null;
                   routeHistoryController.showMap.value = false;
@@ -349,7 +355,7 @@ class VehicleDataWidget extends StatelessWidget {
                       CircleAvatar(
                         backgroundColor: AppColors.grayBright,
                         child:
-                            SvgPicture.asset(Assets.images.svg.icSpeedometer),
+                            SvgPicture.asset(Assets.images.svg.icSpeedometer, width: 24, height: 24,),
                       ).paddingOnly(left: 3, right: 3),
                       Flexible(
                         child: AutoSizeText(
@@ -393,22 +399,19 @@ class VehicleDataWidget extends StatelessWidget {
                     child: Row(
                       children: [
                         CircleAvatar(
-                          backgroundColor: fuel != "N/A"
-                              ? AppColors.grayBright
-                              : AppColors.grayBright,
+                          backgroundColor: AppColors.grayBright,
                           child: SvgPicture.asset(
-                            'assets/images/svg/ic_fuel.svg',
+                            'assets/images/svg/car_icon.svg',
+    width: 20, height: 20,
                             colorFilter: ColorFilter.mode(
                                 AppColors.black, BlendMode.srcIn),
                           ),
                         ),
                         Flexible(
                           child: AutoSizeText(
-                            fuel != "N/A"
-                                ? Utils.toStringAsFixed(data: fuel)
-                                : fuel,
-                            maxLines: 4,
-                            minFontSize: 9,
+                            '${summary?.latestTripKm == null ? "-" : Utils.toStringAsFixed(data: summary?.latestTripKm.toString())}',
+                            maxLines: 2,
+                            minFontSize: 18,
                             overflow: TextOverflow.ellipsis,
                             style: AppTextStyles(context).display21W600,
                           ).paddingOnly(left: 4, right: 6),
@@ -417,15 +420,15 @@ class VehicleDataWidget extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Fuel Approx',
+                              'Latest Trip',
                               style: AppTextStyles(context)
                                   .display9W400
                                   .copyWith(color: AppColors.grayLight),
                             ),
                             Text(
-                              '(Ltr)',
+                              '(km)',
                               style: AppTextStyles(context)
-                                  .display11W400
+                                  .display9W400
                                   .copyWith(color: AppColors.grayLight),
                             ),
                           ],
@@ -500,7 +503,7 @@ class VehicleDataWidget extends StatelessWidget {
                     ],
                   ),
                   SizedBox(
-                    height: 2,
+                    height: 5,
                   ),
                   IntrinsicHeight(
                     child: Row(
@@ -571,58 +574,66 @@ class VehicleDataWidget extends StatelessWidget {
                           width: 8,
                         ),
                         Expanded(
-                            child: Container(
-                                height: 6.h,
-                                // constraints: BoxConstraints(maxHeight: 9.h),
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 6, horizontal: 10),
-                                decoration: BoxDecoration(
-                                  color: AppColors.white,
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Flexible(
-                                      child: Text.rich(
-                                        textAlign: TextAlign.start,
-                                        overflow: TextOverflow.ellipsis,
-                                        TextSpan(
-                                          children: [
-                                            TextSpan(
-                                              text: 'Latest Trip ',
-                                              style: AppTextStyles(context)
-                                                  .display11W500,
-                                            ),
-                                            TextSpan(
-                                              text:
-                                                  '(${summary?.latestTripTime ?? "-"})\n',
-                                              style: AppTextStyles(context)
-                                                  .display11W500
-                                                  .copyWith(
-                                                      color:
-                                                          AppColors.grayLight),
-                                            ),
-                                            TextSpan(
-                                              text:
-                                                  '${summary?.latestTripKm == null ? "-" : Utils.toStringAsFixed(data: summary?.latestTripKm.toString())}',
-                                              style: AppTextStyles(context)
-                                                  .display21W600,
-                                            ),
-                                            TextSpan(
-                                              text: ' KM ',
-                                              style: AppTextStyles(context)
-                                                  .display14W600
-                                                  .copyWith(
-                                                      color:
-                                                          AppColors.grayLight),
-                                            ),
-                                          ],
-                                        ),
+                          child: Container(
+                            height: 6.h,
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 6, horizontal: 10),
+                              decoration: BoxDecoration(
+                                color: AppColors.white,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'Average Speed',
+                                        style: AppTextStyles(context)
+                                            .display11W500,
                                       ),
-                                    )
-                                  ],
-                                )).paddingSymmetric(horizontal: 3, vertical: 4))
+                                      /* SizedBox(
+                                        width: 5,
+                                      ),
+                                      CircleAvatar(
+                                        maxRadius: 16,
+                                        backgroundColor:
+                                            AppColors.selextedindexcolor,
+                                        child: SvgPicture.asset(
+                                          "assets/images/svg/avg_speed_icon.svg",
+                                          width: 16,
+                                          height: 16,
+                                        ),
+                                      ),*/
+                                    ],
+                                  ),
+                                  Text.rich(
+                                    textAlign: TextAlign.start,
+                                    overflow: TextOverflow.ellipsis,
+                                    TextSpan(
+                                      children: [
+                                        TextSpan(
+                                          text:
+                                          '${summary?.avgSpeed == null ? "- " : Utils.toStringAsFixed(data: summary?.avgSpeed)} ',
+                                          style: AppTextStyles(context)
+                                              .display21W600,
+                                        ),
+                                        TextSpan(
+                                          text: 'KMPH',
+                                          style: AppTextStyles(context)
+                                              .display14W600
+                                              .copyWith(
+                                              color: AppColors.grayLight),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              )).paddingSymmetric(horizontal: 3, vertical: 4),
+                        ),
+
                       ],
                     ),
                   ),
@@ -731,64 +742,50 @@ class VehicleDataWidget extends StatelessWidget {
                           width: 8,
                         ),
                         Expanded(
-                          child: Container(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 6, horizontal: 10),
-                              decoration: BoxDecoration(
-                                color: AppColors.white,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        'Average\nSpeed',
-                                        style: AppTextStyles(context)
-                                            .display11W500,
-                                      ),
-                                     /* SizedBox(
-                                        width: 5,
-                                      ),
-                                      CircleAvatar(
-                                        maxRadius: 16,
-                                        backgroundColor:
-                                            AppColors.selextedindexcolor,
-                                        child: SvgPicture.asset(
-                                          "assets/images/svg/avg_speed_icon.svg",
-                                          width: 16,
-                                          height: 16,
-                                        ),
-                                      ),*/
-                                    ],
-                                  ),
-                                  Text.rich(
-                                    textAlign: TextAlign.start,
-                                    overflow: TextOverflow.ellipsis,
-                                    TextSpan(
-                                      children: [
+                            child: Container(
+
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 6, horizontal: 10),
+                                decoration: BoxDecoration(
+                                  color: AppColors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Flexible(
+                                      child: Text.rich(
+                                        textAlign: TextAlign.start,
+                                        overflow: TextOverflow.ellipsis,
                                         TextSpan(
-                                          text:
-                                              '${summary?.avgSpeed == null ? "- " : Utils.toStringAsFixed(data: summary?.avgSpeed)} ',
-                                          style: AppTextStyles(context)
-                                              .display21W600,
+                                          children: [
+                                            TextSpan(
+                                              text: 'Fuel Approx \n(Litres)\n',
+                                              style: AppTextStyles(context)
+                                                  .display11W500,
+                                            ),
+
+                                            fuel != "N/A"
+                                                ?  TextSpan(
+                                              text:
+                                              Utils.toStringAsFixed(data: fuel),
+                                              style: AppTextStyles(context)
+                                                  .display21W600,
+                                            ):
+                                            TextSpan(
+                                              text: 'NA',
+                                              style: AppTextStyles(context)
+                                                  .display21W600
+                                                  .copyWith(
+                                                  color:
+                                                  AppColors.grayLight),
+                                            ),
+                                          ],
                                         ),
-                                        TextSpan(
-                                          text: 'KMPH',
-                                          style: AppTextStyles(context)
-                                              .display14W600
-                                              .copyWith(
-                                                  color: AppColors.grayLight),
-                                        ),
-                                      ],
-                                    ),
-                                  )
-                                ],
-                              )).paddingSymmetric(horizontal: 3, vertical: 4),
-                        ),
+                                      ),
+                                    )
+                                  ],
+                                )).paddingSymmetric(horizontal: 3, vertical: 4))
                       ],
                     ),
                   )

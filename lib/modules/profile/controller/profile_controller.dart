@@ -68,6 +68,7 @@ class ProfileController extends GetxController {
           NetworkStatus.LOADING; // Set network status to loading
       Map<String, dynamic> body = {};
 
+      selectedVehicleIndex.value.removeWhere((element) => (expiringVehicles.value[element].isApplied ?? 50) < 48.01);
       if (selectedVehicleIndex.value.isNotEmpty) {
         List<String> imeiNo = [];
         for (int index in selectedVehicleIndex.value) {
@@ -77,25 +78,26 @@ class ProfileController extends GetxController {
           }
         }
         body = {"imei": imeiNo};
+        isReNewSub.value = false;
+
+        response = await apiservice.renewSubscription(body);
+        // Assuming you handle the response in a similar way
+        if (response.status == 200) {
+          selectedVehicleIndex.clear();
+          networkStatus.value = NetworkStatus.SUCCESS;
+          final controller = Get.isRegistered<TrackRouteController>()
+              ? Get.find<TrackRouteController>() // Find if already registered
+              : Get.put(TrackRouteController());
+          controller.devicesByOwnerID(false);
+          Utils.getSnackbar('Success', 'Generated request for renewal');
+        } else {
+          Utils.getSnackbar('Error', '${response.message}');
+        }
       } else {
         Utils.getSnackbar("Error", "Please select an item for renewal");
       }
 
-      isReNewSub.value = false;
 
-      response = await apiservice.renewSubscription(body);
-      // Assuming you handle the response in a similar way
-      if (response.status == 200) {
-        selectedVehicleIndex.clear();
-        networkStatus.value = NetworkStatus.SUCCESS;
-        final controller = Get.isRegistered<TrackRouteController>()
-            ? Get.find<TrackRouteController>() // Find if already registered
-            : Get.put(TrackRouteController());
-        controller.devicesByOwnerID(false);
-        Utils.getSnackbar('Success', 'Generated request for renewal');
-      } else {
-        Utils.getSnackbar('Error', '${response.message}');
-      }
     } catch (e) {
       networkStatus.value = NetworkStatus.ERROR;
       Utils.getSnackbar("Error", "Please try after 24 hours");

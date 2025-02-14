@@ -157,7 +157,7 @@ class RouteHistoryFilter extends StatelessWidget {
               Column(
                 children: [
                   SizedBox(height: 0.2.h),
-                  Text("to", style: TextStyle(fontSize: 18),),
+                  Text("to", style: AppTextStyles(context).display18W400,),
                 ],
               ),
               SizedBox(width: 2.w),

@@ -119,10 +119,11 @@ class _ReNewSubscriptionState extends State<ReNewSubscription> {
                           bool isApplied = ((vehicle.isApplied ?? 50) < 48.01) ?? false;
                           return InkWell(
                             onTap: () {
-                              setState(() {
-                                controller.toggleVehicleSelection(index);
-                              });
-
+                              if(!isApplied){
+                                setState(() {
+                                  controller.toggleVehicleSelection(index);
+                                });
+                              }
                             },
                             child: Container(
                               padding:isApplied ? EdgeInsets.fromLTRB(16,0,16,10) :  EdgeInsets.symmetric(
@@ -156,7 +157,7 @@ class _ReNewSubscriptionState extends State<ReNewSubscription> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      SvgPicture.asset((isApplied && isSelected) ? "assets/images/svg/blue_check_icon.svg":(isSelected
+                                      SvgPicture.asset((isApplied) ? "assets/images/svg/blue_check_icon.svg":(isSelected
                                               ? "assets/images/svg/green_check.svg"
                                               : "assets/images/svg/grey_check_icon.svg"))
                                           .paddingOnly(right: 5.w),

@@ -252,10 +252,11 @@ class TrackRouteController extends GetxController {
   void _onMarkerTapped(int index, String imei, {double? lat, double? long}) {
     isShowVehicleDetails(index, imei);
     devicesByDetails(imei, updateCamera: false, showDialog: true);
+
+    isExpanded.value = false;
     if(lat!=null && long!=null){
       updateCameraPositionWithZoom(latitude: lat, longitude: long);
     }
-    isExpanded.value = false;
   }
 
   Future<void> loadUser() async {

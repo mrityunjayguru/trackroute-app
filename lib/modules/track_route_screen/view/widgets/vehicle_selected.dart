@@ -615,48 +615,28 @@ class VehicleSelected extends StatelessWidget {
               children: [
                 TextSpan(
                   text: 'WARNING:',
-                  style: TextStyle(
-                    color: AppColors.color_e92e19,
-                    fontSize: 14,
-                  ),
+                  style: AppTextStyles(context).display14W600.copyWith(color: AppColors.color_e92e19)
                 ),
                 TextSpan(
                   text: 'When the vehicle ',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 14,
-                  ),
+                  style: AppTextStyles(context).display14W400
                 ),
                 TextSpan(
                   text: 'Engine Lock',
-                  style: TextStyle(
-                    color: AppColors.color_e92e19,
-                    decorationColor: AppColors.color_e92e19,
-                    decoration: TextDecoration.underline,
-                    fontSize: 14,
-                  ),
+                  style: AppTextStyles(context).display14W500.copyWith(decoration: TextDecoration.underline,  color: AppColors.color_e92e19,
+                    decorationColor: AppColors.color_e92e19,)
                 ),
                 TextSpan(
                   text: ' is active,\n',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 14,
-                  ),
+                  style: AppTextStyles(context).display14W400
                 ),
                 TextSpan(
                   text: 'it will ',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 14,
-                  ),
+                  style: AppTextStyles(context).display14W400
                 ),
                 TextSpan(
                   text: 'instantly shut down the car.',
-                  style: TextStyle(
-                    color: Colors.black,
-                    decoration: TextDecoration.underline,
-                    fontSize: 14,
-                  ),
+                  style:  AppTextStyles(context).display14W400.copyWith(decoration: TextDecoration.underline)
                 ),
               ],
             ),

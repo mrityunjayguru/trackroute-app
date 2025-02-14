@@ -7,6 +7,7 @@ import 'package:track_route_pro/gen/assets.gen.dart';
 import 'package:track_route_pro/modules/about_us/view/about_us.dart';
 import 'package:track_route_pro/modules/faqs/view/faqs_view.dart';
 import 'package:track_route_pro/modules/settig_screen/controller/setting_controller.dart';
+import 'package:track_route_pro/modules/settig_screen/view/update_dialog.dart';
 import 'package:track_route_pro/modules/support/view/support_view.dart';
 import 'package:track_route_pro/routes/app_pages.dart';
 import 'package:track_route_pro/utils/app_prefrance.dart';
@@ -84,10 +85,10 @@ class SettingView extends StatelessWidget {
                     Container(
                       padding: EdgeInsets.all(6),
                       decoration: BoxDecoration(
-                        color: AppColors.color_e5e7e9,
-                        shape: BoxShape.circle
-                      ),
-                      child: SvgPicture.asset("assets/images/svg/notif_icon_setting.svg")
+                          color: AppColors.color_e5e7e9,
+                          shape: BoxShape.circle),
+                      child: SvgPicture.asset(
+                              "assets/images/svg/notif_icon_setting.svg")
                           .paddingSymmetric(horizontal: 5),
                     ).paddingOnly(right: 5),
                     Text(
@@ -168,8 +169,7 @@ class SettingView extends StatelessWidget {
                 children: [
                   Expanded(
                       child: Container(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 7),
+                          padding: EdgeInsets.symmetric(horizontal: 7),
                           decoration: BoxDecoration(
                             borderRadius:
                                 BorderRadius.circular(AppSizes.radius_10),
@@ -181,17 +181,13 @@ class SettingView extends StatelessWidget {
                               children: [
                                 TextSpan(
                                   text: 'App Version\n',
-                                  style: TextStyle(
-                                      color: AppColors.grayLight,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w400),
+                                  style: AppTextStyles(context)
+                                      .display14W500
+                                      .copyWith(color: AppColors.grayLight),
                                 ),
                                 TextSpan(
-                                  text: "${controller.appVersion.value}v",
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500),
+                                  text: "${controller.appVersion.value}",
+                                  style: AppTextStyles(context).display16W500,
                                 ),
                               ],
                             ),
@@ -201,7 +197,9 @@ class SettingView extends StatelessWidget {
                   ),
                   Expanded(
                     child: InkWell(
-                      onTap: () {},
+                      onTap: () {
+                        // Utils.openDialog(context: context, child: UpdateDialog());
+                      },
                       child: Container(
                           padding:
                               EdgeInsets.symmetric(horizontal: 7, vertical: 15),
@@ -212,7 +210,7 @@ class SettingView extends StatelessWidget {
                           ),
                           child: Center(
                             child: Text(
-                              "Check for Update",
+                              "Update",
                               style: AppTextStyles(context)
                                   .display16W500
                                   .copyWith(
@@ -245,7 +243,6 @@ class SettingView extends StatelessWidget {
                                 color: AppColors.black,
                               )).paddingAll(0),
                     ),
-
                     width: context.width,
                     decoration: BoxDecoration(
                         color: AppColors.color_f6f8fc,
@@ -270,21 +267,19 @@ class SettingView extends StatelessWidget {
                             transition: Transition.upToDown,
                             duration: const Duration(milliseconds: 300));
                       },
-                      child: Container(
+                      child:  Container(
                           padding:
-                              EdgeInsets.symmetric(horizontal: 7, vertical: 15),
+                          EdgeInsets.symmetric(horizontal: 7, vertical: 15),
                           decoration: BoxDecoration(
                             borderRadius:
-                                BorderRadius.circular(AppSizes.radius_10),
-                            color: AppColors.black,
+                            BorderRadius.circular(AppSizes.radius_10),
+                            color: AppColors.grayLighter,
                           ),
                           child: Center(
                             child: Text(
                               "About Us",
                               style: AppTextStyles(context)
-                                  .display16W500
-                                  .copyWith(
-                                      color: AppColors.selextedindexcolor),
+                                  .display16W500,
                             ),
                           )),
                     ),
@@ -330,18 +325,11 @@ class SettingView extends StatelessWidget {
                       children: [
                         TextSpan(
                           text: 'Language\n',
-                          style: TextStyle(
-                              color: AppColors.grayLight,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400),
+                          style: AppTextStyles(context).display14W400.copyWith(color: AppColors.grayLight),
                         ),
                         TextSpan(
                           text: 'English (UK)',
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500),
-                        ),
+                          style: AppTextStyles(context).display16W500 )
                       ],
                     ),
                   ))
@@ -374,14 +362,15 @@ class SettingView extends StatelessWidget {
               width: 100.w - (4.w * 0.9),
               decoration: BoxDecoration(
                   color: AppColors.grayLighter,
-                  borderRadius:
-                      BorderRadius.only(topLeft: Radius.circular(AppSizes.radius_4), topRight: Radius.circular(AppSizes.radius_4))),
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(AppSizes.radius_4),
+                      topRight: Radius.circular(AppSizes.radius_4))),
               child: Center(
                   child: Text(
                 localizations.newfeatures,
                 style: AppTextStyles(context).display12W500,
               )),
-            ).paddingOnly( top: 15),
+            ).paddingOnly(top: 15),
             // Expanded(
             //   child: GridView.builder(
             //     itemCount: 2,
