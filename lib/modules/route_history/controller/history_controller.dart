@@ -36,6 +36,7 @@ class HistoryController extends GetxController {
   bool isMapControllerInitialized = false;
   var markers = <Marker>[].obs;
   RxList<TimeOption> timeList = <TimeOption>[].obs;
+  Set<int> overSpeedIndex = {};
   late GoogleMapController mapController;
   var currentLocation = LatLng(0.0, 0.0).obs; // Current vehicle location
   var polylines = <Polyline>[].obs; // List of polylines to display on the map
@@ -52,7 +53,8 @@ class HistoryController extends GetxController {
       for (int minute = 0; minute < 60; minute += 30) {
         // Adjust interval as needed
         String formattedTime =
-            '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
+            '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(
+            2, '0')}';
         timeList.add(TimeOption(formattedTime));
       }
     }
@@ -109,14 +111,15 @@ class HistoryController extends GetxController {
         response = await apiService.routeHistory(body);
 
         if (response.message == "success") {
+          overSpeedIndex = {};
           // data.value = [];
           List<RouteHistoryResponse> vehicleList = [];
           networkStatus.value = NetworkStatus.SUCCESS;
           vehicleList = response.data;
           vehicleList = vehicleList
               .where((item) =>
-                  item.trackingData?.location?.latitude != null &&
-                  item.trackingData?.location?.longitude != null)
+          item.trackingData?.location?.latitude != null &&
+              item.trackingData?.location?.longitude != null)
               .toList();
           vehicleList.sort((a, b) {
             // Assuming trackingData has a timestamp field that you want to compare
@@ -125,7 +128,7 @@ class HistoryController extends GetxController {
               return 0;
             }
             return a.trackingData?.createdAt
-                    ?.compareTo(b.trackingData?.createdAt ?? "") ??
+                ?.compareTo(b.trackingData?.createdAt ?? "") ??
                 0;
           });
           if (vehicleList.isNotEmpty) {
@@ -252,18 +255,21 @@ class HistoryController extends GetxController {
         String time = "";
         if (data[i].trackingData?.createdAt?.isNotEmpty ?? false) {
           DateTime timestamp =
-              DateTime.parse(data[i].trackingData?.createdAt ?? "")
-                  .toLocal(); // Assuming dateFiled is a valid timestamp string
+          DateTime.parse(data[i].trackingData?.createdAt ?? "")
+              .toLocal(); // Assuming dateFiled is a valid timestamp string
           time = DateFormat('HH:mm:ss').format(timestamp);
         }
-
+        bool isOverSpeed = (data[i].trackingData?.currentSpeed != null ||
+            (controller.deviceDetail.value.data?.isNotEmpty ?? false) ||
+            controller.deviceDetail.value.data?[0].maxSpeed != null)
+            ? ((data[i].trackingData?.currentSpeed ?? 0) >
+            (controller.deviceDetail.value.data?[0].maxSpeed ?? 0))
+            : false;
+        if(isOverSpeed){
+          overSpeedIndex.add(i);
+        }
         Marker m = await createMarker(
-            maxSpeed: (data[i].trackingData?.currentSpeed != null ||
-                    (controller.deviceDetail.value.data?.isNotEmpty ?? false) ||
-                    controller.deviceDetail.value.data?[0].maxSpeed != null)
-                ? ((data[i].trackingData?.currentSpeed ?? 0) >
-                    (controller.deviceDetail.value.data?[0].maxSpeed ?? 0))
-                : false,
+            maxSpeed: isOverSpeed,
             index: i + 1,
             imei: data[i].imei ?? "",
             lat: data[i].trackingData?.location?.latitude,
@@ -307,14 +313,15 @@ class HistoryController extends GetxController {
     return maxSpeedIndex;
   }
 
-  Future<String> getAddressFromLatLong(
-      double latitude, double longitude) async {
+  Future<String> getAddressFromLatLong(double latitude,
+      double longitude) async {
     try {
       List<Placemark> placemarks =
-          await placemarkFromCoordinates(latitude, longitude);
+      await placemarkFromCoordinates(latitude, longitude);
       Placemark place = placemarks[0];
 
-      return "${place.street}, ${place.locality}, ${place.subLocality}, ${place.country}";
+      return "${place.street}, ${place.locality}, ${place.subLocality}, ${place
+          .country}";
     } catch (e) {
       debugPrint("Error " + e.toString());
       return "Address not available";
@@ -353,21 +360,20 @@ class HistoryController extends GetxController {
     }
   }
 
-  Future<Marker> createMarker(
-      {double? lat,
-      double? long,
-      double? speed,
-      String? time,
-      required bool maxSpeed,
-      required String imei,
-      required int index}) async {
+  Future<Marker> createMarker({double? lat,
+    double? long,
+    double? speed,
+    String? time,
+    required bool maxSpeed,
+    required String imei,
+    required int index}) async {
     // BitmapDescriptor markerIcon = await createMarkerIconFromAssets();
     BitmapDescriptor markerIcon = await createCustomIconWithNumber(index,
         width: 100, height: 100, isselected: false, maxSpeed: maxSpeed);
 
     final markerId = "$imei$lat$long$time";
     final marker = Marker(
-        // rotation: 90,
+      // rotation: 90,
         markerId: MarkerId(markerId),
         position: LatLng(
           lat ?? 0,
@@ -376,7 +382,8 @@ class HistoryController extends GetxController {
         infoWindow: InfoWindow(
           title: 'Time: $time',
           snippet:
-              '${maxSpeed ? "Max " : ""}Speed: ${speed?.toStringAsFixed(2) ?? "N/A"} KMPH',
+          '${maxSpeed ? "Max " : ""}Speed: ${speed?.toStringAsFixed(2) ??
+              "N/A"} KMPH',
         ),
         icon: markerIcon,
         // icon: await createCustomMarker('$index'),
@@ -396,7 +403,7 @@ class HistoryController extends GetxController {
         BitmapDescriptor markerIconFalse = await createCustomIconWithNumber(
             i + 1,
             isselected: false,
-            maxSpeed: false,
+            maxSpeed: overSpeedIndex.contains(i),
             width: 100,
             height: 100);
         markers[i] = markers[i].copyWith(iconParam: markerIconFalse);
@@ -413,7 +420,7 @@ class HistoryController extends GetxController {
     required String imei,
   }) async {
     BitmapDescriptor markerIcon =
-        await createMarkerIcon('${ProjectUrls.imgBaseUrl}$img');
+    await createMarkerIcon('${ProjectUrls.imgBaseUrl}$img');
     final markerId = "${ProjectUrls.imgBaseUrl}$img";
     // String address = await getAddressFromLatLong(lat ?? 0, long ?? 0);
     final marker = Marker(
@@ -435,7 +442,7 @@ class HistoryController extends GetxController {
       {int width = 100, int height = 100}) async {
     // Load image from network
     final ByteData data =
-        await NetworkAssetBundle(Uri.parse(indexedImage)).load("");
+    await NetworkAssetBundle(Uri.parse(indexedImage)).load("");
     final Uint8List bytes = data.buffer.asUint8List();
 
     // Decode the image to get its original size
@@ -448,7 +455,7 @@ class HistoryController extends GetxController {
 
     // Convert the resized image to bytes
     final ByteData? resizedData =
-        await frameInfo.image.toByteData(format: ui.ImageByteFormat.png);
+    await frameInfo.image.toByteData(format: ui.ImageByteFormat.png);
     final Uint8List resizedBytes = resizedData!.buffer.asUint8List();
 
     return BitmapDescriptor.fromBytes(resizedBytes);
@@ -457,7 +464,7 @@ class HistoryController extends GetxController {
   Future<BitmapDescriptor> createMarkerIconFromAssets(
       {int width = 35, int height = 35}) async {
     final ByteData data =
-        await rootBundle.load("assets/images/png/selected_marker.png");
+    await rootBundle.load("assets/images/png/selected_marker.png");
     final Uint8List bytes = data.buffer.asUint8List();
 
     // Decode the image to get its original size and resize it
@@ -470,7 +477,7 @@ class HistoryController extends GetxController {
 
     // Convert the resized image to bytes
     final ByteData? resizedData =
-        await frameInfo.image.toByteData(format: ui.ImageByteFormat.png);
+    await frameInfo.image.toByteData(format: ui.ImageByteFormat.png);
     final Uint8List resizedBytes = resizedData!.buffer.asUint8List();
 
     // Create and return BitmapDescriptor
@@ -479,22 +486,22 @@ class HistoryController extends GetxController {
 
   Future<BitmapDescriptor> createCustomIconWithNumber(int number,
       {required int width,
-      required int height,
-      required bool isselected,
-      required bool maxSpeed}) async {
+        required int height,
+        required bool isselected,
+        required bool maxSpeed}) async {
     ByteData data = await rootBundle.load(maxSpeed
         ? "assets/images/png/black_marker_icon.png"
         : (isselected
-            ? "assets/images/png/selected_marker.png"
-            : "assets/images/png/unselected_marker.png"));
+        ? "assets/images/png/selected_marker.png"
+        : "assets/images/png/unselected_marker.png"));
 
     ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
         targetWidth: width, targetHeight: height);
     ui.FrameInfo fi = await codec.getNextFrame();
     final Uint8List imageData =
-        (await fi.image.toByteData(format: ui.ImageByteFormat.png))!
-            .buffer
-            .asUint8List();
+    (await fi.image.toByteData(format: ui.ImageByteFormat.png))!
+        .buffer
+        .asUint8List();
 
     // Prepare the canvas for drawing
     final ui.PictureRecorder pictureRecorder = ui.PictureRecorder();
@@ -511,8 +518,12 @@ class HistoryController extends GetxController {
     textPainter.text = TextSpan(
       text: '$number',
       style: TextStyle(
-          fontSize: number.toString().length > 2
-              ? ((number.toString().length > 4) ? width * 0.2 : width * 0.3)
+          fontSize: number
+              .toString()
+              .length > 2
+              ? ((number
+              .toString()
+              .length > 4) ? width * 0.2 : width * 0.3)
               : width * 0.4,
           color: isselected || maxSpeed ? Colors.white : Colors.red,
           fontWeight: FontWeight.bold),
@@ -525,9 +536,9 @@ class HistoryController extends GetxController {
 
     // Convert that masterpiece into an image
     final ui.Image markerAsImage =
-        await pictureRecorder.endRecording().toImage(width, height);
+    await pictureRecorder.endRecording().toImage(width, height);
     final ByteData? byteData =
-        await markerAsImage.toByteData(format: ui.ImageByteFormat.png);
+    await markerAsImage.toByteData(format: ui.ImageByteFormat.png);
     return BitmapDescriptor.fromBytes(byteData!.buffer.asUint8List());
   }
 

@@ -32,18 +32,18 @@ class AnnouncementResponse {
     title = json['title'];
     message = json['message'];
     urgency = json['urgency'];
-    sendTo = json['sendTo'];
-    if (json['users'] != null) {
-      users = [];
-      json['users'].forEach((v) {
-        users?.add(Users.fromJson(v));
-      });
-    }
-    isDeleted = json['isDeleted'];
+    // sendTo = json['sendTo'];
+    // if (json['users'] != null) {
+    //   users = [];
+    //   json['users'].forEach((v) {
+    //     users?.add(Users.fromJson(v));
+    //   });
+    // }
+    // isDeleted = json['isDeleted'];
     createdAt = json['createdAt'];
-    updatedAt = json['updatedAt'];
-    v = json['__v'];
-    userDetails = json['userDetails'] != null ? UserDetails.fromJson(json['userDetails']) : null;
+    // updatedAt = json['updatedAt'];
+    // v = json['__v'];
+    // userDetails = json['userDetails'] != null ? UserDetails.fromJson(json['userDetails']) : null;
   }
   String? id;
   String? title;

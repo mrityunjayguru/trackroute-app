@@ -26,7 +26,9 @@ class Assets {
   static const String fontsSFProTextRegular = 'assets/fonts/SF-Pro-Text-Regular.ttf';
   static const String fontsSFProTextSemibold = 'assets/fonts/SF-Pro-Text-Semibold.ttf';
   static const String iconAppIcon = 'assets/icon/app-icon.png';
+  static const String imagesSvgCarIcon = 'assets/images/svg/car_icon.svg';
   static const String pngBlackMarkerIcon = 'assets/images/png/black_marker_icon.png';
+  static const String pngDeactivated = 'assets/images/png/deactivated.png';
   static const String pngIcLauncher = 'assets/images/png/ic_launcher.png';
   static const String pngIsolationmode = 'assets/images/png/isolationmode.png';
   static const String pngLogo = 'assets/images/png/logo.png';
@@ -45,13 +47,15 @@ class Assets {
   static const String svgBtSteeringWheel = 'assets/images/svg/bt_steering-wheel.svg';
   static const String svgBtTrackRoute = 'assets/images/svg/bt_track_route.svg';
   static const String svgCar = 'assets/images/svg/car.svg';
-  static const String svgCarIcon = 'assets/images/svg/car_icon.svg';
+  static const String svgCarIcon = 'assets/images/svg/car-icon.svg';
   static const String svgChargingIcon = 'assets/images/svg/charging_icon.svg';
   static const String svgCloseIcon = 'assets/images/svg/close_icon.svg';
   static const String svgCloseIconDialog = 'assets/images/svg/close_icon_dialog.svg';
   static const String svgCopy = 'assets/images/svg/copy.svg';
   static const String svgCopyIcon = 'assets/images/svg/copy_icon.svg';
   static const String svgDateIcon = 'assets/images/svg/date_icon.svg';
+  static const String svgDeactivated = 'assets/images/svg/deactivated.svg';
+  static const String svgDeactivatedIcon = 'assets/images/svg/deactivated-icon.svg';
   static const String svgDestinationIcon = 'assets/images/svg/destination_icon.svg';
   static const String svgEngineIcon = 'assets/images/svg/engine_icon.svg';
   static const String svgExtBatteryIcon = 'assets/images/svg/ext_battery_icon.svg';

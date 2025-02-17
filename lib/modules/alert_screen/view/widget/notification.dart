@@ -57,7 +57,7 @@ class AlertNotificationTab extends StatelessWidget {
     if (data.createdAt?.isNotEmpty ?? false) {
       date = DateFormat("dd MMM yyyy")
           .format(DateTime.parse(data.createdAt ?? "").toLocal());
-      time = DateFormat("hh:mm")
+      time = DateFormat("HH:mm")
           .format(DateTime.parse(data.createdAt ?? "").toLocal());
     }
 

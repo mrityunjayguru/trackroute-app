@@ -31,7 +31,12 @@ class ForgotPassController extends GetxController {
   }
 
   Future<void> forgotPassword({required bool fromLogin}) async {
-    var body = {'emailAddress': emailController.text};
+
+    if(emailController.text.isEmpty){
+      return;
+    }
+    Utils.getSnackbar("Requesting Otp...", "");
+    var body = {'emailAddress': emailController.text, "role" : "User"};
     networkStatus.value = NetworkStatus.LOADING;
 
     try {

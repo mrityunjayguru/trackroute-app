@@ -3,6 +3,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:track_route_pro/constants/constant.dart';
 import 'package:track_route_pro/constants/project_urls.dart';
+import 'package:track_route_pro/firebase_controller.dart';
+import 'package:track_route_pro/firebase_controller.dart';
+import 'package:track_route_pro/firebase_controller.dart';
 import 'package:track_route_pro/modules/login_screen/view/widget/banner.dart';
 import 'package:track_route_pro/modules/profile/controller/profile_controller.dart';
 import 'package:track_route_pro/routes/app_pages.dart';
@@ -265,8 +268,11 @@ class LoginController extends GetxController {
 
   // Function to fetch splash data from the API
   Future<void> sendTokenData({isLogout=false}) async {
-
-    final fcmToken = await AppPreference.getStringFromSF(Constants.fcmToken);
+    final fcmController = Get.isRegistered<FirebaseNotificationService>()
+        ? Get.find<FirebaseNotificationService>() // Find if already registered
+        : Get.put(FirebaseNotificationService());
+    final fcmToken = await fcmController.getFcmToken();
+    // final fcmToken = await AppPreference.getStringFromSF(Constants.fcmToken);
     userId.value = await AppPreference.getStringFromSF(Constants.userId) ?? "";
 
     if(userId.value.isNotEmpty){
@@ -281,7 +287,7 @@ class LoginController extends GetxController {
         if(isLogout){
            request = {"_id": userId.value, "firebaseToken": '${fcmToken}', "isLogout" : "true"};
         }
-        debugPrint("FIREBASE REQUEST ===> $request");
+        // debugPrint("FIREBASE REQUEST ===> $request");
         var response = await apiService
             .sendTokenData(request);
             log("FCM TOKEN $response");

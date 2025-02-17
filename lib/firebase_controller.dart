@@ -18,7 +18,7 @@ class FirebaseNotificationService extends GetxService {
   @override
   void onInit() {
     super.onInit();
-    _initializeFirebaseMessaging();
+    // _initializeFirebaseMessaging();
   }
 
   void init() {
@@ -48,10 +48,10 @@ class FirebaseNotificationService extends GetxService {
   // get token
   Future<String?> getFcmToken() async {
     final token = await _firebaseMessaging.getToken();
-    debugPrint('_firebaseMessaging_Token: $token');
+    // debugPrint('_firebaseMessaging_Token: $token');
     if (token != null) {
       await AppPreference.addStringToSF(Constants.fcmToken, token);
-      Get.put(LoginController()).sendTokenData();
+      // Get.put(LoginController()).sendTokenData();
     }
     return token;
   }

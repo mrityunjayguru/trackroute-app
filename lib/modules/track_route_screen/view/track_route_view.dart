@@ -131,7 +131,7 @@ class TrackRouteView extends StatelessWidget {
                                         date =
                                             '${DateFormat("dd MMM y").format(DateTime.parse(trackingData?.lastUpdateTime ?? "").toLocal()) ?? ''}';
                                         time =
-                                            '${DateFormat("hh:mm").format(DateTime.parse(trackingData?.lastUpdateTime ?? "").toLocal()) ?? ''}';
+                                            '${DateFormat("HH:mm").format(DateTime.parse(trackingData?.lastUpdateTime ?? "").toLocal()) ?? ''}';
                                       }
                                       return VehicalDetailBottomSheet(
                                         expiryDate: controller.deviceDetail

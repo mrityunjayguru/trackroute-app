@@ -52,7 +52,7 @@ getDayName(DateTime date) {
 }
 
 getDate(DateTime date) {
-  return DateFormat('dd/MM/yyy a HH:MM').format(date);
+  return DateFormat('dd/MM/yyy a HH:mm').format(date);
 }
 
 getDateDDMMYYYY(DateTime date) {

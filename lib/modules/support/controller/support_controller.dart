@@ -36,11 +36,20 @@ class SupportController extends GetxController {
 
   Future<void> submitSupportRequest() async {
     var supportRequest;
+    if(selectedVehicleName.isEmpty && deviceID.text.isEmpty){
+      Utils.getSnackbar("Error", "Please select vehicle or enter the imei");
+      return;
+    }
+    if(description.text.trim().isEmpty){
+      Utils.getSnackbar("Error", "Please enter description");
+      return;
+    }
+
     if(selectedVehicleName.isEmpty){
        supportRequest = {
         "imei": deviceID.text,
-        "suport": subject.text,
-        "description": description.text,
+        "suport": subject.text.trim(),
+        "description": description.text.trim(),
         "userID": userId.value
       };
     }
@@ -52,7 +61,7 @@ class SupportController extends GetxController {
         "userID": userId.value
       };
     }
-    else{
+    if(selectedVehicleName.isNotEmpty && deviceID.text.isNotEmpty){
        supportRequest = {
         "imei": deviceID.text,
         "vehicleNo": selectedVehicleName.value,

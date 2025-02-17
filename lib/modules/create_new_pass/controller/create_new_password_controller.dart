@@ -53,6 +53,7 @@ class CreateNewPasswordController extends GetxController {
   Future<void> resetPassword({required bool fromLogin}) async {
     try {
       final body = {
+        "role" : "User",
         "emailAddress": email.value,
         "otp": otp.value,
         "password": '${confirmpasswordController.text}'

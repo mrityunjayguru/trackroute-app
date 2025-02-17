@@ -32,7 +32,7 @@ class VehicalDetailCard extends StatelessWidget {
       date =
           '${DateFormat("dd MMM y").format(DateTime.parse(vehicleInfo.trackingData?.lastUpdateTime ?? "").toLocal()) ?? ''}';
       time =
-          '${DateFormat("hh:mm").format(DateTime.parse(vehicleInfo.trackingData?.lastUpdateTime ?? "").toLocal()) ?? ''}';
+          '${DateFormat("HH:mm").format(DateTime.parse(vehicleInfo.trackingData?.lastUpdateTime ?? "").toLocal()) ?? ''}';
     }
 
     var trackingData = vehicleInfo.trackingData;

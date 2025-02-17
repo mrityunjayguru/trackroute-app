@@ -43,6 +43,7 @@ class OtpController extends GetxController {
   Future<void> verifyotp({required bool fromLogin}) async {
     try {
       final body = {
+        "role" : "User",
         "emailAddress": email.value,
         "otp": otpController.value.text,
       };

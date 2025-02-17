@@ -36,7 +36,7 @@ class AnnouncementTab extends StatelessWidget {
       date =
           '${DateFormat("dd MMM yyyy").format(DateTime.parse(data.createdAt ?? "").toLocal()) ?? ''}';
       time =
-          '${DateFormat("hh:mm").format(DateTime.parse(data.createdAt ?? "").toLocal()) ?? ''}';
+          '${DateFormat("HH:mm").format(DateTime.parse(data.createdAt ?? "").toLocal()) ?? ''}';
     }
 
     Color color;

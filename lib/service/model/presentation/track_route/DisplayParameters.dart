@@ -21,6 +21,7 @@ class DisplayParameters {
       this.humidity,
       this.temperature,
       this.bluetooth,
+      this.overspeed,
       this.gps,});
 
   DisplayParameters.fromJson(dynamic json) {
@@ -36,6 +37,7 @@ class DisplayParameters {
     humidity = json['humidity'];
     temperature = json['temperature'];
     bluetooth = json['bluetooth'];
+    overspeed = json['overspeed'];
   }
   bool? ac;
   bool? door;
@@ -49,6 +51,7 @@ class DisplayParameters {
   bool? humidity;
   bool? temperature;
   bool? bluetooth;
+  bool? overspeed;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};

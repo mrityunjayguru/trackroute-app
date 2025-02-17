@@ -20,9 +20,6 @@ class OtpView extends StatelessWidget {
   OtpView({super.key, this.fromLogin = false});
 
   final controller = Get.put(OtpController());
-  final dataController = Get.isRegistered<DataController>()
-      ? Get.find<DataController>() // Find if already registered
-      : Get.put(DataController());
 
   @override
   Widget build(BuildContext context) {
@@ -33,52 +30,12 @@ class OtpView extends StatelessWidget {
           key: controller.formKey.value,
           child: Column(
             children: [
-              if (fromLogin)
+
                 Container(
                   height: 35.h,
                   color: AppColors.black,
                   child:
                       Center(child: SvgPicture.asset(Assets.images.svg.logo)),
-                )
-              else
-                Container(
-                  // height: 20.h,
-                  width: 100.w,
-                  decoration: BoxDecoration(color: AppColors.black),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: 8.h,
-                      ),
-                      Row(
-                        children: [
-                          Obx(
-                            () => Image.network(
-                                width: 120,
-                                height: 50,
-                                "${ProjectUrls.imgBaseUrl}${dataController.settings.value.appLogo}",
-                                errorBuilder: (context, error, stackTrace) =>
-                                    SvgPicture.asset(
-                                      Assets.images.svg.icIsolationMode,
-                                      color: AppColors.black,
-                                    )),
-                          ),
-                          Spacer(),
-                          InkWell(
-                              onTap: () {
-                                Get.back();
-                              },
-                              child: SvgPicture.asset(
-                                "assets/images/svg/close_icon.svg",
-                              ))
-                        ],
-                      ),
-                      SizedBox(
-                        height: 4.h,
-                      ),
-                    ],
-                  ).paddingSymmetric(horizontal: 6.w),
                 ),
               Container(
                 height: 6,

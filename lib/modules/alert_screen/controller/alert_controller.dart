@@ -94,7 +94,8 @@ class AlertController extends GetxController {
       } else if (response.status == 400) {
         networkStatus.value = NetworkStatus.ERROR;
       }
-    } catch (e) {
+    } catch (e,s) {
+      log("EXCEPTION $e $s");
       networkStatus.value = NetworkStatus.ERROR;
     }
   }

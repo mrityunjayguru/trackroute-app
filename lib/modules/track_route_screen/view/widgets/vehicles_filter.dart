@@ -84,98 +84,145 @@ class VehiclesList extends StatelessWidget {
                                       shrinkWrap: true,
                                       itemCount: itemCount,
                                       itemBuilder:
-                                          (BuildContext context, int index) =>
-                                              GestureDetector(
-                                        behavior: HitTestBehavior.deferToChild,
-                                        onTap: () {
-                                          controller.isShowVehicleDetails(
-                                              index,
-                                              controller.vehicleList.value
-                                                      .data?[index].imei ??
-                                                  '');
-                                          controller.devicesByDetails(
-                                              controller.vehicleList.value
-                                                      .data?[index].imei ??
-                                                  '',
-                                              showDialog: true,
-                                              zoom: true);
-                                          controller.isExpanded.value = false;
-                                          controller.isFilterSelected.value =
-                                              false;
-                                          controller
-                                              .isFilterSelectedindex.value = -1;
-                                        },
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 8, vertical: 4),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                'Vehicle',
-                                                style: AppTextStyles(context)
-                                                    .display12W400
-                                                    .copyWith(
-                                                        color: AppColors
-                                                            .grayLight),
-                                              ),
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Flexible(
-                                                    child: Text(
-                                                      '${controller.vehicleList.value.data?[index].vehicleNo ?? "-"}',
-                                                      // todo
-                                                      style:
-                                                          AppTextStyles(context)
-                                                              .display16W700,
+                                          (BuildContext context, int index) {
+                                        bool isInactive =
+                                            controller.checkIfInactive(
+                                                vehicle: controller.vehicleList
+                                                    .value.data?[index]);
+                                        return GestureDetector(
+                                          behavior:
+                                              HitTestBehavior.deferToChild,
+                                          onTap: () {
+                                            controller.isShowVehicleDetails(
+                                                index,
+                                                controller.vehicleList.value
+                                                        .data?[index].imei ??
+                                                    '');
+                                            controller.devicesByDetails(
+                                                controller.vehicleList.value
+                                                        .data?[index].imei ??
+                                                    '',
+                                                showDialog: true,
+                                                zoom: true);
+                                            controller.isExpanded.value = false;
+                                            controller.isFilterSelected.value =
+                                                false;
+                                            controller.isFilterSelectedindex
+                                                .value = -1;
+                                          },
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 8, vertical: 4),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  'Vehicle',
+                                                  style: AppTextStyles(context)
+                                                      .display12W400
+                                                      .copyWith(
+                                                          color: AppColors
+                                                              .grayLight),
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Flexible(
+                                                      child: Text(
+                                                        '${controller.vehicleList.value.data?[index].vehicleNo ?? "-"}',
+                                                        // todo
+                                                        style: AppTextStyles(
+                                                                context)
+                                                            .display16W700
+                                                            .copyWith(
+                                                                color: isInactive
+                                                                    ? AppColors
+                                                                        .grayLight
+                                                                    : AppColors
+                                                                        .black),
+                                                      ),
                                                     ),
-                                                  ),
-                                                  const SizedBox(width: 4),
-                                                  GestureDetector(
-                                                    behavior: HitTestBehavior
-                                                        .deferToChild,
-                                                    onTap: () {
-                                                      controller
-                                                          .isvehicleSelected
-                                                          .value = true;
-                                                      controller.isedit.value =
-                                                          false;
-                                                      controller
-                                                          .stackIndex.value = 1;
-                                                      controller.editGeofence
-                                                          .value = false;
-                                                      controller.editSpeed
-                                                          .value = false;
-                                                      controller.isExpanded
-                                                          .value = false;
-                                                      controller.devicesByDetails(
+                                                    const SizedBox(width: 4),
+                                                    GestureDetector(
+                                                      behavior: HitTestBehavior
+                                                          .deferToChild,
+                                                      onTap: () {
+                                                        if (isInactive) {
+                                                          controller.isShowVehicleDetails(
+                                                              index,
+                                                              controller
+                                                                      .vehicleList
+                                                                      .value
+                                                                      .data?[
+                                                                          index]
+                                                                      .imei ??
+                                                                  '');
+                                                          controller.devicesByDetails(
+                                                              controller
+                                                                      .vehicleList
+                                                                      .value
+                                                                      .data?[
+                                                                          index]
+                                                                      .imei ??
+                                                                  '',
+                                                              showDialog: true,
+                                                              zoom: true);
+                                                          controller.isExpanded
+                                                              .value = false;
                                                           controller
-                                                                  .vehicleList
-                                                                  .value
-                                                                  .data?[index]
-                                                                  .imei ??
-                                                              '');
-                                                    },
-                                                    child: Text(
-                                                      'Manage',
-                                                      style: AppTextStyles(
-                                                              context)
-                                                          .display12W500
-                                                          .copyWith(
-                                                              color: AppColors
-                                                                  .blue),
-                                                    ),
-                                                  )
-                                                ],
-                                              ),
-                                            ],
+                                                              .isFilterSelected
+                                                              .value = false;
+                                                          controller
+                                                              .isFilterSelectedindex
+                                                              .value = -1;
+                                                        } else {
+                                                          controller
+                                                              .isvehicleSelected
+                                                              .value = true;
+                                                          controller.isedit
+                                                              .value = false;
+                                                          controller.stackIndex
+                                                              .value = 1;
+                                                          controller
+                                                              .editGeofence
+                                                              .value = false;
+                                                          controller.editSpeed
+                                                              .value = false;
+                                                          controller.isExpanded
+                                                              .value = false;
+                                                          controller.devicesByDetails(
+                                                              controller
+                                                                      .vehicleList
+                                                                      .value
+                                                                      .data?[
+                                                                          index]
+                                                                      .imei ??
+                                                                  '');
+                                                        }
+                                                      },
+                                                      child: Text(
+                                                        'Manage',
+                                                        style: AppTextStyles(
+                                                                context)
+                                                            .display12W500
+                                                            .copyWith(
+                                                                color: isInactive
+                                                                    ? AppColors
+                                                                        .grayLight
+                                                                    : AppColors
+                                                                        .blue),
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                      ),
+                                        );
+                                      },
                                       separatorBuilder: (BuildContext context,
                                               int index) =>
                                           Divider(color: AppColors.grayLighter),

@@ -228,9 +228,7 @@ class LoginView extends StatelessWidget {
               recognizer: TapGestureRecognizer()
                 ..onTap = () {
                   Get.to(
-                      () => ForgotView(
-                            fromLogin: true,
-                          ),
+                      () => ForgotView(fromLogin: true,),
                       transition: Transition.upToDown,
                       duration: const Duration(milliseconds: 300));
                 },

@@ -537,6 +537,10 @@ class VehicleSelected extends StatelessWidget {
   }
 
   Widget immobilizerWidget(BuildContext context) {
+    bool active = true;
+    if(controller.deviceDetail.value.data?[0].displayParameters?.relay == null){
+      active = false;
+    }
     return Column(
       children: [
         Container(
@@ -555,7 +559,7 @@ class VehicleSelected extends StatelessWidget {
             mainAxisSize: MainAxisSize.max,
             children: [
               CircleAvatar(
-                backgroundColor: AppColors.color_e92e19,
+                backgroundColor: active?  AppColors.color_e92e19 : AppColors.color_e5e7e9,
                 child: SvgPicture.asset(
                   'assets/images/svg/engine_icon.svg',
                   colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn),
@@ -567,13 +571,12 @@ class VehicleSelected extends StatelessWidget {
                 children: [
                   Text(
                     'Engine Lock',
-                    style: AppTextStyles(context).display20W500,
+                    style: AppTextStyles(context).display20W500.copyWith(color: active? AppColors.black : AppColors.color_9F9EA2),
                   ).paddingOnly(bottom: 3),
                   Text(
                     "Relay On/Off",
                     style: AppTextStyles(context)
-                        .display10W500
-                        .copyWith(color: AppColors.color_e92e19),
+                        .display10W500.copyWith(color: active? AppColors.color_e92e19 : AppColors.color_9F9EA2),
                   ).paddingOnly(bottom: 3),
                 ],
               ),
@@ -584,23 +587,26 @@ class VehicleSelected extends StatelessWidget {
                   thumbIcon: thumbIcon,
                   trackOutlineWidth: WidgetStatePropertyAll(0),
                   trackOutlineColor: WidgetStatePropertyAll(Colors.transparent),
-                  activeColor: AppColors.color_e92e19,
+                  activeColor: active ? AppColors.color_e92e19 : AppColors.color_EBE7E4,
                   value: controller.relayStatus == "Stop",
-                  inactiveThumbColor: AppColors.selextedindexcolor,
-                  inactiveTrackColor: AppColors.grayLight,
-                  activeTrackColor: AppColors.black,
+                  inactiveThumbColor: active ? AppColors.selextedindexcolor : AppColors.color_EBE7E4,
+                  inactiveTrackColor: active? AppColors.grayLight : AppColors.white,
+                  activeTrackColor: active? AppColors.black : AppColors.white,
+
                   onChanged: (value) {
-                    if (controller.relayStatus == "Stop") {
-                      Get.showOverlay(
-                          asyncFunction: () => controller.startEngine(
-                              controller.deviceDetail.value.data?[0].imei ??
-                                  ""),
-                          loadingWidget: LoadingAnimationWidget.dotsTriangle(
-                            color: AppColors.white,
-                            size: 50,
-                          ));
-                    } else {
-                      Utils.openDialog(context: context, child: RelayDialog());
+                    if(active){
+                      if (controller.relayStatus == "Stop") {
+                        Get.showOverlay(
+                            asyncFunction: () => controller.startEngine(
+                                controller.deviceDetail.value.data?[0].imei ??
+                                    ""),
+                            loadingWidget: LoadingAnimationWidget.dotsTriangle(
+                              color: AppColors.white,
+                              size: 50,
+                            ));
+                      } else {
+                        Utils.openDialog(context: context, child: RelayDialog());
+                      }
                     }
                   },
                 ).paddingOnly(right: 10),
@@ -615,28 +621,28 @@ class VehicleSelected extends StatelessWidget {
               children: [
                 TextSpan(
                   text: 'WARNING:',
-                  style: AppTextStyles(context).display14W600.copyWith(color: AppColors.color_e92e19)
+                  style: AppTextStyles(context).display14W600.copyWith(color: active ? AppColors.color_e92e19 : AppColors.grayLight)
                 ),
                 TextSpan(
                   text: 'When the vehicle ',
-                  style: AppTextStyles(context).display14W400
+                  style: AppTextStyles(context).display14W400.copyWith(color: active? AppColors.black : AppColors.grayLight),
                 ),
                 TextSpan(
                   text: 'Engine Lock',
-                  style: AppTextStyles(context).display14W500.copyWith(decoration: TextDecoration.underline,  color: AppColors.color_e92e19,
-                    decorationColor: AppColors.color_e92e19,)
+                  style: AppTextStyles(context).display14W500.copyWith(decoration: TextDecoration.underline,  color:active ? AppColors.color_e92e19 : AppColors.grayLight,
+                    decorationColor: active ? AppColors.color_e92e19 : AppColors.grayLight,)
                 ),
                 TextSpan(
                   text: ' is active,\n',
-                  style: AppTextStyles(context).display14W400
+                  style: AppTextStyles(context).display14W400.copyWith(color: active? AppColors.black : AppColors.grayLight),
                 ),
                 TextSpan(
                   text: 'it will ',
-                  style: AppTextStyles(context).display14W400
+                  style: AppTextStyles(context).display14W400.copyWith(color: active? AppColors.black : AppColors.grayLight),
                 ),
                 TextSpan(
                   text: 'instantly shut down the car.',
-                  style:  AppTextStyles(context).display14W400.copyWith(decoration: TextDecoration.underline)
+                  style:  AppTextStyles(context).display14W400.copyWith(decoration: TextDecoration.underline,color: active? AppColors.black : AppColors.grayLight)
                 ),
               ],
             ),
@@ -714,9 +720,16 @@ class VehicleSelected extends StatelessWidget {
   }
 
   Widget geofenceWidget(BuildContext context) {
+    bool active = true;
+    if(controller.deviceDetail.value.data?[0].displayParameters?.geoFencing == null){
+      active = false;
+    }
     return InkWell(
       onTap: () {
-        controller.editGeofence.value = true;
+        if(active){
+          controller.editGeofence.value = true;
+        }
+
       },
       child: Container(
           decoration: BoxDecoration(
@@ -733,7 +746,10 @@ class VehicleSelected extends StatelessWidget {
             children: [
               InkWell(
                 onTap: (){
-                  controller.editGeofence.value = !controller.editGeofence.value;
+                  if(active){
+                    controller.editGeofence.value = !controller.editGeofence.value;
+                  }
+
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -755,7 +771,7 @@ class VehicleSelected extends StatelessWidget {
                                   'Geofencing',
                                   style: AppTextStyles(context).display24W400,
                                 ),
-                                FutureBuilder(
+                                if(active)FutureBuilder(
                                   future: controller.getCurrAddress(
                                       latitude: controller.deviceDetail.value
                                           .data?[0].location?.latitude,
@@ -785,25 +801,28 @@ class VehicleSelected extends StatelessWidget {
                         trackOutlineWidth: WidgetStatePropertyAll(0),
                         trackOutlineColor:
                             WidgetStatePropertyAll(Colors.transparent),
-                        activeColor: AppColors.selextedindexcolor,
+                        activeColor: active?  AppColors.selextedindexcolor : AppColors.color_f6f8fc,
                         value: controller.geofence.value,
-                        inactiveThumbColor: AppColors.selextedindexcolor,
-                        inactiveTrackColor: AppColors.grayLight,
-                        activeTrackColor: AppColors.black,
+                        inactiveThumbColor: active?  AppColors.selextedindexcolor : AppColors.color_f6f8fc,
+                        inactiveTrackColor: active? AppColors.grayLight : AppColors.white,
+                        activeTrackColor: active? AppColors.black : AppColors.white,
                         onChanged: (value) {
-                          controller.geofence.value =
-                          !(controller.geofence.value);
-                          if (value) {
-                            controller.editGeofence.value = true;
+                          if(active){
+                            controller.geofence.value =
+                            !(controller.geofence.value);
+                            if (value) {
+                              controller.editGeofence.value = true;
+                            }
+                            controller.editGeofenceToggle(context);
                           }
-                          controller.editGeofenceToggle(context);
+
                         },
                       ),
                     ),
                   ],
                 ),
               ),
-              if (controller.editGeofence.value) ...[
+              if (controller.editGeofence.value && active) ...[
                 Divider(color: AppColors.color_e5e7e9),
                 Text(
                   "Set Geofencing",
@@ -925,10 +944,17 @@ class VehicleSelected extends StatelessWidget {
   }
 
   Widget parkingWidget(BuildContext context) {
+    bool active = true;
+    if(controller.deviceDetail.value.data?[0].displayParameters?.parking == null){
+      active = false;
+    }
     return InkWell(
       onTap: (){
-        controller.editGeofence.value=false;
-        controller.editSpeed.value=false;
+        if(active){
+          controller.editGeofence.value=false;
+          controller.editSpeed.value=false;
+        }
+
       },
       child: Container(
           decoration: BoxDecoration(
@@ -961,15 +987,17 @@ class VehicleSelected extends StatelessWidget {
                       trackOutlineWidth: WidgetStatePropertyAll(0),
                       trackOutlineColor:
                           WidgetStatePropertyAll(Colors.transparent),
-                      activeColor: AppColors.selextedindexcolor,
+                      activeColor: active?  AppColors.selextedindexcolor : AppColors.color_f6f8fc,
                       value: controller.parkingUpdate.value,
-                      inactiveThumbColor: AppColors.selextedindexcolor,
-                      inactiveTrackColor: AppColors.grayLight,
-                      activeTrackColor: AppColors.black,
+                      inactiveThumbColor: active?  AppColors.selextedindexcolor : AppColors.color_f6f8fc,
+                      inactiveTrackColor: active? AppColors.grayLight : AppColors.white,
+                      activeTrackColor: active? AppColors.black : AppColors.white,
                       onChanged: (value) {
-                        controller.parkingUpdate.value =
-                            !(controller.parkingUpdate.value);
-                        controller.editDevicesByDetails(context: context);
+                        if(active){
+                          controller.parkingUpdate.value =
+                          !(controller.parkingUpdate.value);
+                          controller.editDevicesByDetails(context: context);
+                        }
                       },
                     ),
                   ),

@@ -692,7 +692,7 @@ class VehicleDataWidget extends StatelessWidget {
                                               children: [
                                                 TextSpan(
                                                   text:
-                                                      '@ ${summary?.maxSpeedTime != null ? DateFormat("HH:MM").format(DateTime.parse(summary?.maxSpeedTime ?? "")) : "-"}  ',
+                                                      '@ ${summary?.maxSpeedTime != null ? DateFormat("HH:mm").format(DateTime.parse(summary?.maxSpeedTime ?? "")) : "-"}  ',
                                                   style: AppTextStyles(context)
                                                       .display11W500,
                                                 ),
