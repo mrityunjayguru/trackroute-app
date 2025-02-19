@@ -10,6 +10,7 @@ import 'package:track_route_pro/modules/login_screen/view/widget/banner.dart';
 import 'package:track_route_pro/modules/profile/controller/profile_controller.dart';
 import 'package:track_route_pro/routes/app_pages.dart';
 import 'package:track_route_pro/service/api_service/api_service.dart';
+import 'package:track_route_pro/service/model/auth/FirebaseUpdateRequest.dart';
 import 'package:track_route_pro/service/model/presentation/splsh_add/splash_add.dart';
 import 'package:track_route_pro/utils/app_prefrance.dart';
 import 'package:track_route_pro/utils/common_import.dart';
@@ -283,38 +284,15 @@ class LoginController extends GetxController {
 
         // Call the API method from ApiService
 
-        var request = {"_id": userId.value, "firebaseToken": '${fcmToken}'};
+        var request = FirebaseUpdateRequest(id: userId.value, firebaseToken: fcmToken);
 
         if(isLogout){
-           request = {"_id": userId.value, "firebaseToken": '${fcmToken}', "isLogout" : "true"};
-        }
+           request.isLogout = true;  }
         // debugPrint("FIREBASE REQUEST ===> $request");
         var response = await apiService
             .sendTokenData(request);
-            log("FCM TOKEN $response");
+            // log("FCM TOKEN $response");
         // Assuming you handle the response in a similar way
-        if (response.message?.isNotEmpty ?? false) {
-          networkStatus.value = NetworkStatus.SUCCESS;
-        }
-      } catch (e) {
-        networkStatus.value = NetworkStatus.ERROR;
-
-        // print('Error: $e');
-      }
-    }
-  }
-
-  Future<void> logout() async {
-    userId.value = await AppPreference.getStringFromSF(Constants.userId) ?? "";
-
-    if(userId.value.isNotEmpty){
-      try {
-        networkStatus.value =
-            NetworkStatus.LOADING;
-
-        var request = {"_id": userId.value, "firebaseToken": ''};
-        var response = await apiService
-            .sendTokenData(request);
         if (response.message?.isNotEmpty ?? false) {
           networkStatus.value = NetworkStatus.SUCCESS;
         }
@@ -367,3 +345,4 @@ class LoginController extends GetxController {
   }
 
 }
+

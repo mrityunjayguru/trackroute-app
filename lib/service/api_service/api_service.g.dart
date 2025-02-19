@@ -193,12 +193,13 @@ class _ApiService implements ApiService {
   }
 
   @override
-  Future<FCMDataResponse> sendTokenData(Map<String, dynamic> body) async {
+  Future<FCMDataResponse> sendTokenData(FirebaseUpdateRequest request) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    _data.addAll(body);
+    _data.addAll(request.toJson());
+    _data.removeWhere((k, v) => v == null);
     final _options = _setStreamType<FCMDataResponse>(Options(
       method: 'POST',
       headers: _headers,

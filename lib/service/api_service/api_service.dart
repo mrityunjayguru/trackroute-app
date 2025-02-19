@@ -7,6 +7,7 @@ import 'package:retrofit/retrofit.dart';
 import 'package:track_route_pro/constants/project_urls.dart';
 import 'package:track_route_pro/service/model/alerts/config/get_config/GetAlertsConfig.dart';
 import 'package:track_route_pro/service/model/alerts/config/response/AlertsConfigResponse.dart';
+import 'package:track_route_pro/service/model/auth/FirebaseUpdateRequest.dart';
 import 'package:track_route_pro/service/model/auth/ManageSettingModel.dart';
 import 'package:track_route_pro/service/model/auth/forgot_password/generate_otp.dart';
 import 'package:track_route_pro/service/model/auth/forgot_password/verify_otp.dart';
@@ -103,7 +104,7 @@ abstract class ApiService {
 
   @POST(ProjectUrls.sendTokenData)
   Future<FCMDataResponse> sendTokenData(
-    @Body() Map<String, dynamic> body,
+      @Body(nullToAbsent: true) FirebaseUpdateRequest request
   );
 
   @POST(ProjectUrls.sendAlertsData)
