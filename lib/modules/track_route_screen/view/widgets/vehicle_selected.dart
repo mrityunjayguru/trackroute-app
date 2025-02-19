@@ -923,6 +923,7 @@ class VehicleSelected extends StatelessWidget {
                     controller.editGeofence.value = false;
                   },
                   child: Container(
+                    height: 5.h,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(AppSizes.radius_10),
                       color: AppColors.black,
@@ -933,7 +934,7 @@ class VehicleSelected extends StatelessWidget {
                         style: AppTextStyles(context)
                             .display16W500
                             .copyWith(color: AppColors.selextedindexcolor),
-                      ).paddingSymmetric(horizontal: 4.w, vertical: 1.4.h),
+                      ).paddingSymmetric(horizontal: 4.w, vertical: 1.h),
                     ),
                   ).paddingSymmetric(vertical: 1.4.h, horizontal: 10),
                 ),
@@ -1142,7 +1143,7 @@ class VehicleSelected extends StatelessWidget {
                                             color:
                                                 AppColors.selextedindexcolor),
                                   ).paddingSymmetric(
-                                      horizontal: 2.w, vertical: 1.4.h),
+                                      horizontal: 2.w, vertical: 1.h),
                                 ),
                               ),
                             ),

@@ -409,29 +409,18 @@ class VehicleDataWidget extends StatelessWidget {
                         ),
                         Flexible(
                           child: AutoSizeText(
-                            '${summary?.latestTripKm == null ? "-" : Utils.toStringAsFixed(data: summary?.latestTripKm.toString())}',
+                            '${summary?.avgSpeed == null ? "- " : Utils.toStringAsFixed(data: summary?.avgSpeed)} ',
                             maxLines: 2,
                             minFontSize: 18,
                             overflow: TextOverflow.ellipsis,
                             style: AppTextStyles(context).display21W600,
                           ).paddingOnly(left: 4, right: 6),
                         ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Latest Trip',
-                              style: AppTextStyles(context)
-                                  .display9W400
-                                  .copyWith(color: AppColors.grayLight),
-                            ),
-                            Text(
-                              '(km)',
-                              style: AppTextStyles(context)
-                                  .display9W400
-                                  .copyWith(color: AppColors.grayLight),
-                            ),
-                          ],
+                        Text(
+                          'Average\nSpeed (KMPH)',
+                          style: AppTextStyles(context)
+                              .display9W400
+                              .copyWith(color: AppColors.grayLight),
                         ),
                       ],
                     ),
@@ -552,7 +541,7 @@ class VehicleDataWidget extends StatelessWidget {
                                           ),
                                           TextSpan(
                                             text:
-                                                '${summary?.total_travel_km == null ? "-" : Utils.toStringAsFixed(data: summary?.total_travel_km.toString())}', //todo
+                                                '${summary?.total_travel_km == null ? "-" : Utils.toStringAsFixed(data: summary?.total_travel_km.toString())}',
                                             style: AppTextStyles(context)
                                                 .display21W600,
                                           ),
@@ -582,55 +571,39 @@ class VehicleDataWidget extends StatelessWidget {
                                 color: AppColors.white,
                                 borderRadius: BorderRadius.circular(10),
                               ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        'Average Speed',
-                                        style: AppTextStyles(context)
-                                            .display11W500,
-                                      ),
-                                      /* SizedBox(
-                                        width: 5,
-                                      ),
-                                      CircleAvatar(
-                                        maxRadius: 16,
-                                        backgroundColor:
-                                            AppColors.selextedindexcolor,
-                                        child: SvgPicture.asset(
-                                          "assets/images/svg/avg_speed_icon.svg",
-                                          width: 16,
-                                          height: 16,
-                                        ),
-                                      ),*/
-                                    ],
-                                  ),
-                                  Text.rich(
-                                    textAlign: TextAlign.start,
-                                    overflow: TextOverflow.ellipsis,
+                              child: Text.rich(
+                                textAlign: TextAlign.start,
+                                overflow: TextOverflow.ellipsis,
+                                TextSpan(
+                                  children: [
                                     TextSpan(
-                                      children: [
-                                        TextSpan(
-                                          text:
-                                          '${summary?.avgSpeed == null ? "- " : Utils.toStringAsFixed(data: summary?.avgSpeed)} ',
-                                          style: AppTextStyles(context)
-                                              .display21W600,
-                                        ),
-                                        TextSpan(
-                                          text: 'KMPH',
-                                          style: AppTextStyles(context)
-                                              .display14W600
-                                              .copyWith(
-                                              color: AppColors.grayLight),
-                                        ),
-                                      ],
+                                      text: 'Latest Trip ',
+                                      style: AppTextStyles(context)
+                                          .display11W500,
                                     ),
-                                  )
-                                ],
+                                    TextSpan(
+                                      text:
+                                      '(${summary?.latestTripTime ?? "-"})\n',
+                                      style: AppTextStyles(context)
+                                          .display11W500
+                                          .copyWith(
+                                          color: AppColors.grayLight),
+                                    ),
+                                    TextSpan(
+                                      text:
+                                      '${summary?.latestTripKm == null ? "-" : Utils.toStringAsFixed(data: summary?.latestTripKm.toString())}',
+                                      style: AppTextStyles(context)
+                                          .display21W600,
+                                    ),
+                                    TextSpan(
+                                      text: ' KM ',
+                                      style: AppTextStyles(context)
+                                          .display14W600
+                                          .copyWith(
+                                          color: AppColors.grayLight),
+                                    ),
+                                  ],
+                                ),
                               )).paddingSymmetric(horizontal: 3, vertical: 4),
                         ),
 

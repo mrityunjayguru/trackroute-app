@@ -133,7 +133,6 @@ class VehiclesList extends StatelessWidget {
                                                     Flexible(
                                                       child: Text(
                                                         '${controller.vehicleList.value.data?[index].vehicleNo ?? "-"}',
-                                                        // todo
                                                         style: AppTextStyles(
                                                                 context)
                                                             .display16W700
