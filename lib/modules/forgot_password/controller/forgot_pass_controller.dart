@@ -41,12 +41,12 @@ class ForgotPassController extends GetxController {
 
     try {
       // Log the request body for debugging
-      print('Sending forgotPassword request with body: $body');
+      // print('Sending forgotPassword request with body: $body');
 
       final response = await apiservice.forgotPassword(body);
 
       // Log the response to see the full data returned by the API
-      print('Forgot password response: $response');
+      // print('Forgot password response: $response');
 
       // Check if the response status is 200 (success) and otp is not null
       if (response.status == 200 && response.otp != null) {
@@ -64,12 +64,12 @@ class ForgotPassController extends GetxController {
         Utils.getSnackbar("Success", "OTP sent successfully");
       } else {
         // Handle cases where the response status is not 200
-        print('Error: Unexpected response status ${response.status}');
+        // print('Error: Unexpected response status ${response.status}');
         networkStatus.value = NetworkStatus.ERROR;
       }
     } catch (error) {
       Utils.getSnackbar("Error", "Something went wrong");
-      print('Error during forgotPassword request: $error');
+      // print('Error during forgotPassword request: $error');
       networkStatus.value = NetworkStatus.ERROR;
     }
   }

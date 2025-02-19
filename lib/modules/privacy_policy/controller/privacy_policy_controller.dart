@@ -25,7 +25,7 @@ class PrivacyPolicyController extends GetxController {
       networkStatus.value = NetworkStatus.SUCCESS;
     } catch (e) {
       networkStatus.value = NetworkStatus.ERROR;
-      print("Error fetching privacy policy data: $e");
+      // print("Error fetching privacy policy data: $e");
     }
   }
 
@@ -37,7 +37,7 @@ class PrivacyPolicyController extends GetxController {
       networkStatus.value = NetworkStatus.SUCCESS;
     } catch (e) {
       networkStatus.value = NetworkStatus.ERROR;
-      print("Error fetching terms conditions data: $e");
+      // print("Error fetching terms conditions data: $e");
     }
   }
 }

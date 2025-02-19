@@ -29,7 +29,7 @@ class SplashController extends GetxController {
 
     // Check if the API token exists in AppPreference
     String? apiToken = await AppPreference.getStringFromSF(AppPreference.accessTokenKey);
-    debugPrint("API TOKEN ========> $apiToken");
+    // debugPrint("API TOKEN ========> $apiToken");
     if (apiToken != null && apiToken.isNotEmpty) {
       // If token exists, navigate to BottomBar
 

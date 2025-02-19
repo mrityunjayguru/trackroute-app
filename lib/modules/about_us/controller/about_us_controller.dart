@@ -23,7 +23,7 @@ class AboutUsController extends GetxController {
       networkStatus.value = NetworkStatus.SUCCESS;
     } catch (e) {
       networkStatus.value = NetworkStatus.ERROR;
-      print("Error fetching About Us data: $e");
+      // print("Error fetching About Us data: $e");
     }
   }
 }

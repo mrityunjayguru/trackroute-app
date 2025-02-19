@@ -31,7 +31,7 @@ class DataController extends GetxController {
         //     Constants.contactPasswd, settings.value.mobileSupport);
       }
     } catch (e) {
-      debugPrint("EXCEPTION $e");
+      // debugPrint("EXCEPTION $e");
       networkStatus.value = NetworkStatus.ERROR;
     }
   }

@@ -145,7 +145,7 @@ class Utils{
         throw 'Could not launch $launchUri';
       }
     } on PlatformException catch (e) {
-      print('Error: $e'); // Log the error to the console for debugging
+      // print('Error: $e'); // Log the error to the console for debugging
     }
   }
 

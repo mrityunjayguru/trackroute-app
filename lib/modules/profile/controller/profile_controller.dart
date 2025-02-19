@@ -101,7 +101,7 @@ class ProfileController extends GetxController {
     } catch (e) {
       networkStatus.value = NetworkStatus.ERROR;
       Utils.getSnackbar("Error", "Please try after 24 hours");
-      print('Error: $e');
+      // print('Error: $e');
     }
   }
 }

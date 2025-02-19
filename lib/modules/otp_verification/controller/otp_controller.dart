@@ -60,14 +60,14 @@ class OtpController extends GetxController {
         otpErrorText.value = 'Enter a valid OTP';
         networkStatus.value = NetworkStatus.ERROR;
 
-        print('Invalid OTP: Status 400');
+        // print('Invalid OTP: Status 400');
       }
     } catch (e) {
       Utils.getSnackbar("Error", "Something went wrong");
       networkStatus.value = NetworkStatus.ERROR;
       isOtpError.value = true;
       otpErrorText.value = 'Enter valid OTP';
-      print("Error during OTP verification: $e");
+      // print("Error during OTP verification: $e");
     }
   }
 

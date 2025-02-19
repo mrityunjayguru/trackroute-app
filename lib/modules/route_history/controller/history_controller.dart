@@ -177,11 +177,11 @@ class HistoryController extends GetxController {
           }
         } else {
           // log("EXCEPTION ${data}");
-          debugPrint("EXCEPTION ${data}");
+          // debugPrint("EXCEPTION ${data}");
         }
       } catch (e, s) {
         // log("EXCEPTION $e $s");
-        debugPrint("EXCEPTION $e $s");
+        // debugPrint("EXCEPTION $e $s");
         networkStatus.value = NetworkStatus.ERROR;
         Utils.getSnackbar("Error", "Something went wrong");
       }
@@ -323,7 +323,7 @@ class HistoryController extends GetxController {
       return "${place.street}, ${place.locality}, ${place.subLocality}, ${place
           .country}";
     } catch (e) {
-      debugPrint("Error " + e.toString());
+      // debugPrint("Error " + e.toString());
       return "Address not available";
     }
   }

@@ -122,7 +122,7 @@ class LoginController extends GetxController {
           Get.offAllNamed(Routes.BOTTOMBAR); // Navigate to bottom bar page
         } else {
           // If login fails, show the error message
-          print('Login failed: ${response.message}   STATUS => ${response.status}');
+          // print('Login failed: ${response.message}   STATUS => ${response.status}');
           isWrongUser.value = true;
         }
 
@@ -130,12 +130,12 @@ class LoginController extends GetxController {
       } catch (e, s) {
         // Handle errors during API call
         networkStatus.value = NetworkStatus.ERROR;
-        print('Error during login: $e  $s');
+        // print('Error during login: $e  $s');
         isWrongUser.value = true;
       }
     } else {
       // Show validation errors in case email/password are invalid
-      print('Email or password validation failed');
+      // print('Email or password validation failed');
     }
     showLoader.value=false;
   }
@@ -155,31 +155,31 @@ class LoginController extends GetxController {
       dio.interceptors.add(InterceptorsWrapper(
         onRequest: (options, handler) {
           // Log the request details
-          print('Request URL: ${options.uri}');
+         /* print('Request URL: ${options.uri}');
           print('Request Headers: ${options.headers}');
           print('Request Method: ${options.method}');
-          print('Request Data: ${options.data}');
+          print('Request Data: ${options.data}');*/
           return handler.next(options); // Continue with the request
         },
         onResponse: (response, handler) {
           // Log the response details
-          print('Response Status Code: ${response.statusCode}');
-          print('Response Data: ${response.data}');
+         /* print('Response Status Code: ${response.statusCode}');
+          print('Response Data: ${response.data}');*/
           return handler.next(response); // Continue with the response
         },
         onError: (DioError e, handler) {
           // Log any error that occurs
-          print('Error: ${e.message}');
+          // print('Error: ${e.message}');
           if (e.response != null) {
-            print('Error Response Status Code: ${e.response?.statusCode}');
-            print('Error Response Data: ${e.response?.data}');
+          /*  print('Error Response Status Code: ${e.response?.statusCode}');
+            print('Error Response Data: ${e.response?.data}');*/
           }
           return handler.next(e); // Continue with error handling
         },
       ));
       try {
 
-        debugPrint("fetch splash data ");
+        // debugPrint("fetch splash data ");
 
         final accessToken =
         await AppPreference.getStringFromSF(AppPreference.accessTokenKey,);
@@ -193,7 +193,8 @@ class LoginController extends GetxController {
               'content-Type': 'application/json'
             },
           ),
-        );  debugPrint("fetch splash data ");
+        );
+        // debugPrint("fetch splash data ");
 
 
         if (res.statusCode == 200) {
@@ -202,14 +203,14 @@ class LoginController extends GetxController {
 
           // Parse the data into ManageSettingModel
           SplashAddResponse response = SplashAddResponse.fromJson(data);
-          print('Settings parsed successfully: ${response.toString()}');
+          // print('Settings parsed successfully: ${response.toString()}');
           // Now you can use 'settings' object as needed
 
           if (res.data.isNotEmpty) {
             networkStatus.value = NetworkStatus.SUCCESS;
             splashAddResponse.value = response;
-            print('splash message message:::::>${splashAddResponse.value.message}');
-            print('data:::::>${splashAddResponse.value.data}');
+           /* print('splash message message:::::>${splashAddResponse.value.message}');
+            print('data:::::>${splashAddResponse.value.data}');*/
             showActiveAds(response.data);
             // if (response.data[0].status == 'Active') {
             //   Future.delayed(Duration.zero, () {
@@ -249,10 +250,10 @@ class LoginController extends GetxController {
             // }
           }
         } else {
-          print('Failed with status code: ${res.statusCode}');
+          // print('Failed with status code: ${res.statusCode}');
         }
       } on DioException catch (e) {
-        print("SPLASH ADD ERROR $e");
+        // print("SPLASH ADD ERROR $e");
       }
 
       // var response = await apiService.splashAdd();
@@ -262,7 +263,7 @@ class LoginController extends GetxController {
     } catch (e) {
       networkStatus.value = NetworkStatus.ERROR;
 
-      print('Error: $e');
+      // print('Error: $e');
     }
   }
 
@@ -298,7 +299,7 @@ class LoginController extends GetxController {
       } catch (e) {
         networkStatus.value = NetworkStatus.ERROR;
 
-        print('Error: $e');
+        // print('Error: $e');
       }
     }
   }
@@ -320,7 +321,7 @@ class LoginController extends GetxController {
       } catch (e) {
         networkStatus.value = NetworkStatus.ERROR;
 
-        print('Error: $e');
+        // print('Error: $e');
       }
     }
   }

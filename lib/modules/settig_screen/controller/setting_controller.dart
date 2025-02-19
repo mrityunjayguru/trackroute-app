@@ -41,13 +41,13 @@ class SettingController extends GetxController {
         networkStatus.value = NetworkStatus.SUCCESS;
         addBanner.value = response;
         addBanner.value.data= addBanner.value.data?.where((element) => element.status =="Active",).toList();
-        print('message:::::>${addBanner.value.message}');
-        print('data:::::>${addBanner.value.data}');
+        // print('message:::::>${addBanner.value.message}');
+        // print('data:::::>${addBanner.value.data}');
       }
     } catch (e) {
       networkStatus.value = NetworkStatus.ERROR;
 
-      print('Error: $e');
+      // print('Error: $e');
     }
   }
 

@@ -181,7 +181,7 @@ class OtpView extends StatelessWidget {
                                     controller.forgotPassword(
                                         fromLogin: fromLogin);
                                   }
-                                  appPrint('Clicked on reset link');
+                                  // appPrint('Clicked on reset link');
                                 },
                             ),
                           ],

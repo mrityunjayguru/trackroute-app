@@ -87,7 +87,7 @@ class SupportController extends GetxController {
         networkStatus.value = NetworkStatus.ERROR;
       }
     } catch (error,s) {
-      debugPrint("ERROR SUPPORT $error $s");
+      // debugPrint("ERROR SUPPORT $error $s");
       Utils.getSnackbar("Error", "Something went wrong");
       networkStatus.value = NetworkStatus.ERROR;
     }

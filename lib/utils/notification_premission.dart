@@ -9,7 +9,7 @@ class NotificationPermissionRequester {
       PermissionStatus status = await Permission.notification.request();
 
       if (status.isGranted) {
-        debugPrint('Notification permission granted');
+        // debugPrint('Notification permission granted');
       } else {
         Permission.notification.request();
       }

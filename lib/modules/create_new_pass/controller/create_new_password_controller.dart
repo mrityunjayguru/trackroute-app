@@ -77,7 +77,7 @@ class CreateNewPasswordController extends GetxController {
       Utils.getSnackbar("Error", "Something went wrong");
       networkStatus.value = NetworkStatus.ERROR;
 
-      print("Error during OTP verification: $e");
+      // print("Error during OTP verification: $e");
     }
   }
 

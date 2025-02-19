@@ -8,7 +8,48 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:track_route_pro/constants/constant.dart';
 import 'package:track_route_pro/modules/login_screen/controller/login_controller.dart';
 import 'package:track_route_pro/utils/app_prefrance.dart';
+Future<void> _firebaseMessagingBackgroundHandler(
+    RemoteMessage message) async {
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+  FlutterLocalNotificationsPlugin();
+  const initializationSettingsAndroid =
+  AndroidInitializationSettings('@drawable/ic_notif');
 
+  const initializationSettings = InitializationSettings(
+    android: initializationSettingsAndroid,
+  );
+
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
+  // debugPrint('Handling a background message: ${message.messageId}');
+  // log("android key =====> ${message.notification?.android?.sound}");
+  String alert = message.notification?.title != "Out of Area!" ? 'message_alert'  : 'danger_alert';
+
+  var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+    'high_importance_channel',
+    'track_route_pro_channel_name',
+    channelDescription: 'your_channel_description',
+    importance: Importance.max,
+    priority: Priority.high,
+    showWhen: true,
+    icon: "@drawable/ic_notif",
+    playSound: true,
+    // sound: RawResourceAndroidNotificationSound(alert),
+  );
+
+  // log("ANDROID ===> ${androidPlatformChannelSpecifics.sound?.sound}");
+  var platformChannelSpecifics =
+  NotificationDetails(android: androidPlatformChannelSpecifics);
+
+  // log("ANDROID PLATFORM ===> ${platformChannelSpecifics.android?.sound?.sound}");
+  await flutterLocalNotificationsPlugin.show(
+    DateTime.now().millisecondsSinceEpoch % 2147483647,
+    message.notification?.title,
+    message.notification?.body,
+    platformChannelSpecifics,
+    payload: 'item x',
+  );
+}
 class FirebaseNotificationService extends GetxService {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   String? token;
@@ -86,13 +127,13 @@ class FirebaseNotificationService extends GetxService {
 
     // Handle foreground messages
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      debugPrint('Got a message whilst in the foreground!');
-      debugPrint('Message data: ${message.data}');
+     /* debugPrint('Got a message whilst in the foreground!');
+      debugPrint('Message data: ${message.data}');*/
 
       if (message.notification != null) {
-        debugPrint(
+      /*  debugPrint(
           'Message also contained a notification: ${message.notification?.title}',
-        );
+        );*/
         _showNotification(message.notification);
 
         /* // Add the notification to the NotificationController
@@ -135,7 +176,7 @@ class FirebaseNotificationService extends GetxService {
 
   Future<void> _showNotification(RemoteNotification? notification) async {
     if (notification != null) {
-      log("android key =====> ${notification.android?.sound}");
+      // log("android key =====> ${notification.android?.sound}");
        String alert = notification.title != "Out of Area!"? 'message_alert'  : 'danger_alert';
 
         var androidPlatformChannelSpecifics = AndroidNotificationDetails(
@@ -150,11 +191,11 @@ class FirebaseNotificationService extends GetxService {
           // sound: RawResourceAndroidNotificationSound(alert),
         );
 
-      log("ANDROID ===> ${androidPlatformChannelSpecifics.sound?.sound}");
+      // log("ANDROID ===> ${androidPlatformChannelSpecifics.sound?.sound}");
       var platformChannelSpecifics =
           NotificationDetails(android: androidPlatformChannelSpecifics);
 
-      log("ANDROID PLATFORM ===> ${platformChannelSpecifics.android?.sound?.sound}");
+      // log("ANDROID PLATFORM ===> ${platformChannelSpecifics.android?.sound?.sound}");
       await flutterLocalNotificationsPlugin.show(
         DateTime.now().millisecondsSinceEpoch % 2147483647,
         notification.title,
@@ -165,37 +206,7 @@ class FirebaseNotificationService extends GetxService {
     }
   }
 
-   Future<void> _firebaseMessagingBackgroundHandler(
-      RemoteMessage message) async {
-    debugPrint('Handling a background message: ${message.messageId}');
-    log("android key =====> ${message.notification?.android?.sound}");
-    String alert = message.notification?.title != "Out of Area!" ? 'message_alert'  : 'danger_alert';
 
-    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
-      'high_importance_channel',
-      'track_route_pro_channel_name',
-      channelDescription: 'your_channel_description',
-      importance: Importance.max,
-      priority: Priority.high,
-      showWhen: true,
-      icon: "@drawable/ic_notif",
-      playSound: true,
-      // sound: RawResourceAndroidNotificationSound(alert),
-    );
-
-    log("ANDROID ===> ${androidPlatformChannelSpecifics.sound?.sound}");
-    var platformChannelSpecifics =
-    NotificationDetails(android: androidPlatformChannelSpecifics);
-
-    log("ANDROID PLATFORM ===> ${platformChannelSpecifics.android?.sound?.sound}");
-    await flutterLocalNotificationsPlugin.show(
-      DateTime.now().millisecondsSinceEpoch % 2147483647,
-      message.notification?.title,
-      message.notification?.body,
-      platformChannelSpecifics,
-      payload: 'item x',
-    );
-  }
 
 /*
   static Future<void> _firebaseMessagingBackgroundHandler(

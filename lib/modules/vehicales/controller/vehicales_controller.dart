@@ -42,10 +42,10 @@ class VehicalesController extends GetxController {
 
       String address= "${place.street}, ${place.locality}, ${place.postalCode}, ${place.country}";
 
-      log("ADDRESS =====> $address");
+      // log("ADDRESS =====> $address");
       return address;
     } catch (e) {
-      debugPrint("Error " + e.toString());
+      // debugPrint("Error " + e.toString());
       address.value = "Address not available";
       return address.value;
     }
@@ -229,7 +229,7 @@ class VehicalesController extends GetxController {
       }
     } catch (e) {
       networkStatus.value = NetworkStatus.ERROR;
-      print("Error during fetching vehicles: $e");
+      // print("Error during fetching vehicles: $e");
     }
   }
 }

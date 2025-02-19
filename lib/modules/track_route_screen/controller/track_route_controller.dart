@@ -102,7 +102,7 @@ class TrackRouteController extends GetxController {
           "${place.street}, ${place.locality}, ${place.postalCode}, ${place.country}";
       address.refresh();
     } catch (e) {
-      debugPrint("Error " + e.toString());
+      // debugPrint("Error " + e.toString());
       address.value = "Address not available";
     }
   }
@@ -116,7 +116,7 @@ class TrackRouteController extends GetxController {
       Placemark place = placemarks[0];
       return "${place.street}, ${place.locality}";
     } catch (e) {
-      debugPrint("Error LAT LONG ADDRESS" + e.toString());
+      // debugPrint("Error LAT LONG ADDRESS" + e.toString());
       return "Address not available";
     }
   }
@@ -153,7 +153,7 @@ class TrackRouteController extends GetxController {
       ).toBitmapDescriptor();
       return selectedIcon;
     } catch (e) {
-      debugPrint("Error loading SVG: $e");
+      // debugPrint("Error loading SVG: $e");
       return BitmapDescriptor.defaultMarker;
     }
   }
@@ -169,7 +169,7 @@ class TrackRouteController extends GetxController {
       ).toBitmapDescriptor();
       return selectedIcon;
     } catch (e) {
-      debugPrint("Error loading SVG: $e");
+      // debugPrint("Error loading SVG: $e");
       return BitmapDescriptor.defaultMarker;
     }
   }
@@ -275,7 +275,7 @@ class TrackRouteController extends GetxController {
       return await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high);
     } catch (e) {
-      print('Error fetching location: $e');
+      // print('Error fetching location: $e');
       return null;
     }
   }
@@ -342,7 +342,7 @@ class TrackRouteController extends GetxController {
 
   Future<void> loadUser() async {
     String? userId = await AppPreference.getStringFromSF(Constants.userId);
-    print('userid:::::>${userId}');
+    // print('userid:::::>${userId}');
     devicesOwnerID.value = userId ?? '';
   }
 
@@ -541,7 +541,7 @@ class TrackRouteController extends GetxController {
     } catch (e) {
       networkStatus.value = NetworkStatus.ERROR;
 
-      print("Error during OTP verification: $e");
+      // print("Error during OTP verification: $e");
     }
   }
 
@@ -762,7 +762,7 @@ class TrackRouteController extends GetxController {
     } catch (e) {
       networkStatus.value = NetworkStatus.ERROR;
 
-      print("Error during data update: $e");
+      // print("Error during data update: $e");
     }
   }
 
@@ -901,11 +901,11 @@ class TrackRouteController extends GetxController {
 
   void checkFilterIndex(bool updateCamera) async {
     List<Data> vehiclesToDisplay = [];
-    if (isFilterSelectedindex.value == 0) {
+    if (isFilterSelectedindex.value == 2) {
       vehiclesToDisplay = activeVehiclesList;
-    } else if (isFilterSelectedindex.value == 1) {
+    } else if (isFilterSelectedindex.value == 0) {
       vehiclesToDisplay = ignitionOnList;
-    } else if (isFilterSelectedindex.value == 2) {
+    } else if (isFilterSelectedindex.value == 1) {
       vehiclesToDisplay = ignitionOffList;
     } else if (isFilterSelectedindex.value == 3) {
       vehiclesToDisplay = inActiveVehiclesList;

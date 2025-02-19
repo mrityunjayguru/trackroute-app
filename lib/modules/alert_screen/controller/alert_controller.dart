@@ -75,7 +75,7 @@ class AlertController extends GetxController {
 
   Future<void> loadUser() async {
     String? userId = await AppPreference.getStringFromSF(Constants.userId);
-    print('userid:::::>${userId}');
+    // print('userid:::::>${userId}');
     devicesOwnerID.value = userId ?? '';
   }
 
@@ -133,7 +133,7 @@ class AlertController extends GetxController {
           "${place.street}, ${place.locality}, ${place.postalCode}, ${place.country}";
       return address;
     } catch (e) {
-      debugPrint("Error " + e.toString());
+      // debugPrint("Error " + e.toString());
       String address = "Address not available";
       return address;
     }
@@ -290,7 +290,7 @@ class AlertController extends GetxController {
       } catch (e) {
         networkStatus.value = NetworkStatus.ERROR;
 
-        print('Error: $e');
+        // print('Error: $e');
       }
     }
   }

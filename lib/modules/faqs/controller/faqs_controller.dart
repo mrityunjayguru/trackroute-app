@@ -36,7 +36,7 @@ class FaqsController extends GetxController {
         topicsList.sort((a, b) => int.parse(a.priority ?? "0").compareTo(int.parse(b.priority ?? "0")));
       }
     } catch (e) {
-      debugPrint("EXCEPTION $e");
+      // debugPrint("EXCEPTION $e");
       networkStatus.value = NetworkStatus.ERROR;
     }
   }
@@ -55,7 +55,7 @@ class FaqsController extends GetxController {
         faqs.value = faqs.where((p0) => p0.status == "Active",).toList();
       }
     } catch (e) {
-      debugPrint("EXCEPTION $e");
+      // debugPrint("EXCEPTION $e");
       networkStatus.value = NetworkStatus.ERROR;
     }
   }
