@@ -9,7 +9,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.trackRoutePro</string>
+	<string>com.trp.trackRoutePro</string>
 	<key>PROJECT_ID</key>
 	<string>trackroutepro-e12a1</string>
 	<key>STORAGE_BUCKET</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:855209405678:ios:711f212c3a1e3bcef497ff</string>
+	<string>1:855209405678:ios:f6472f6d0a3a9237f497ff</string>
 </dict>
 </plist>
