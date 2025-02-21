@@ -588,7 +588,7 @@ class TrackRouteController extends GetxController {
           driverMobileNo.text = data?.mobileNo ?? '';
           // vehicleBrand.text = data?.vehicleBrand ?? '';
           // vehicleModel.text = data?.vehicleModel ?? '';
-          maxSpeedUpdate.text = (data?.maxSpeed ?? '').toString();
+          maxSpeedUpdate.text = ((data?.maxSpeed ?? 0).toStringAsFixed(0) ?? '').toString();
           latitudeUpdate.text = (data?.location?.latitude ?? '').toString();
           longitudeUpdate.text = (data?.location?.longitude ?? '').toString();
           parkingUpdate.value = data?.parking ?? false;

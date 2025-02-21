@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:855209405678:android:97bc2427df05e237f497ff",
+        "mobilesdk_app_id": "1:855209405678:android:d47874fe0e2582a3f497ff",
         "android_client_info": {
-          "package_name": "com.example.track_route_pro"
+          "package_name": "com.trp.track_route_pro"
         }
       },
       "oauth_client": [],

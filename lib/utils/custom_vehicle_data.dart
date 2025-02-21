@@ -644,11 +644,28 @@ class VehicleDataWidget extends StatelessWidget {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(
-                                        'Max Speed',
-                                        style: AppTextStyles(context)
-                                            .display11W500,
+                                      Text.rich(
+                                        textAlign: TextAlign.start,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        TextSpan(
+                                          children: [
+                                            TextSpan(
+                                              text: 'Max Speed ',
+                                              style: AppTextStyles(context)
+                                                  .display11W500,
+                                            ),
+                                            TextSpan(
+                                              text:
+                                              '@ ${summary?.maxSpeedTime != null ? DateFormat("HH:mm").format(DateTime.parse(summary?.maxSpeedTime ?? "")) : "-"}  ',
+                                              style: AppTextStyles(context)
+                                                  .display11W500,
+                                            ),
+
+                                          ],
+                                        ),
                                       ),
+
                                       FutureBuilder(
                                         future: controller.getCurrAddress(
                                             latitude: summary
@@ -663,12 +680,7 @@ class VehicleDataWidget extends StatelessWidget {
                                             overflow: TextOverflow.ellipsis,
                                             TextSpan(
                                               children: [
-                                                TextSpan(
-                                                  text:
-                                                      '@ ${summary?.maxSpeedTime != null ? DateFormat("HH:mm").format(DateTime.parse(summary?.maxSpeedTime ?? "")) : "-"}  ',
-                                                  style: AppTextStyles(context)
-                                                      .display11W500,
-                                                ),
+
                                                 TextSpan(
                                                   text: '${snapshot.data}\n',
                                                   style: AppTextStyles(context)

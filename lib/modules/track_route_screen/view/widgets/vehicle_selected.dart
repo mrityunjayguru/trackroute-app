@@ -1082,7 +1082,7 @@ class VehicleSelected extends StatelessWidget {
                     Row(
                       children: [
                         Text(
-                          '${controller.deviceDetail.value.data?[0].maxSpeed ?? '-'} ',
+                          '${(controller.deviceDetail.value.data?[0].maxSpeed ?? 0).toStringAsFixed(0) ?? '-'} ',
                           style: AppTextStyles(context).display24W600,
                         ),
                         Text(
@@ -1114,7 +1114,7 @@ class VehicleSelected extends StatelessWidget {
                               textStyle: AppTextStyles(context).display16W500,
                               controller: controller.maxSpeedUpdate,
                               hintText: "Max Speed",
-                              inputFormatters: [Utils.doubleFormatter()],
+                              inputFormatters: [Utils.intFormatter()],
                             ),
                           ),
                           SizedBox(

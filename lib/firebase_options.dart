@@ -26,7 +26,10 @@ class DefaultFirebaseOptions {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        return ios;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for ios - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.macOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for macos - '
@@ -51,19 +54,9 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyBOrSA22lp4GcPhGpxIWzV4SP_aui13mI4',
-    appId: '1:855209405678:android:97bc2427df05e237f497ff',
+    appId: '1:855209405678:android:d47874fe0e2582a3f497ff',
     messagingSenderId: '855209405678',
     projectId: 'trackroutepro-e12a1',
     storageBucket: 'trackroutepro-e12a1.firebasestorage.app',
   );
-
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBWAc_n6Leb79HEg9VWP5m81yaMRchtPXI',
-    appId: '1:855209405678:ios:711f212c3a1e3bcef497ff',
-    messagingSenderId: '855209405678',
-    projectId: 'trackroutepro-e12a1',
-    storageBucket: 'trackroutepro-e12a1.firebasestorage.app',
-    iosBundleId: 'com.example.trackRoutePro',
-  );
-
 }
