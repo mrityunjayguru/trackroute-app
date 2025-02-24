@@ -25,7 +25,7 @@ class Assets {
   static const String fontsSFProTextLight = 'assets/fonts/SF-Pro-Text-Light.ttf';
   static const String fontsSFProTextRegular = 'assets/fonts/SF-Pro-Text-Regular.ttf';
   static const String fontsSFProTextSemibold = 'assets/fonts/SF-Pro-Text-Semibold.ttf';
-  static const String iconAppIcon = 'assets/icon/app-icon.png';
+  static const String iconAppIcon = 'assets/icon/icon.png';
   static const String imagesSvgCarIcon = 'assets/images/svg/car_icon.svg';
   static const String pngBlackMarkerIcon = 'assets/images/png/black_marker_icon.png';
   static const String pngDeactivated = 'assets/images/png/deactivated.png';
