@@ -82,12 +82,12 @@ dev_dependencies:
   retrofit_generator: ^9.1.2
   json_serializable: ^6.8.0
   freezed: ^2.5.7
-  flutter_launcher_icons: ^0.13.1
+#  flutter_launcher_icons: ^0.13.1
   # flutter_gen_runner: ^5.8.0
-flutter_icons:
-#  android: true       # Generate icons for Android
-  ios: true           # Generate icons for iOS
-  image_path: "assets/icon/icon.png"
+#flutter_icons:
+##  android: true       # Generate icons for Android
+##  ios: true           # Generate icons for iOS
+#  image_path: "assets/icon/icon.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
