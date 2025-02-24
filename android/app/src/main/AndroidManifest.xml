@@ -23,7 +23,7 @@
         android:name="${applicationName}"
         android:allowBackup="false"
         android:fullBackupContent="false"
-        android:icon="@mipmap/launcher_icon"
+        android:icon="@mipmap/ic_launcher"
         android:label="Track Route Pro">
         <meta-data android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="high_importance_channel" />
