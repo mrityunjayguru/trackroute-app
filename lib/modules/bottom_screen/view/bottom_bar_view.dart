@@ -52,7 +52,7 @@ class BottomBarView extends StatelessWidget {
       ),
       bottomNavigationBar: Container(
         color: AppColors.black,
-        height: MediaQuery.of(context).size.height < 670 ? 14.h : 12.h, // Increase height for smaller screens
+        height: MediaQuery.of(context).size.height < 670 ? 13.h : 12.h, // Increase height for smaller screens
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [

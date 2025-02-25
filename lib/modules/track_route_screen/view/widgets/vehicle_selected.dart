@@ -728,6 +728,7 @@ class VehicleSelected extends StatelessWidget {
       onTap: () {
         if(active){
           controller.editGeofence.value = true;
+          controller.editSpeed.value = false;
         }
 
       },
@@ -748,6 +749,7 @@ class VehicleSelected extends StatelessWidget {
                 onTap: (){
                   if(active){
                     controller.editGeofence.value = !controller.editGeofence.value;
+                    controller.editSpeed.value = false;
                   }
 
                 },
@@ -808,6 +810,7 @@ class VehicleSelected extends StatelessWidget {
                         activeTrackColor: active? AppColors.black : AppColors.white,
                         onChanged: (value) {
                           if(active){
+                            controller.editSpeed.value = false;
                             controller.geofence.value =
                             !(controller.geofence.value);
                             if (value) {
@@ -1067,6 +1070,7 @@ class VehicleSelected extends StatelessWidget {
                             inactiveTrackColor: AppColors.grayLight,
                             activeTrackColor: AppColors.black,
                             onChanged: (value) {
+                              controller.editGeofence.value = false;
                               controller.speedUpdate.value =
                                   !(controller.speedUpdate.value);
 
