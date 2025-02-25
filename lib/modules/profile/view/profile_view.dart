@@ -244,7 +244,9 @@ class _ProfileViewState extends State<ProfileView> {
                               ),
                             ),
                           ),
-                          Spacer(),
+                          SizedBox(
+                            height: 3.h,
+                          ),
                           Container(
                             // height: 20.h,
                             width: 100.w - (4.w * 0.9),
