@@ -60,283 +60,285 @@ class _ProfileViewState extends State<ProfileView> {
               : Container(
                   color: AppColors.white,
                   child: SafeArea(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Obx(
-                          () => Row(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Obx(
+                            () => Row(
+                              children: [
+                                Image.network(
+                                    width: 25,
+                                    height: 25,
+                                    "${ProjectUrls.imgBaseUrl}${dataController.settings.value.logo}",
+                                    errorBuilder: (context, error, stackTrace) =>
+                                        SvgPicture.asset(
+                                          Assets.images.svg.icIsolationMode,
+                                          color: AppColors.black,
+                                        )).paddingOnly(right: 8),
+                                Text(
+                                  localizations.myProfile,
+                                  style: AppTextStyles(context).display20W500,
+                                ),
+                                Spacer(),
+                                Text(
+                                  "Crafted By DesignDemonz",
+                                  style: AppTextStyles(context)
+                                      .display10W400
+                                      .copyWith(color: AppColors.grayLight),
+                                ),
+                              ],
+                            ).paddingOnly(top: 12),
+                          ),
+                          SizedBox(height: 20),
+                          Container(
+                            padding:
+                                EdgeInsets.symmetric(horizontal: 7, vertical: 12),
+                            decoration: BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.circular(AppSizes.radius_10),
+                              color: AppColors.color_f6f8fc,
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(6),
+                                  decoration: BoxDecoration(
+                                      color: AppColors.color_e5e7e9,
+                                      shape: BoxShape.circle),
+                                  child: SvgPicture.asset(
+                                          "assets/images/svg/user_icon.svg")
+                                      .paddingSymmetric(horizontal: 5),
+                                ).paddingOnly(right: 5),
+                                Text(
+                                  '${controller.name.value ?? ''}',
+                                  style: AppTextStyles(context).display18W500,
+                                ),
+                              ],
+                            ),
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Image.network(
-                                  width: 25,
-                                  height: 25,
-                                  "${ProjectUrls.imgBaseUrl}${dataController.settings.value.logo}",
-                                  errorBuilder: (context, error, stackTrace) =>
-                                      SvgPicture.asset(
-                                        Assets.images.svg.icIsolationMode,
-                                        color: AppColors.black,
-                                      )).paddingOnly(right: 8),
                               Text(
-                                localizations.myProfile,
-                                style: AppTextStyles(context).display20W500,
-                              ),
-                              Spacer(),
-                              Text(
-                                "Crafted By DesignDemonz",
+                                'Registered Email ID',
                                 style: AppTextStyles(context)
-                                    .display10W400
+                                    .display14W400
                                     .copyWith(color: AppColors.grayLight),
                               ),
-                            ],
-                          ).paddingOnly(top: 12),
-                        ),
-                        SizedBox(height: 20),
-                        Container(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 7, vertical: 12),
-                          decoration: BoxDecoration(
-                            borderRadius:
-                                BorderRadius.circular(AppSizes.radius_10),
-                            color: AppColors.color_f6f8fc,
-                          ),
-                          child: Row(
-                            children: [
-                              Container(
-                                padding: EdgeInsets.all(6),
-                                decoration: BoxDecoration(
-                                    color: AppColors.color_e5e7e9,
-                                    shape: BoxShape.circle),
-                                child: SvgPicture.asset(
-                                        "assets/images/svg/user_icon.svg")
-                                    .paddingSymmetric(horizontal: 5),
-                              ).paddingOnly(right: 5),
                               Text(
-                                '${controller.name.value ?? ''}',
-                                style: AppTextStyles(context).display18W500,
+                                '${controller.email.value ?? ""}',
+                                style: AppTextStyles(context).display18W600,
                               ),
-                            ],
-                          ),
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Registered Email ID',
-                              style: AppTextStyles(context)
-                                  .display14W400
-                                  .copyWith(color: AppColors.grayLight),
-                            ),
-                            Text(
-                              '${controller.email.value ?? ""}',
-                              style: AppTextStyles(context).display18W600,
-                            ),
-                            SizedBox(
-                              height: 1.5.h,
-                            ),
-                            Text(
-                              'Registered Phone',
-                              style: AppTextStyles(context)
-                                  .display14W400
-                                  .copyWith(color: AppColors.grayLight),
-                            ),
-                            Text(
-                              '${controller.phone.value}',
-                              style: AppTextStyles(context).display18W600,
-                            ),
-                          ],
-                        ).paddingSymmetric(vertical: 2.h, horizontal: 5),
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius:
-                                BorderRadius.circular(AppSizes.radius_10),
-                            color: AppColors.color_f6f8fc,
-                          ),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                  child: Container(
-                                      padding:
-                                          EdgeInsets.symmetric(horizontal: 7),
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(
-                                            AppSizes.radius_10),
-                                        color: AppColors.color_f6f8fc,
-                                      ),
-                                      child: Text.rich(
-                                        textAlign: TextAlign.start,
-                                        TextSpan(
-                                          children: [
-                                            TextSpan(
-                                              text: 'Password\n',
-                                              style: AppTextStyles(context).display14W400.copyWith(color: AppColors.grayLight)
-                                            ),
-                                            TextSpan(
-                                              text: '*' *
-                                                  controller.password.value,
-                                              style: AppTextStyles(context)
-                                                  .display14W600
-                                                  .copyWith(
-                                                      color:
-                                                          AppColors.blueColor),
-                                            ),
-                                          ],
-                                        ),
-                                      )).paddingOnly(left: 7)),
                               SizedBox(
-                                width: 12,
+                                height: 1.5.h,
                               ),
-                              Expanded(
-                                child: InkWell(
-                                  onTap: () => Get.to(
-                                      () => ForgotView(
-                                            fromLogin: false,
-                                          ),
-                                      transition: Transition.upToDown,
-                                      duration:
-                                          const Duration(milliseconds: 300)),
-                                  child: Container(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 7, vertical: 15),
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(
-                                            AppSizes.radius_10),
-                                        color: AppColors.black,
-                                      ),
-                                      child: Center(
-                                        child: Text(
-                                          "Reset Password",
-                                          style: AppTextStyles(context)
-                                              .display16W500
-                                              .copyWith(
-                                                  color: AppColors
-                                                      .selextedindexcolor),
-                                        ),
-                                      )),
-                                ),
+                              Text(
+                                'Registered Phone',
+                                style: AppTextStyles(context)
+                                    .display14W400
+                                    .copyWith(color: AppColors.grayLight),
+                              ),
+                              Text(
+                                '${controller.phone.value}',
+                                style: AppTextStyles(context).display18W600,
                               ),
                             ],
-                          ),
-                        ).paddingOnly(top: 5, bottom: 15),
-                        SizedBox(
-                          height: 3.h,
-                        ),
-                        InkWell(
-                          onTap: () {
-                            controller.checkForRenewal();
-                            controller.isReNewSub.value = true;
-                            controller.selectedVehicleIndex.value = {};
-                          },
-                          child: Container(
-                            padding: EdgeInsets.symmetric(vertical: 16),
-                            width: context.width,
+                          ).paddingSymmetric(vertical: 2.h, horizontal: 5),
+                          Container(
                             decoration: BoxDecoration(
-                                borderRadius:
-                                    BorderRadius.circular(AppSizes.radius_10),
-                                color: AppColors.black),
-                            child: Center(
-                              child: Text(
-                                'Extend / Renew Subscription',
-                                style: AppTextStyles(context)
-                                    .display18W500
-                                    .copyWith(
-                                        color: AppColors.selextedindexcolor),
+                              borderRadius:
+                                  BorderRadius.circular(AppSizes.radius_10),
+                              color: AppColors.color_f6f8fc,
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                    child: Container(
+                                        padding:
+                                            EdgeInsets.symmetric(horizontal: 7),
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(
+                                              AppSizes.radius_10),
+                                          color: AppColors.color_f6f8fc,
+                                        ),
+                                        child: Text.rich(
+                                          textAlign: TextAlign.start,
+                                          TextSpan(
+                                            children: [
+                                              TextSpan(
+                                                text: 'Password\n',
+                                                style: AppTextStyles(context).display14W400.copyWith(color: AppColors.grayLight)
+                                              ),
+                                              TextSpan(
+                                                text: '*' *
+                                                    controller.password.value,
+                                                style: AppTextStyles(context)
+                                                    .display14W600
+                                                    .copyWith(
+                                                        color:
+                                                            AppColors.blueColor),
+                                              ),
+                                            ],
+                                          ),
+                                        )).paddingOnly(left: 7)),
+                                SizedBox(
+                                  width: 12,
+                                ),
+                                Expanded(
+                                  child: InkWell(
+                                    onTap: () => Get.to(
+                                        () => ForgotView(
+                                              fromLogin: false,
+                                            ),
+                                        transition: Transition.upToDown,
+                                        duration:
+                                            const Duration(milliseconds: 300)),
+                                    child: Container(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 7, vertical: 15),
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(
+                                              AppSizes.radius_10),
+                                          color: AppColors.black,
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            "Reset Password",
+                                            style: AppTextStyles(context)
+                                                .display16W500
+                                                .copyWith(
+                                                    color: AppColors
+                                                        .selextedindexcolor),
+                                          ),
+                                        )),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ).paddingOnly(top: 5, bottom: 15),
+                          SizedBox(
+                            height: 3.h,
+                          ),
+                          InkWell(
+                            onTap: () {
+                              controller.checkForRenewal();
+                              controller.isReNewSub.value = true;
+                              controller.selectedVehicleIndex.value = {};
+                            },
+                            child: Container(
+                              padding: EdgeInsets.symmetric(vertical: 16),
+                              width: context.width,
+                              decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.circular(AppSizes.radius_10),
+                                  color: AppColors.black),
+                              child: Center(
+                                child: Text(
+                                  'Extend / Renew Subscription',
+                                  style: AppTextStyles(context)
+                                      .display18W500
+                                      .copyWith(
+                                          color: AppColors.selextedindexcolor),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        Spacer(),
-                        Container(
-                          // height: 20.h,
-                          width: 100.w - (4.w * 0.9),
-                          decoration: BoxDecoration(
-                            boxShadow: [
-                              BoxShadow(
-                                  color: Color(0xff00000026).withOpacity(0.15),
-                                  blurRadius: 2,
-                                  spreadRadius: 0,
-                                  offset: Offset(0, 2))
-                            ],
-                            color: AppColors.black,
-                            borderRadius:
-                                BorderRadius.circular(AppSizes.radius_10),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Align(
-                                alignment: Alignment.centerLeft,
-                                child: CachedNetworkImage(
-                                  height: 40,
-                                  width: 150,
-                                  progressIndicatorBuilder:
-                                      (context, url, progress) => Center(
-                                    child: CircularProgressIndicator(
-                                      value: progress.progress,
+                          Spacer(),
+                          Container(
+                            // height: 20.h,
+                            width: 100.w - (4.w * 0.9),
+                            decoration: BoxDecoration(
+                              boxShadow: [
+                                BoxShadow(
+                                    color: Color(0xff00000026).withOpacity(0.15),
+                                    blurRadius: 2,
+                                    spreadRadius: 0,
+                                    offset: Offset(0, 2))
+                              ],
+                              color: AppColors.black,
+                              borderRadius:
+                                  BorderRadius.circular(AppSizes.radius_10),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: CachedNetworkImage(
+                                    height: 40,
+                                    width: 150,
+                                    progressIndicatorBuilder:
+                                        (context, url, progress) => Center(
+                                      child: CircularProgressIndicator(
+                                        value: progress.progress,
+                                      ),
                                     ),
-                                  ),
-                                  errorWidget: (context, url, error) =>
-                                      SvgPicture.asset(
-                                    "assets/images/svg/tarck_route_pro.svg",
-                                  ),
-                                  imageUrl:
-                                      "${ProjectUrls.imgBaseUrl}${dataController.settings.value.appLogo}",
-                                ).paddingOnly(left: 6, right: 8),
-                              ),
-                              SizedBox(
-                                height: 2.h,
-                              ),
-                              Text(
-                                'Explore our wide range of GPS trackers!',
-                                style: AppTextStyles(context)
-                                    .display15W400
-                                    .copyWith(color: AppColors.whiteOff),
-                              ),
-                              SizedBox(
-                                height: 2.h,
-                              ),
-                              InkWell(
-                                onTap: () async {
-                                  final url =
-                                      '${dataController.settings.value.catalogueLink ?? ''}';
-                                  Utils.launchLink(url);
-                                },
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(
-                                        AppSizes.radius_50),
-                                    color: AppColors.selextedindexcolor,
-                                  ),
-                                  child: Text(
-                                    'Product Catalogue',
-                                    style: AppTextStyles(context).display14W400,
-                                  ).paddingSymmetric(
-                                      horizontal: 7.w, vertical: 1.4.h),
+                                    errorWidget: (context, url, error) =>
+                                        SvgPicture.asset(
+                                      "assets/images/svg/tarck_route_pro.svg",
+                                    ),
+                                    imageUrl:
+                                        "${ProjectUrls.imgBaseUrl}${dataController.settings.value.appLogo}",
+                                  ).paddingOnly(left: 6, right: 8),
                                 ),
-                              ),
-                              SizedBox(
-                                height: 2.h,
-                              ),
-                              InkWell(
-                                onTap: () {
-                                  final url =
-                                      '${dataController.settings.value.websiteLink ?? ''}';
-                                  log("$url");
-                                  Utils.launchLink(url);
-                                },
-                                child: Text(
-                                    '${dataController.settings.value.websiteLabel ?? ''}',
-                                    style: AppTextStyles(context)
-                                        .display15W400
-                                        .copyWith(color: AppColors.whiteOff)),
-                              ),
-                            ],
-                          ).paddingSymmetric(horizontal: 20, vertical: 13),
-                        ),
-                        SizedBox(
-                          height: 3.h,
-                        )
-                      ],
-                    ).paddingSymmetric(horizontal: 4.w * 0.9),
+                                SizedBox(
+                                  height: 2.h,
+                                ),
+                                Text(
+                                  'Explore our wide range of GPS trackers!',
+                                  style: AppTextStyles(context)
+                                      .display15W400
+                                      .copyWith(color: AppColors.whiteOff),
+                                ),
+                                SizedBox(
+                                  height: 2.h,
+                                ),
+                                InkWell(
+                                  onTap: () async {
+                                    final url =
+                                        '${dataController.settings.value.catalogueLink ?? ''}';
+                                    Utils.launchLink(url);
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(
+                                          AppSizes.radius_50),
+                                      color: AppColors.selextedindexcolor,
+                                    ),
+                                    child: Text(
+                                      'Product Catalogue',
+                                      style: AppTextStyles(context).display14W400,
+                                    ).paddingSymmetric(
+                                        horizontal: 7.w, vertical: 1.4.h),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 2.h,
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    final url =
+                                        '${dataController.settings.value.websiteLink ?? ''}';
+                                    log("$url");
+                                    Utils.launchLink(url);
+                                  },
+                                  child: Text(
+                                      '${dataController.settings.value.websiteLabel ?? ''}',
+                                      style: AppTextStyles(context)
+                                          .display15W400
+                                          .copyWith(color: AppColors.whiteOff)),
+                                ),
+                              ],
+                            ).paddingSymmetric(horizontal: 20, vertical: 13),
+                          ),
+                          SizedBox(
+                            height: 3.h,
+                          )
+                        ],
+                      ).paddingSymmetric(horizontal: 4.w * 0.9),
+                    ),
                   ),
                 ));
     });
