@@ -98,7 +98,7 @@ class Utils{
       behavior: HitTestBehavior.deferToChild,
       onTap: onTap,
       child: Container(
-        height: 6.h,
+        height: MediaQuery.of(context).size.height < 670 ? 7.h : 6.h, // Increase height for smaller screens
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(AppSizes.radius_50),
           color: AppColors.black,
