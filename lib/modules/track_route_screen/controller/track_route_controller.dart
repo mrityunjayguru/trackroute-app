@@ -80,7 +80,7 @@ class TrackRouteController extends GetxController {
 
     loadUser().then(
       (value) {
-        devicesByOwnerID(true);
+        devicesByOwnerID(false);
       },
     );
 

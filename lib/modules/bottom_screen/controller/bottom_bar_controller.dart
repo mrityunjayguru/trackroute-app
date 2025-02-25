@@ -30,7 +30,7 @@ class BottomBarController extends GetxController {
       controller.showAllVehicles();
       if(controller.vehicleList.value.data?.isEmpty ?? false){
         controller.markers.value = [];
-        controller.devicesByOwnerID(true);
+        controller.devicesByOwnerID(false);
       }
 
     }
