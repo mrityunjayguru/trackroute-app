@@ -499,7 +499,7 @@ class VehicleDataWidget extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Container(
-                              height: 6.h,
+                              // height: 6.h,
                               // constraints: BoxConstraints(maxHeight: 9.h),
                               padding: EdgeInsets.symmetric(
                                   vertical: 6, horizontal: 10),

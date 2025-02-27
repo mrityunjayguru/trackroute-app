@@ -498,7 +498,7 @@ class TrackRouteController extends GetxController {
                 markers.add(m);
               }
             }
-            if (updateCamera &&
+          /*  if (updateCamera &&
                 allVehiclesRes.isNotEmpty &&
                 allVehiclesRes[0].trackingData?.location?.latitude != null &&
                 allVehiclesRes[0].trackingData?.location?.longitude != null) {
@@ -507,7 +507,7 @@ class TrackRouteController extends GetxController {
                       allVehiclesRes[0].trackingData?.location?.latitude ?? 0,
                   longitude:
                       allVehiclesRes[0].trackingData?.location?.longitude ?? 0);
-            }
+            }*/
           } else if (isFilterSelected.value) {
             checkFilterIndex(false);
           } else if (isShowvehicleDetail.value &&
