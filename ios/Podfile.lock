@@ -106,6 +106,7 @@ DEPENDENCIES:
   - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
   - geocoding_ios (from `.symlinks/plugins/geocoding_ios/ios`)
   - geolocator_apple (from `.symlinks/plugins/geolocator_apple/ios`)
+  - Google-Maps-iOS-Utils (= 6.1)
   - google_maps_flutter_ios (from `.symlinks/plugins/google_maps_flutter_ios/ios`)
   - GoogleMaps (= 9.2.0)
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
@@ -186,6 +187,6 @@ SPEC CHECKSUMS:
   sqflite_darwin: 44bb54cc302bff1fbe5752293aba1820b157cf1c
   url_launcher_ios: 694010445543906933d732453a59da0a173ae33d
 
-PODFILE CHECKSUM: 9bb2664233039b1342a91026316fe276624b3f82
+PODFILE CHECKSUM: 9f0b451c9bc88fc509dc1a25d7f8099192bcbdab
 
 COCOAPODS: 1.16.2
