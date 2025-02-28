@@ -40,6 +40,7 @@ class MapViewTrackRoute extends StatelessWidget {
           ),
           CustomInfoWindow(
             controller: controller.customInfoWindowController,
+            offset: 200,
             width: 200,
             height: 60,
           ),
