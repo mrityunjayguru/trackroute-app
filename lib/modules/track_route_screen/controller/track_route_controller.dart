@@ -886,7 +886,7 @@ class TrackRouteController extends GetxController {
           snippet: 'IMEI: ${imei}',
         ) : InfoWindow.noText,
         icon: markerIcon,
-        onTap: () => _onMarkerTapped(-1, imei, vehicleNo ?? "",lat: lat, long: long));
+        onTap: () => _onMarkerTapped(-1, imei, vehicleNo ?? "-",lat: lat, long: long));
     return marker;
   }
 
