@@ -38,8 +38,6 @@ class TrackRouteController extends GetxController {
   Rx<TrackRouteVehicleList> vehicleList = Rx(TrackRouteVehicleList());
   RxList<FilterData> filterData = RxList([]);
   var markers = <Marker>[].obs;
-  CustomInfoWindowController customInfoWindowController =
-      CustomInfoWindowController();
 
   // New Rx lists for filtered results
   RxList<Data> ignitionOnList = <Data>[].obs;

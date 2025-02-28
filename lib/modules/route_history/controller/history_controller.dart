@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 import 'package:custom_info_window/custom_info_window.dart';
@@ -21,12 +22,13 @@ import '../../../service/model/time_model.dart';
 import '../../track_route_screen/controller/track_route_controller.dart';
 
 class HistoryController extends GetxController {
-  CustomInfoWindowController customInfoWindowController =
-  CustomInfoWindowController();
+  final GlobalKey markerKey = GlobalKey();
   RxString address = ''.obs;
   RxString name = ''.obs;
   RxString updateDate = ''.obs;
   RxString imei = ''.obs;
+  RxString selectedTime = ''.obs;
+  RxString selectedSpeed = ''.obs;
   RxBool showMap = false.obs;
   RxBool showLoader = false.obs;
   TextEditingController dateController = TextEditingController();
@@ -54,8 +56,7 @@ class HistoryController extends GetxController {
       for (int minute = 0; minute < 60; minute += 30) {
         // Adjust interval as needed
         String formattedTime =
-            '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(
-            2, '0')}';
+            '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
         timeList.add(TimeOption(formattedTime));
       }
     }
@@ -79,6 +80,8 @@ class HistoryController extends GetxController {
   }
 
   Future<void> getRouteHistory() async {
+    selectedTime.value = "";
+    selectedSpeed.value = "";
     pendingUpdateMap = null;
     pendingUpdate = null;
     if (dateController.text.isEmpty)
@@ -119,10 +122,9 @@ class HistoryController extends GetxController {
           vehicleList = response.data;
           vehicleList = vehicleList
               .where((item) =>
-          item.trackingData?.location?.latitude != null &&
-              item.trackingData?.location?.longitude != null)
+                  item.trackingData?.location?.latitude != null &&
+                  item.trackingData?.location?.longitude != null)
               .toList();
-
 
           vehicleList.sort((a, b) {
             // Assuming trackingData has a timestamp field that you want to compare
@@ -131,7 +133,7 @@ class HistoryController extends GetxController {
               return 0;
             }
             return a.trackingData?.createdAt
-                ?.compareTo(b.trackingData?.createdAt ?? "") ??
+                    ?.compareTo(b.trackingData?.createdAt ?? "") ??
                 0;
           });
 
@@ -165,7 +167,7 @@ class HistoryController extends GetxController {
             }
             processedData = processList(processedData);
 
-            // await showMapData(processedData);
+            await showMapData(processedData);
             showLoader.value = false;
 
             /* if (vehicleList[0].trackingData?.location?.latitude != null &&
@@ -238,7 +240,7 @@ class HistoryController extends GetxController {
 
       for (int i = 0; i < data.length; i++) {
         print("DATA ${data[i].dateFiled.toString()}");
-        if (i < 25 || i % 3 == 0 || i>data.length-11) {
+        if (i < 25 || i % 3 == 0 || i > data.length - 11) {
           // Keep first 25 as they are, then 1 in every 3
           processedData.add(data[i]);
         }
@@ -259,20 +261,20 @@ class HistoryController extends GetxController {
       if (data[i].trackingData?.location?.latitude != null &&
           data[i].trackingData?.location?.longitude != null) {
         String time = "";
-        if (data[i].dateFiled!=null) {
+        if (data[i].dateFiled != null) {
           /*DateTime timestamp =
           DateTime.parse(data[i].trackingData?.createdAt ?? ""); // Assuming dateFiled is a valid timestamp string
           time = DateFormat('HH:mm:ss').format(timestamp);*/
 
-          time  = data[i].dateFiled?.split(" ")[1] ?? "N?A";
+          time = data[i].dateFiled?.split(" ")[1] ?? "N?A";
         }
         bool isOverSpeed = (data[i].trackingData?.currentSpeed != null ||
-            (controller.deviceDetail.value.data?.isNotEmpty ?? false) ||
-            controller.deviceDetail.value.data?[0].maxSpeed != null)
+                (controller.deviceDetail.value.data?.isNotEmpty ?? false) ||
+                controller.deviceDetail.value.data?[0].maxSpeed != null)
             ? ((data[i].trackingData?.currentSpeed ?? 0) >
-            (controller.deviceDetail.value.data?[0].maxSpeed ?? 0))
+                (controller.deviceDetail.value.data?[0].maxSpeed ?? 0))
             : false;
-        if(isOverSpeed){
+        if (isOverSpeed) {
           overSpeedIndex.add(i);
         }
         Marker m = await createMarker(
@@ -320,15 +322,14 @@ class HistoryController extends GetxController {
     return maxSpeedIndex;
   }
 
-  Future<String> getAddressFromLatLong(double latitude,
-      double longitude) async {
+  Future<String> getAddressFromLatLong(
+      double latitude, double longitude) async {
     try {
       List<Placemark> placemarks =
-      await placemarkFromCoordinates(latitude, longitude);
+          await placemarkFromCoordinates(latitude, longitude);
       Placemark place = placemarks[0];
 
-      return "${place.street}, ${place.locality}, ${place.subLocality}, ${place
-          .country}";
+      return "${place.street}, ${place.locality}, ${place.subLocality}, ${place.country}";
     } catch (e) {
       // debugPrint("Error " + e.toString());
       return "Address not available";
@@ -336,8 +337,6 @@ class HistoryController extends GetxController {
   }
 
   void onMapCreated(GoogleMapController controller) {
-    customInfoWindowController.googleMapController =
-        controller;
     mapController = controller;
     isMapControllerInitialized = true;
 
@@ -369,45 +368,59 @@ class HistoryController extends GetxController {
     }
   }
 
-  Future<Marker> createMarker({double? lat,
-    double? long,
-    double? speed,
-    String? time,
-    required bool maxSpeed,
-    required String imei,
-    required int index}) async {
+  Future<Marker> createMarker(
+      {double? lat,
+      double? long,
+      double? speed,
+      String? time,
+      required bool maxSpeed,
+      required String imei,
+      required int index}) async {
     // BitmapDescriptor markerIcon = await createMarkerIconFromAssets();
     BitmapDescriptor markerIcon = await createCustomIconWithNumber(index,
         width: 100, height: 100, isselected: false, maxSpeed: maxSpeed);
 
     final markerId = "$imei$lat$long$time";
     final marker = Marker(
-      // rotation: 90,
+        // rotation: 90,
         markerId: MarkerId(markerId),
         position: LatLng(
           lat ?? 0,
           long ?? 0,
         ),
-        infoWindow: InfoWindow(
+        infoWindow: Platform.isAndroid ?  InfoWindow(
           title: 'Time: $time',
           snippet:
-          '${maxSpeed ? "Max " : ""}Speed: ${speed?.toStringAsFixed(2) ??
-              "N/A"} KMPH',
-        ),
+              '${maxSpeed ? "Max " : ""}Speed: ${speed?.toStringAsFixed(2) ?? "N/A"} KMPH',
+        ) : InfoWindow.noText,
         icon: markerIcon,
         // icon: await createCustomMarker('$index'),
-        onTap: () => _onMarkerTapped(index, maxSpeed, lat: lat, long: long, time: time ?? "", speed : '${maxSpeed ? "Max " : ""}Speed: ${speed?.toStringAsFixed(2) ??
-            "N/A"} KMPH'));
+        onTap: () => _onMarkerTapped(index, maxSpeed,
+            lat: lat,
+            long: long,
+            time: time ?? "",
+            speed:
+                '${maxSpeed ? "Max " : ""}Speed: ${speed?.toStringAsFixed(2) ?? "N/A"} KMPH'));
     return marker;
   }
 
-  void _onMarkerTapped(int index, bool maxSpeed,{double? lat, double? long, required String time, required String speed}) async {
+  void _onMarkerTapped(int index, bool maxSpeed,
+      {double? lat,
+      double? long,
+      required String time,
+      required String speed}) async {
+    if(Platform.isIOS){
+      selectedTime.value = time;
+      selectedSpeed.value = speed;
+      markers.removeWhere(
+            (element) => element.markerId.value.contains("INFOWINDOWMARKER"),
+      );
+      addCustomMarker(LatLng(lat ?? 0, long ?? 0), time, speed);
+    }
     BitmapDescriptor markerIcon = await createCustomIconWithNumber(index,
         isselected: true, width: 100, height: 100, maxSpeed: maxSpeed);
     markers[index - 1] = markers[index - 1].copyWith(iconParam: markerIcon);
-    LatLng tappedMarkerPosition = markers[index - 1].position;
-    // updateCameraPosition(tappedMarkerPosition.latitude, tappedMarkerPosition.longitude, zoom: 19);
-     for (int i = 0; i < markers.length; i++) {
+    for (int i = 0; i < markers.length; i++) {
       if (i != index - 1) {
         BitmapDescriptor markerIconFalse = await createCustomIconWithNumber(
             i + 1,
@@ -418,10 +431,35 @@ class HistoryController extends GetxController {
         markers[i] = markers[i].copyWith(iconParam: markerIconFalse);
       }
     }
-
-
-
   }
+
+  Future<void> addCustomMarker(
+      LatLng position, String text1, String text2) async {
+    Uint8List? markerIcon = await _captureMarkerWidget();
+
+    if (markerIcon != null) {
+      final marker = Marker(
+        markerId: MarkerId("INFOWINDOWMARKER$text1$text2"),
+        position: position,
+        icon: BitmapDescriptor.fromBytes(markerIcon),
+      );
+
+      markers.add(marker);
+    }
+  }
+
+  Future<Uint8List?> _captureMarkerWidget() async {
+    RenderRepaintBoundary? boundary =
+        markerKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
+    if (boundary != null) {
+      ui.Image image = await boundary.toImage(pixelRatio: 2.0);
+      ByteData? byteData =
+          await image.toByteData(format: ui.ImageByteFormat.png);
+      return byteData?.buffer.asUint8List();
+    }
+    return null;
+  }
+
   Future<Marker> createMarkerFromNet({
     double? lat,
     double? long,
@@ -431,7 +469,7 @@ class HistoryController extends GetxController {
     required String imei,
   }) async {
     BitmapDescriptor markerIcon =
-    await createMarkerIcon('${ProjectUrls.imgBaseUrl}$img');
+        await createMarkerIcon('${ProjectUrls.imgBaseUrl}$img');
     final markerId = "${ProjectUrls.imgBaseUrl}$img";
     // String address = await getAddressFromLatLong(lat ?? 0, long ?? 0);
     final marker = Marker(
@@ -440,10 +478,10 @@ class HistoryController extends GetxController {
         lat ?? 0,
         long ?? 0,
       ),
-      infoWindow: InfoWindow(
+      infoWindow: Platform.isAndroid ? InfoWindow(
         title: 'Time: $time',
         snippet: 'Speed: $speed',
-      ),
+      ) : InfoWindow.noText,
       icon: markerIcon,
     );
     return marker;
@@ -453,7 +491,7 @@ class HistoryController extends GetxController {
       {int width = 100, int height = 100}) async {
     // Load image from network
     final ByteData data =
-    await NetworkAssetBundle(Uri.parse(indexedImage)).load("");
+        await NetworkAssetBundle(Uri.parse(indexedImage)).load("");
     final Uint8List bytes = data.buffer.asUint8List();
 
     // Decode the image to get its original size
@@ -466,7 +504,7 @@ class HistoryController extends GetxController {
 
     // Convert the resized image to bytes
     final ByteData? resizedData =
-    await frameInfo.image.toByteData(format: ui.ImageByteFormat.png);
+        await frameInfo.image.toByteData(format: ui.ImageByteFormat.png);
     final Uint8List resizedBytes = resizedData!.buffer.asUint8List();
 
     return BitmapDescriptor.fromBytes(resizedBytes);
@@ -475,7 +513,7 @@ class HistoryController extends GetxController {
   Future<BitmapDescriptor> createMarkerIconFromAssets(
       {int width = 35, int height = 35}) async {
     final ByteData data =
-    await rootBundle.load("assets/images/png/selected_marker.png");
+        await rootBundle.load("assets/images/png/selected_marker.png");
     final Uint8List bytes = data.buffer.asUint8List();
 
     // Decode the image to get its original size and resize it
@@ -488,7 +526,7 @@ class HistoryController extends GetxController {
 
     // Convert the resized image to bytes
     final ByteData? resizedData =
-    await frameInfo.image.toByteData(format: ui.ImageByteFormat.png);
+        await frameInfo.image.toByteData(format: ui.ImageByteFormat.png);
     final Uint8List resizedBytes = resizedData!.buffer.asUint8List();
 
     // Create and return BitmapDescriptor
@@ -497,22 +535,22 @@ class HistoryController extends GetxController {
 
   Future<BitmapDescriptor> createCustomIconWithNumber(int number,
       {required int width,
-        required int height,
-        required bool isselected,
-        required bool maxSpeed}) async {
+      required int height,
+      required bool isselected,
+      required bool maxSpeed}) async {
     ByteData data = await rootBundle.load(maxSpeed
         ? "assets/images/png/black_marker_icon.png"
         : (isselected
-        ? "assets/images/png/selected_marker.png"
-        : "assets/images/png/unselected_marker.png"));
+            ? "assets/images/png/selected_marker.png"
+            : "assets/images/png/unselected_marker.png"));
 
     ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
         targetWidth: width, targetHeight: height);
     ui.FrameInfo fi = await codec.getNextFrame();
     final Uint8List imageData =
-    (await fi.image.toByteData(format: ui.ImageByteFormat.png))!
-        .buffer
-        .asUint8List();
+        (await fi.image.toByteData(format: ui.ImageByteFormat.png))!
+            .buffer
+            .asUint8List();
 
     // Prepare the canvas for drawing
     final ui.PictureRecorder pictureRecorder = ui.PictureRecorder();
@@ -529,12 +567,8 @@ class HistoryController extends GetxController {
     textPainter.text = TextSpan(
       text: '$number',
       style: TextStyle(
-          fontSize: number
-              .toString()
-              .length > 2
-              ? ((number
-              .toString()
-              .length > 4) ? width * 0.2 : width * 0.3)
+          fontSize: number.toString().length > 2
+              ? ((number.toString().length > 4) ? width * 0.2 : width * 0.3)
               : width * 0.4,
           color: isselected || maxSpeed ? Colors.white : Colors.red,
           fontWeight: FontWeight.bold),
@@ -547,9 +581,9 @@ class HistoryController extends GetxController {
 
     // Convert that masterpiece into an image
     final ui.Image markerAsImage =
-    await pictureRecorder.endRecording().toImage(width, height);
+        await pictureRecorder.endRecording().toImage(width, height);
     final ByteData? byteData =
-    await markerAsImage.toByteData(format: ui.ImageByteFormat.png);
+        await markerAsImage.toByteData(format: ui.ImageByteFormat.png);
     return BitmapDescriptor.fromBytes(byteData!.buffer.asUint8List());
   }
 
