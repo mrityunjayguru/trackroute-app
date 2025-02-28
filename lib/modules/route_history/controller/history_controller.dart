@@ -122,6 +122,8 @@ class HistoryController extends GetxController {
           item.trackingData?.location?.latitude != null &&
               item.trackingData?.location?.longitude != null)
               .toList();
+
+
           vehicleList.sort((a, b) {
             // Assuming trackingData has a timestamp field that you want to compare
             if (a.trackingData?.createdAt == null ||
@@ -132,6 +134,7 @@ class HistoryController extends GetxController {
                 ?.compareTo(b.trackingData?.createdAt ?? "") ??
                 0;
           });
+
           if (vehicleList.isNotEmpty) {
             showMap.value = true;
             markers.value = [];
@@ -162,7 +165,7 @@ class HistoryController extends GetxController {
             }
             processedData = processList(processedData);
 
-            await showMapData(processedData);
+            // await showMapData(processedData);
             showLoader.value = false;
 
             /* if (vehicleList[0].trackingData?.location?.latitude != null &&
@@ -232,8 +235,10 @@ class HistoryController extends GetxController {
       }
     } else {
       // If list length is greater than 125, show 1 in every 3 data
+
       for (int i = 0; i < data.length; i++) {
-        if (i < 25 || i % 3 == 0) {
+        print("DATA ${data[i].dateFiled.toString()}");
+        if (i < 25 || i % 3 == 0 || i>data.length-11) {
           // Keep first 25 as they are, then 1 in every 3
           processedData.add(data[i]);
         }
@@ -254,11 +259,12 @@ class HistoryController extends GetxController {
       if (data[i].trackingData?.location?.latitude != null &&
           data[i].trackingData?.location?.longitude != null) {
         String time = "";
-        if (data[i].trackingData?.createdAt?.isNotEmpty ?? false) {
-          DateTime timestamp =
-          DateTime.parse(data[i].trackingData?.createdAt ?? "")
-              .toLocal(); // Assuming dateFiled is a valid timestamp string
-          time = DateFormat('HH:mm:ss').format(timestamp);
+        if (data[i].dateFiled!=null) {
+          /*DateTime timestamp =
+          DateTime.parse(data[i].trackingData?.createdAt ?? ""); // Assuming dateFiled is a valid timestamp string
+          time = DateFormat('HH:mm:ss').format(timestamp);*/
+
+          time  = data[i].dateFiled?.split(" ")[1] ?? "N?A";
         }
         bool isOverSpeed = (data[i].trackingData?.currentSpeed != null ||
             (controller.deviceDetail.value.data?.isNotEmpty ?? false) ||
