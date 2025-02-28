@@ -340,7 +340,7 @@ class TrackRouteController extends GetxController {
     if(Platform.isIOS){
         customInfoWindowController.addInfoWindow!(
           _buildCustomInfoWindow(vehicleNo, imei),
-          LatLng((lat ?? 0)- 0.0020, long ?? 0),
+          LatLng((lat ?? 0)- 0.0070, long ?? 0),
         );
     }
     if (lat != null && long != null) {
@@ -352,7 +352,7 @@ class TrackRouteController extends GetxController {
   Widget _buildCustomInfoWindow(String? vehicleNo, String imei) {
     return Container(
       width: 200,
-      padding: EdgeInsets.all(8),
+      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 5),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),

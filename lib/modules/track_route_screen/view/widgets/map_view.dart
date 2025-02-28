@@ -25,6 +25,9 @@ class MapViewTrackRoute extends StatelessWidget {
               controller.customInfoWindowController.googleMapController =
                   mapCon;
             },
+            onTap: (position) {
+              controller.customInfoWindowController.hideInfoWindow!();
+            },
             initialCameraPosition: CameraPosition(
               target: controller.currentLocation.value,
               zoom: 7,
@@ -33,14 +36,11 @@ class MapViewTrackRoute extends StatelessWidget {
             myLocationEnabled: true,
             myLocationButtonEnabled: false,
             mapToolbarEnabled: false,
-
             minMaxZoomPreference: MinMaxZoomPreference(0, 19),
           ),
           CustomInfoWindow(
             controller: controller.customInfoWindowController,
-            height: 70,
-            width: 200,
-            offset: 50,
+            width: 200
           ),
         ]
       ),
