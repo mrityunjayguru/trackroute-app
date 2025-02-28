@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
+import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:geocoding/geocoding.dart';
@@ -34,7 +35,8 @@ class TrackRouteController extends GetxController {
   Rx<TrackRouteVehicleList> vehicleList = Rx(TrackRouteVehicleList());
   RxList<FilterData> filterData = RxList([]);
   var markers = <Marker>[].obs;
-
+  CustomInfoWindowController customInfoWindowController =
+  CustomInfoWindowController();
   // New Rx lists for filtered results
   RxList<Data> ignitionOnList = <Data>[].obs;
   RxList<Data> ignitionOffList = <Data>[].obs;
@@ -330,14 +332,44 @@ class TrackRouteController extends GetxController {
     mapController = controller;
   }
 
-  void _onMarkerTapped(int index, String imei, {double? lat, double? long}) {
+  void _onMarkerTapped(int index, String imei, String vehicleNo, {double? lat, double? long}) {
     isShowVehicleDetails(index, imei);
     devicesByDetails(imei, updateCamera: false, showDialog: true);
 
     isExpanded.value = false;
+    if(Platform.isIOS){
+        customInfoWindowController.addInfoWindow!(
+          _buildCustomInfoWindow(vehicleNo, imei),
+          LatLng((lat ?? 0)- 0.0020, long ?? 0),
+        );
+    }
     if (lat != null && long != null) {
       updateCameraPositionWithZoom(latitude: lat, longitude: long);
     }
+
+  }
+
+  Widget _buildCustomInfoWindow(String? vehicleNo, String imei) {
+    return Container(
+      width: 200,
+      padding: EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 5)],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            'Vehicle No: ${vehicleNo ?? "N/A"}',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 4),
+          Text('IMEI: $imei'),
+        ],
+      ),
+    );
   }
 
   Future<void> loadUser() async {
@@ -849,12 +881,12 @@ class TrackRouteController extends GetxController {
           lat ?? 0,
           long ?? 0,
         ),
-        infoWindow: InfoWindow(
+        infoWindow: Platform.isAndroid ? InfoWindow(
           title: 'Vehicle No: ${vehicleNo}',
           snippet: 'IMEI: ${imei}',
-        ),
+        ) : InfoWindow.noText,
         icon: markerIcon,
-        onTap: () => _onMarkerTapped(-1, imei, lat: lat, long: long));
+        onTap: () => _onMarkerTapped(-1, imei, vehicleNo ?? "",lat: lat, long: long));
     return marker;
   }
 
