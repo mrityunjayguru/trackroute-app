@@ -365,7 +365,7 @@ class TrackRouteController extends GetxController {
             'Vehicle No: ${vehicleNo ?? "N/A"}',
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
-          SizedBox(height: 4),
+          SizedBox(height: 3),
           Text('IMEI: $imei'),
         ],
       ),
@@ -929,6 +929,10 @@ class TrackRouteController extends GetxController {
     } else {
       updateCameraPositionToCurrentLocation();
     }
+    if(customInfoWindowController.hideInfoWindow!=null){
+      customInfoWindowController.hideInfoWindow!();
+    }
+
   }
 
   void checkFilterIndex(bool updateCamera) async {
