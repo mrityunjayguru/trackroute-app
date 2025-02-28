@@ -340,7 +340,7 @@ class TrackRouteController extends GetxController {
     if(Platform.isIOS){
         customInfoWindowController.addInfoWindow!(
           _buildCustomInfoWindow(vehicleNo, imei),
-          LatLng((lat ?? 0)- 0.0070, long ?? 0),
+          LatLng((lat ?? 0), long ?? 0),
         );
     }
     if (lat != null && long != null) {
