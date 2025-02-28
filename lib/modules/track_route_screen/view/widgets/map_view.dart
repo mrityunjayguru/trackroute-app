@@ -22,6 +22,8 @@ class MapViewTrackRoute extends StatelessWidget {
             onMapCreated: (mapCon) {
               controller.mapController = mapCon;
               controller.showLoader.value = false;
+              controller.customInfoWindowController.googleMapController =
+                  mapCon;
             },
             initialCameraPosition: CameraPosition(
               target: controller.currentLocation.value,

@@ -238,6 +238,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.8"
+  custom_info_window:
+    dependency: "direct main"
+    description:
+      name: custom_info_window
+      sha256: b7fce9017cb4b8a4319fa7f8080e4fdabfc65996df61c65cd2079dbaf93f56f5
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
   dart_style:
     dependency: transitive
     description:
@@ -627,7 +635,7 @@ packages:
     source: hosted
     version: "2.14.9"
   google_maps_flutter_ios:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       name: google_maps_flutter_ios
       sha256: "753ebf6a2bc24c5eba8e714c901345d858abd9694b1f878c43614fd3f06b8060"
