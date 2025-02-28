@@ -1,11 +1,10 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:math';
 import 'dart:ui';
+import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:ui' as ui;
 import 'dart:typed_data';
@@ -22,6 +21,8 @@ import '../../../service/model/time_model.dart';
 import '../../track_route_screen/controller/track_route_controller.dart';
 
 class HistoryController extends GetxController {
+  CustomInfoWindowController customInfoWindowController =
+  CustomInfoWindowController();
   RxString address = ''.obs;
   RxString name = ''.obs;
   RxString updateDate = ''.obs;
@@ -121,6 +122,8 @@ class HistoryController extends GetxController {
           item.trackingData?.location?.latitude != null &&
               item.trackingData?.location?.longitude != null)
               .toList();
+
+
           vehicleList.sort((a, b) {
             // Assuming trackingData has a timestamp field that you want to compare
             if (a.trackingData?.createdAt == null ||
@@ -131,6 +134,7 @@ class HistoryController extends GetxController {
                 ?.compareTo(b.trackingData?.createdAt ?? "") ??
                 0;
           });
+
           if (vehicleList.isNotEmpty) {
             showMap.value = true;
             markers.value = [];
@@ -161,7 +165,7 @@ class HistoryController extends GetxController {
             }
             processedData = processList(processedData);
 
-            await showMapData(processedData);
+            // await showMapData(processedData);
             showLoader.value = false;
 
             /* if (vehicleList[0].trackingData?.location?.latitude != null &&
@@ -231,8 +235,10 @@ class HistoryController extends GetxController {
       }
     } else {
       // If list length is greater than 125, show 1 in every 3 data
+
       for (int i = 0; i < data.length; i++) {
-        if (i < 25 || i % 3 == 0) {
+        print("DATA ${data[i].dateFiled.toString()}");
+        if (i < 25 || i % 3 == 0 || i>data.length-11) {
           // Keep first 25 as they are, then 1 in every 3
           processedData.add(data[i]);
         }
@@ -253,11 +259,12 @@ class HistoryController extends GetxController {
       if (data[i].trackingData?.location?.latitude != null &&
           data[i].trackingData?.location?.longitude != null) {
         String time = "";
-        if (data[i].trackingData?.createdAt?.isNotEmpty ?? false) {
-          DateTime timestamp =
-          DateTime.parse(data[i].trackingData?.createdAt ?? "")
-              .toLocal(); // Assuming dateFiled is a valid timestamp string
-          time = DateFormat('HH:mm:ss').format(timestamp);
+        if (data[i].dateFiled!=null) {
+          /*DateTime timestamp =
+          DateTime.parse(data[i].trackingData?.createdAt ?? ""); // Assuming dateFiled is a valid timestamp string
+          time = DateFormat('HH:mm:ss').format(timestamp);*/
+
+          time  = data[i].dateFiled?.split(" ")[1] ?? "N?A";
         }
         bool isOverSpeed = (data[i].trackingData?.currentSpeed != null ||
             (controller.deviceDetail.value.data?.isNotEmpty ?? false) ||
@@ -329,6 +336,8 @@ class HistoryController extends GetxController {
   }
 
   void onMapCreated(GoogleMapController controller) {
+    customInfoWindowController.googleMapController =
+        controller;
     mapController = controller;
     isMapControllerInitialized = true;
 
@@ -387,18 +396,18 @@ class HistoryController extends GetxController {
         ),
         icon: markerIcon,
         // icon: await createCustomMarker('$index'),
-        onTap: () => _onMarkerTapped(index, maxSpeed));
+        onTap: () => _onMarkerTapped(index, maxSpeed, lat: lat, long: long, time: time ?? "", speed : '${maxSpeed ? "Max " : ""}Speed: ${speed?.toStringAsFixed(2) ??
+            "N/A"} KMPH'));
     return marker;
   }
 
-  void _onMarkerTapped(int index, bool maxSpeed) async {
+  void _onMarkerTapped(int index, bool maxSpeed,{double? lat, double? long, required String time, required String speed}) async {
     BitmapDescriptor markerIcon = await createCustomIconWithNumber(index,
         isselected: true, width: 100, height: 100, maxSpeed: maxSpeed);
     markers[index - 1] = markers[index - 1].copyWith(iconParam: markerIcon);
     LatLng tappedMarkerPosition = markers[index - 1].position;
     // updateCameraPosition(tappedMarkerPosition.latitude, tappedMarkerPosition.longitude, zoom: 19);
-
-    for (int i = 0; i < markers.length; i++) {
+     for (int i = 0; i < markers.length; i++) {
       if (i != index - 1) {
         BitmapDescriptor markerIconFalse = await createCustomIconWithNumber(
             i + 1,
@@ -409,8 +418,10 @@ class HistoryController extends GetxController {
         markers[i] = markers[i].copyWith(iconParam: markerIconFalse);
       }
     }
-  }
 
+
+
+  }
   Future<Marker> createMarkerFromNet({
     double? lat,
     double? long,

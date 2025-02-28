@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
+import 'dart:ui';
 import 'package:custom_info_window/custom_info_window.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:geocoding/geocoding.dart';
@@ -24,6 +26,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'dart:ui' as ui;
 import '../../../constants/project_urls.dart';
 import '../../../service/model/presentation/vehicle_type/Data.dart';
+import '../../../utils/info_window.dart';
 import '../view/widgets/vehicle_dialog.dart';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
@@ -36,13 +39,14 @@ class TrackRouteController extends GetxController {
   RxList<FilterData> filterData = RxList([]);
   var markers = <Marker>[].obs;
   CustomInfoWindowController customInfoWindowController =
-  CustomInfoWindowController();
+      CustomInfoWindowController();
+
   // New Rx lists for filtered results
   RxList<Data> ignitionOnList = <Data>[].obs;
   RxList<Data> ignitionOffList = <Data>[].obs;
   RxList<Data> activeVehiclesList = <Data>[].obs;
   RxList<Data> inActiveVehiclesList = <Data>[].obs;
-
+  final GlobalKey markerKey = GlobalKey();
   // RxList<Data> inActiveVehiclesList = <Data>[].obs;
   RxList<Data> allVehicles = <Data>[].obs;
   RxList<DataVehicleType> vehicleTypeList = <DataVehicleType>[].obs;
@@ -178,10 +182,10 @@ class TrackRouteController extends GetxController {
 
   Future<BitmapDescriptor> createMarkerIcon(String indexedImage,
       {int width = 120, int height = 120}) async {
-    try{
+    try {
       // Load image from network
       final ByteData data =
-      await NetworkAssetBundle(Uri.parse(indexedImage)).load("");
+          await NetworkAssetBundle(Uri.parse(indexedImage)).load("");
       final Uint8List bytes = data.buffer.asUint8List();
 
       // Decode the image to get its original size
@@ -194,22 +198,19 @@ class TrackRouteController extends GetxController {
 
       // Convert the resized image to bytes
       final ByteData? resizedData =
-      await frameInfo.image.toByteData(format: ui.ImageByteFormat.png);
+          await frameInfo.image.toByteData(format: ui.ImageByteFormat.png);
       final Uint8List resizedBytes = resizedData!.buffer.asUint8List();
 
       return BitmapDescriptor.fromBytes(resizedBytes);
-
-    } catch(e){
+    } catch (e) {
       return BitmapDescriptor.defaultMarker;
     }
-
   }
 
   Future<BitmapDescriptor> createMarkerIconInactive(
       {int width = 120, int height = 120}) async {
     // Load image from network
-    ByteData data =
-        await rootBundle.load("assets/images/png/deactivated.png");
+    ByteData data = await rootBundle.load("assets/images/png/deactivated.png");
     final Uint8List bytes = data.buffer.asUint8List();
 
     // Decode the image to get its original size
@@ -332,21 +333,31 @@ class TrackRouteController extends GetxController {
     mapController = controller;
   }
 
-  void _onMarkerTapped(int index, String imei, String vehicleNo, {double? lat, double? long}) {
+  void _onMarkerTapped(int index, String imei, String vehicleNo,
+      {double? lat, double? long}) async {
     isShowVehicleDetails(index, imei);
-    devicesByDetails(imei, updateCamera: false, showDialog: true);
-
     isExpanded.value = false;
-    if(Platform.isIOS){
+    await devicesByDetails(imei, updateCamera: false, showDialog: true);
+
+
+    try{
+      if(Platform.isIOS){
+        addCustomMarker(LatLng((lat ?? 0)+0.0006, long ?? 0), "Vehicle No.: $vehicleNo", "IMEI: $imei");
+      }
+
+    }catch(e,s){
+      log("EXCEPTION $e ====> $s");
+    }
+
+    /* if(Platform.isIOS){
         customInfoWindowController.addInfoWindow!(
           _buildCustomInfoWindow(vehicleNo, imei),
           LatLng((lat ?? 0), long ?? 0),
         );
-    }
+    }*/
     if (lat != null && long != null) {
       updateCameraPositionWithZoom(latitude: lat, longitude: long);
     }
-
   }
 
   Widget _buildCustomInfoWindow(String? vehicleNo, String imei) {
@@ -370,6 +381,42 @@ class TrackRouteController extends GetxController {
         ],
       ),
     );
+  }
+
+  Future<void> addCustomMarker(LatLng position, String text1, String text2) async {
+    Uint8List? markerIcon = await _captureMarkerWidget();
+
+    if (markerIcon != null) {
+      final marker = Marker(
+        markerId: MarkerId("INFOWINDOWMARKER$text1$text2"),
+        position: position,
+        icon: BitmapDescriptor.fromBytes(markerIcon),
+      );
+
+      markers.add(marker);
+    }
+  }
+  Future<Uint8List?> _captureMarkerWidget() async {
+    RenderRepaintBoundary? boundary =
+    markerKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
+    if (boundary != null) {
+      ui.Image image = await boundary.toImage(pixelRatio: 2.0);
+      ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+      return byteData?.buffer.asUint8List();
+    }
+    return null;
+  }
+
+  Future<Uint8List?> getWidgetMarker(String text1, String text2) async {
+    final recorder = PictureRecorder();
+    final canvas = Canvas(recorder);
+    final painter = MarkerPainter(text1, text2);
+
+    painter.paint(canvas, Size(500, 120));
+
+    final img = await recorder.endRecording().toImage(500, 120);
+    final byteData = await img.toByteData(format: ImageByteFormat.png);
+    return byteData?.buffer.asUint8List();
   }
 
   Future<void> loadUser() async {
@@ -530,7 +577,7 @@ class TrackRouteController extends GetxController {
                 markers.add(m);
               }
             }
-          /*  if (updateCamera &&
+            /*  if (updateCamera &&
                 allVehiclesRes.isNotEmpty &&
                 allVehiclesRes[0].trackingData?.location?.latitude != null &&
                 allVehiclesRes[0].trackingData?.location?.longitude != null) {
@@ -620,7 +667,8 @@ class TrackRouteController extends GetxController {
           driverMobileNo.text = data?.mobileNo ?? '';
           // vehicleBrand.text = data?.vehicleBrand ?? '';
           // vehicleModel.text = data?.vehicleModel ?? '';
-          maxSpeedUpdate.text = ((data?.maxSpeed ?? 0).toStringAsFixed(0) ?? '').toString();
+          maxSpeedUpdate.text =
+              ((data?.maxSpeed ?? 0).toStringAsFixed(0) ?? '').toString();
           latitudeUpdate.text = (data?.location?.latitude ?? '').toString();
           longitudeUpdate.text = (data?.location?.longitude ?? '').toString();
           parkingUpdate.value = data?.parking ?? false;
@@ -786,6 +834,7 @@ class TrackRouteController extends GetxController {
           updateCamera: false);
       Utils.getSnackbar('Success', 'Your detail is Updated');
       // deviceDetail.value.data?.clear();
+      // deviceDetail.value.data?.clear();
       //  if (response.message == "success") {
       //   networkStatus.value = NetworkStatus.SUCCESS;
       //   stackIndex.value = 0;
@@ -881,12 +930,15 @@ class TrackRouteController extends GetxController {
           lat ?? 0,
           long ?? 0,
         ),
-        infoWindow: Platform.isAndroid ? InfoWindow(
-          title: 'Vehicle No: ${vehicleNo}',
-          snippet: 'IMEI: ${imei}',
-        ) : InfoWindow.noText,
+        infoWindow: Platform.isAndroid
+            ? InfoWindow(
+                title: 'Vehicle No: ${vehicleNo}',
+                snippet: 'IMEI: ${imei}',
+              )
+            : InfoWindow.noText,
         icon: markerIcon,
-        onTap: () => _onMarkerTapped(-1, imei, vehicleNo ?? "-",lat: lat, long: long));
+        onTap: () =>
+            _onMarkerTapped(-1, imei, vehicleNo ?? "-", lat: lat, long: long));
     return marker;
   }
 
@@ -896,23 +948,7 @@ class TrackRouteController extends GetxController {
     selectedVehicleIndex.value = -1;
     selectedVehicleIMEI.value = "";
     isvehicleSelected.value = false;
-
-    for (var vehicle in vehicleList.value.data ?? []) {
-      if (vehicle.trackingData?.location?.latitude != null &&
-          vehicle.trackingData?.location?.longitude != null) {
-        bool isInactive = checkIfInactive(vehicle: vehicle);
-        Marker m = await createMarker(
-            course: Utils.parseDouble(data: vehicle.course),
-            imei: vehicle.imei ?? "",
-            lat: vehicle.trackingData?.location?.latitude,
-            long: vehicle.trackingData?.location?.longitude,
-            img: vehicle.vehicletype?.icons,
-            id: vehicle.deviceId,
-            vehicleNo: vehicle.vehicleNo,
-            isInactive: isInactive);
-        markers.add(m);
-      }
-    }
+    checkFilterIndex(false);
     if ((vehicleList.value.data?.isNotEmpty ?? false)) {
       int? validIndex = vehicleList.value.data?.indexWhere((vehicle) =>
           vehicle.trackingData?.location?.latitude != null &&
@@ -926,11 +962,9 @@ class TrackRouteController extends GetxController {
       } else {
         updateCameraPositionToCurrentLocation();
       }
-    } else {
-      updateCameraPositionToCurrentLocation();
     }
-    if(customInfoWindowController.hideInfoWindow!=null){
-      customInfoWindowController.hideInfoWindow!();
+    else {
+      updateCameraPositionToCurrentLocation();
     }
 
   }

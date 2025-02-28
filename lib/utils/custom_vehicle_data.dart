@@ -147,6 +147,8 @@ class VehicleDataWidget extends StatelessWidget {
                           BottomBarController>() // Find if already registered
                       : Get.put(BottomBarController());
                   bottomController.updateIndex(2);
+                  controller.isFilterSelected.value = false;
+                  controller.isFilterSelectedindex.value = -1;
                   controller.showAllVehicles();
                   // controller.isShowvehicleDetail.value = false;
                   controller.isvehicleSelected.value = true;
@@ -304,9 +306,11 @@ class VehicleDataWidget extends StatelessWidget {
                   routeHistoryController.imei.value = imei;
                   routeHistoryController.generateTimeList();
                   routeHistoryController.showMap.value = false;
-                  String formattedDate = DateFormat('dd-MM-yyyy').format(DateTime.now());
+                  String formattedDate =
+                      DateFormat('dd-MM-yyyy').format(DateTime.now());
                   routeHistoryController.dateController.text = formattedDate;
-                  routeHistoryController.endDateController.text = DateFormat('yyyy-MM-dd').format(DateTime.now());
+                  routeHistoryController.endDateController.text =
+                      DateFormat('yyyy-MM-dd').format(DateTime.now());
                   routeHistoryController.time1.value = null;
                   routeHistoryController.time2.value = null;
                   routeHistoryController.showMap.value = false;
@@ -354,8 +358,11 @@ class VehicleDataWidget extends StatelessWidget {
                     children: [
                       CircleAvatar(
                         backgroundColor: AppColors.grayBright,
-                        child:
-                            SvgPicture.asset(Assets.images.svg.icSpeedometer, width: 24, height: 24,),
+                        child: SvgPicture.asset(
+                          Assets.images.svg.icSpeedometer,
+                          width: 24,
+                          height: 24,
+                        ),
                       ).paddingOnly(left: 3, right: 3),
                       Flexible(
                         child: AutoSizeText(
@@ -402,7 +409,8 @@ class VehicleDataWidget extends StatelessWidget {
                           backgroundColor: AppColors.grayBright,
                           child: SvgPicture.asset(
                             'assets/images/svg/car_icon.svg',
-    width: 20, height: 20,
+                            width: 20,
+                            height: 20,
                             colorFilter: ColorFilter.mode(
                                 AppColors.black, BlendMode.srcIn),
                           ),
@@ -472,7 +480,8 @@ class VehicleDataWidget extends StatelessWidget {
                                 duration: const Duration(milliseconds: 300));
                           },
                           child: Container(
-                            padding: EdgeInsets.symmetric(vertical :12, horizontal: 8),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 12, horizontal: 8),
                             decoration: BoxDecoration(
                                 borderRadius:
                                     BorderRadius.circular(AppSizes.radius_50),
@@ -564,7 +573,7 @@ class VehicleDataWidget extends StatelessWidget {
                         ),
                         Expanded(
                           child: Container(
-                            height: 6.h,
+                              height: 6.h,
                               padding: EdgeInsets.symmetric(
                                   vertical: 6, horizontal: 10),
                               decoration: BoxDecoration(
@@ -578,35 +587,32 @@ class VehicleDataWidget extends StatelessWidget {
                                   children: [
                                     TextSpan(
                                       text: 'Latest Trip ',
-                                      style: AppTextStyles(context)
-                                          .display11W500,
+                                      style:
+                                          AppTextStyles(context).display11W500,
                                     ),
                                     TextSpan(
                                       text:
-                                      '(${summary?.latestTripTime ?? "-"})\n',
+                                          '(${summary?.latestTripTime ?? "-"})\n',
                                       style: AppTextStyles(context)
                                           .display11W500
-                                          .copyWith(
-                                          color: AppColors.grayLight),
+                                          .copyWith(color: AppColors.grayLight),
                                     ),
                                     TextSpan(
                                       text:
-                                      '${summary?.latestTripKm == null ? "-" : Utils.toStringAsFixed(data: summary?.latestTripKm.toString())}',
-                                      style: AppTextStyles(context)
-                                          .display21W600,
+                                          '${summary?.latestTripKm == null ? "-" : Utils.toStringAsFixed(data: summary?.latestTripKm.toString())}',
+                                      style:
+                                          AppTextStyles(context).display21W600,
                                     ),
                                     TextSpan(
                                       text: ' KM ',
                                       style: AppTextStyles(context)
                                           .display14W600
-                                          .copyWith(
-                                          color: AppColors.grayLight),
+                                          .copyWith(color: AppColors.grayLight),
                                     ),
                                   ],
                                 ),
                               )).paddingSymmetric(horizontal: 3, vertical: 4),
                         ),
-
                       ],
                     ),
                   ),
@@ -627,7 +633,7 @@ class VehicleDataWidget extends StatelessWidget {
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                             /*   CircleAvatar(
+                                /*   CircleAvatar(
                                   maxRadius: 16,
                                   backgroundColor: AppColors.selextedindexcolor,
                                   child: SvgPicture.asset(
@@ -657,15 +663,13 @@ class VehicleDataWidget extends StatelessWidget {
                                             ),
                                             TextSpan(
                                               text:
-                                              '@ ${summary?.maxSpeedTime != null ? DateFormat("HH:mm").format(DateTime.parse(summary?.maxSpeedTime ?? "")) : "-"}  ',
+                                                  '@ ${summary?.maxSpeedTime != null ? DateFormat("HH:mm").format(DateTime.parse(summary?.maxSpeedTime ?? "")) : "-"}  ',
                                               style: AppTextStyles(context)
                                                   .display11W500,
                                             ),
-
                                           ],
                                         ),
                                       ),
-
                                       FutureBuilder(
                                         future: controller.getCurrAddress(
                                             latitude: summary
@@ -680,7 +684,6 @@ class VehicleDataWidget extends StatelessWidget {
                                             overflow: TextOverflow.ellipsis,
                                             TextSpan(
                                               children: [
-
                                                 TextSpan(
                                                   text: '${snapshot.data}\n',
                                                   style: AppTextStyles(context)
@@ -728,7 +731,6 @@ class VehicleDataWidget extends StatelessWidget {
                         ),
                         Expanded(
                             child: Container(
-
                                 padding: EdgeInsets.symmetric(
                                     vertical: 6, horizontal: 10),
                                 decoration: BoxDecoration(
@@ -749,22 +751,23 @@ class VehicleDataWidget extends StatelessWidget {
                                               style: AppTextStyles(context)
                                                   .display11W500,
                                             ),
-
                                             fuel != "N/A"
-                                                ?  TextSpan(
-                                              text:
-                                              Utils.toStringAsFixed(data: fuel),
-                                              style: AppTextStyles(context)
-                                                  .display21W600,
-                                            ):
-                                            TextSpan(
-                                              text: 'NA',
-                                              style: AppTextStyles(context)
-                                                  .display21W600
-                                                  .copyWith(
-                                                  color:
-                                                  AppColors.grayLight),
-                                            ),
+                                                ? TextSpan(
+                                                    text: Utils.toStringAsFixed(
+                                                        data: fuel),
+                                                    style:
+                                                        AppTextStyles(context)
+                                                            .display21W600,
+                                                  )
+                                                : TextSpan(
+                                                    text: 'NA',
+                                                    style:
+                                                        AppTextStyles(context)
+                                                            .display21W600
+                                                            .copyWith(
+                                                                color: AppColors
+                                                                    .grayLight),
+                                                  ),
                                           ],
                                         ),
                                       ),
@@ -843,6 +846,8 @@ class VehicleDataWidget extends StatelessWidget {
         ] else
           InkWell(
             onTap: () {
+              controller.isFilterSelected.value = false;
+              controller.isFilterSelectedindex.value = -1;
               controller.showAllVehicles();
               Get.put(BottomBarController()).updateIndexForRenewal(imei);
             },

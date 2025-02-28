@@ -688,16 +688,13 @@ class VehicleSelected extends StatelessWidget {
           Expanded(
               child: InkWell(
             onTap: () {
+              controller.isFilterSelected.value = false;
+              controller.isFilterSelectedindex.value = -1;
               controller.showAllVehicles();
               Get.put(BottomBarController()).updateIndexForRenewal(
                   controller.deviceDetail.value.data?[0].imei ?? "");
               controller.stackIndex.value=0;
 
-              /*final profile = Get.isRegistered<ProfileController>()
-                  ? Get.find<ProfileController>() // Find if already registered
-                  : Get.put(ProfileController());
-              profile.renewService(
-                  id: controller.deviceDetail.value.data?[0].sId);*/
             },
             child: Container(
               height: 6.h,
