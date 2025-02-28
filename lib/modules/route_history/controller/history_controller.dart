@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
-import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -421,7 +420,7 @@ class HistoryController extends GetxController {
         isselected: true, width: 100, height: 100, maxSpeed: maxSpeed);
     markers[index - 1] = markers[index - 1].copyWith(iconParam: markerIcon);
     for (int i = 0; i < markers.length; i++) {
-      if (i != index - 1) {
+      if (i != index - 1 && !markers[i].markerId.value.contains("INFOWINDOWMARKER")) {
         BitmapDescriptor markerIconFalse = await createCustomIconWithNumber(
             i + 1,
             isselected: false,
