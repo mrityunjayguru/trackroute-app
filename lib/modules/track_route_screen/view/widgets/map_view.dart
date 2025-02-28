@@ -1,11 +1,9 @@
-import 'package:custom_info_window/custom_info_window.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:track_route_pro/config/theme/app_textstyle.dart';
 import 'package:track_route_pro/modules/track_route_screen/controller/track_route_controller.dart';
 import 'package:track_route_pro/utils/common_import.dart';
 
 import '../../../../config/theme/app_colors.dart';
-import '../../../../constants/project_urls.dart';
 
 class MapViewTrackRoute extends StatelessWidget {
   MapViewTrackRoute({super.key});
@@ -24,12 +22,8 @@ class MapViewTrackRoute extends StatelessWidget {
             onMapCreated: (mapCon) {
               controller.mapController = mapCon;
               controller.showLoader.value = false;
-              controller.customInfoWindowController.googleMapController =
-                  mapCon;
             },
-            onTap: (position) {
-              controller.customInfoWindowController.hideInfoWindow!();
-            },
+
             initialCameraPosition: CameraPosition(
               target: controller.currentLocation.value,
               zoom: 7,
@@ -58,11 +52,13 @@ class MapViewTrackRoute extends StatelessWidget {
                     // Icon(Icons.directions_car, size: 40, color: Colors.blue),
                     Text(
                       "Vehicle No.: ${controller.deviceDetail.value.data?[0].vehicleNo}",
-                      style:AppTextStyles(context).display18W500,
+                      style: AppTextStyles(context).display18W500.copyWith(fontSize: MediaQuery.of(context).size.height < 670 ? 14 : null),
                     ),
                     Text(
                       "IMEI: ${controller.deviceDetail.value.data?[0].imei}",
-                      style: AppTextStyles(context).display16W400.copyWith( color: AppColors.grayLight),
+                      style: AppTextStyles(context)
+                          .display16W400
+                          .copyWith(color: AppColors.grayLight, fontSize: MediaQuery.of(context).size.height < 670 ? 12 : null),
                     ),
                   ],
                 ) : SizedBox.shrink(),
