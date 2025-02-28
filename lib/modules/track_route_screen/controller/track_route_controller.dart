@@ -337,12 +337,12 @@ class TrackRouteController extends GetxController {
     devicesByDetails(imei, updateCamera: false, showDialog: true);
 
     isExpanded.value = false;
-    if(Platform.isIOS){
+   /* if(Platform.isIOS){
         customInfoWindowController.addInfoWindow!(
           _buildCustomInfoWindow(vehicleNo, imei),
           LatLng((lat ?? 0)- 0.0020, long ?? 0),
         );
-    }
+    }*/
     if (lat != null && long != null) {
       updateCameraPositionWithZoom(latitude: lat, longitude: long);
     }
@@ -881,10 +881,14 @@ class TrackRouteController extends GetxController {
           lat ?? 0,
           long ?? 0,
         ),
-        infoWindow: Platform.isAndroid ? InfoWindow(
+       /* infoWindow: Platform.isAndroid ? InfoWindow(
           title: 'Vehicle No: ${vehicleNo}',
           snippet: 'IMEI: ${imei}',
-        ) : InfoWindow.noText,
+        ) : InfoWindow.noText,*/
+        infoWindow: InfoWindow(
+          title: 'Vehicle No: ${vehicleNo}',
+          snippet: 'IMEI: ${imei}',
+        ),
         icon: markerIcon,
         onTap: () => _onMarkerTapped(-1, imei, vehicleNo ?? "-",lat: lat, long: long));
     return marker;
