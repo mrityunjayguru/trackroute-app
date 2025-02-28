@@ -1,12 +1,9 @@
-import 'package:custom_info_window/custom_info_window.dart';
+
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:track_route_pro/modules/route_history/controller/history_controller.dart';
-import 'package:track_route_pro/modules/track_route_screen/controller/track_route_controller.dart';
 import 'package:track_route_pro/utils/common_import.dart';
-
 import '../../../../config/theme/app_colors.dart';
 import '../../../../config/theme/app_textstyle.dart';
-import '../../../../constants/project_urls.dart';
 
 class RouteHistoryMap extends StatefulWidget {
   RouteHistoryMap({super.key});
