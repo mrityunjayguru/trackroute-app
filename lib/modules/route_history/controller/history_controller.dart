@@ -1,11 +1,10 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:math';
 import 'dart:ui';
+import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:ui' as ui;
 import 'dart:typed_data';
@@ -22,6 +21,8 @@ import '../../../service/model/time_model.dart';
 import '../../track_route_screen/controller/track_route_controller.dart';
 
 class HistoryController extends GetxController {
+  CustomInfoWindowController customInfoWindowController =
+  CustomInfoWindowController();
   RxString address = ''.obs;
   RxString name = ''.obs;
   RxString updateDate = ''.obs;
@@ -329,6 +330,8 @@ class HistoryController extends GetxController {
   }
 
   void onMapCreated(GoogleMapController controller) {
+    customInfoWindowController.googleMapController =
+        controller;
     mapController = controller;
     isMapControllerInitialized = true;
 
@@ -387,18 +390,18 @@ class HistoryController extends GetxController {
         ),
         icon: markerIcon,
         // icon: await createCustomMarker('$index'),
-        onTap: () => _onMarkerTapped(index, maxSpeed));
+        onTap: () => _onMarkerTapped(index, maxSpeed, lat: lat, long: long, time: time ?? "", speed : '${maxSpeed ? "Max " : ""}Speed: ${speed?.toStringAsFixed(2) ??
+            "N/A"} KMPH'));
     return marker;
   }
 
-  void _onMarkerTapped(int index, bool maxSpeed) async {
+  void _onMarkerTapped(int index, bool maxSpeed,{double? lat, double? long, required String time, required String speed}) async {
     BitmapDescriptor markerIcon = await createCustomIconWithNumber(index,
         isselected: true, width: 100, height: 100, maxSpeed: maxSpeed);
     markers[index - 1] = markers[index - 1].copyWith(iconParam: markerIcon);
     LatLng tappedMarkerPosition = markers[index - 1].position;
     // updateCameraPosition(tappedMarkerPosition.latitude, tappedMarkerPosition.longitude, zoom: 19);
-
-    for (int i = 0; i < markers.length; i++) {
+     for (int i = 0; i < markers.length; i++) {
       if (i != index - 1) {
         BitmapDescriptor markerIconFalse = await createCustomIconWithNumber(
             i + 1,
@@ -409,8 +412,10 @@ class HistoryController extends GetxController {
         markers[i] = markers[i].copyWith(iconParam: markerIconFalse);
       }
     }
-  }
 
+
+
+  }
   Future<Marker> createMarkerFromNet({
     double? lat,
     double? long,

@@ -32,10 +32,11 @@ class TrackRouteView extends StatelessWidget {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, val) {
         controller.stackIndex.value = 0;
         controller.isShowvehicleDetail.value = false;
         controller.isExpanded.value = false;
+        controller.showAllVehicles();
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
@@ -68,6 +69,7 @@ class TrackRouteView extends StatelessWidget {
                     (controller.deviceDetail.value.data?.isNotEmpty ??
                         false)) ...[
                   DraggableScrollableSheet(
+
                     initialChildSize: 0.55, // Initial size of the sheet
                     minChildSize: 0.1, // Minimum size before closing
                     maxChildSize: 0.55, // Maximum size of the sheet
@@ -81,11 +83,13 @@ class TrackRouteView extends StatelessWidget {
                       }
                       return NotificationListener<
                           DraggableScrollableNotification>(
+
                         onNotification: (notification) {
                           // When dragged down enough, close the bottom sheet
                           if (notification.extent <= 0.2) {
                             controller.showAllVehicles();
                           }
+
                           return true;
                         },
                         child: DeferredPointerHandler(
