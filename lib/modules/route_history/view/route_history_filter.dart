@@ -31,7 +31,7 @@ class RouteHistoryPage extends StatelessWidget {
       child: SafeArea(
         child: Scaffold(
           resizeToAvoidBottomInset: false,
-          backgroundColor:   AppColors.backgroundColor,
+          backgroundColor: AppColors.backgroundColor,
           body: Obx(
             () => Stack(children: [
               if (controller.showMap.value) RouteHistoryMap(),
@@ -55,7 +55,6 @@ class RouteHistoryPage extends StatelessWidget {
                         }
                         controller.showMap.value = false;
                         controller.data.value = [];
-
                       },
                       name: controller.showMap.value
                           ? controller.name.value
@@ -64,7 +63,7 @@ class RouteHistoryPage extends StatelessWidget {
                     height: 1.5.h,
                   ),
                   controller.showMap.value
-                      ?  (controller.showDetails.value
+                      ? (controller.showDetails.value
                           ? Column(
                               children: [
                                 SizedBox(height: 1.h),
@@ -140,7 +139,7 @@ class RouteHistoryPage extends StatelessWidget {
                                                         .selectedSpeed.value,
                                                     style:
                                                         AppTextStyles(context)
-                                                            .display20W600,
+                                                            .display20W600.copyWith(fontSize: MediaQuery.of(context).size.height < 670 ? 18 : 20),
                                                   ),
                                                   TextSpan(
                                                     text: ' KMPH',
@@ -174,7 +173,7 @@ class RouteHistoryPage extends StatelessWidget {
                                             Text(
                                               controller.selectedTime.value,
                                               style: AppTextStyles(context)
-                                                  .display20W600,
+                                                  .display20W600.copyWith(fontSize: MediaQuery.of(context).size.height < 670 ? 18 : 20),
                                             ),
                                           ],
                                         ),
@@ -243,14 +242,17 @@ class RouteHistoryPage extends StatelessWidget {
                         )
                 ],
               ).paddingOnly(top: 12).paddingSymmetric(horizontal: 4.w * 0.9),
-              if(controller.showLoader.value)Positioned.fill(child: Container(
-                alignment: Alignment.center,
-                color: Colors.grey.withOpacity(0.7),
-                child: LoadingAnimationWidget.threeArchedCircle(
-                  color: AppColors.selextedindexcolor,
-                  size: 50,
-                ),
-              ),)
+              if (controller.showLoader.value)
+                Positioned.fill(
+                  child: Container(
+                    alignment: Alignment.center,
+                    color: Colors.grey.withOpacity(0.7),
+                    child: LoadingAnimationWidget.threeArchedCircle(
+                      color: AppColors.selextedindexcolor,
+                      size: 50,
+                    ),
+                  ),
+                )
             ]),
           ),
         ),
