@@ -71,7 +71,6 @@ class TrackRouteController extends GetxController {
 
   final ApiService apiService = ApiService.create();
   Rx<NetworkStatus> networkStatus = Rx(NetworkStatus.IDLE);
-  RxString address = ''.obs;
 
   Timer? _refreshTimer;
 
@@ -95,19 +94,19 @@ class TrackRouteController extends GetxController {
     });
   }
 
-  Future<void> getAddressFromLatLong(double latitude, double longitude) async {
+  Future<String> getAddressFromLatLong(double latitude, double longitude) async {
     try {
       List<Placemark> placemarks =
           await placemarkFromCoordinates(latitude, longitude);
       Placemark place = placemarks[0];
 
-      address.value =
+      return
           "${place.street}, ${place.locality}, ${place.postalCode}, ${place.country}";
-      address.refresh();
+
     } catch (e) {
-      // debugPrint("Error " + e.toString());
-      address.value = "Address not available";
+      return "Address not available";
     }
+    return "Address not available";
   }
 
   Future<String> getCurrAddress({double? latitude, double? longitude}) async {

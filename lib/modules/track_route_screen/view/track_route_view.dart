@@ -111,6 +111,7 @@ class TrackRouteView extends StatelessWidget {
                                         false) {
                                       var trackingData = controller.deviceDetail
                                           .value.data?[0].trackingData;
+                                      String address = "Fetching Address...";
                                       if (trackingData?.location?.latitude !=
                                               null &&
                                           trackingData?.location?.longitude !=
@@ -123,7 +124,7 @@ class TrackRouteView extends StatelessWidget {
                                               0.0,
                                         );
                                       } else {
-                                        controller.address.value =
+                                        address =
                                             "Address Unavailable";
                                       }
 
@@ -137,83 +138,102 @@ class TrackRouteView extends StatelessWidget {
                                         time =
                                             '${DateFormat("HH:mm").format(DateTime.parse(trackingData?.lastUpdateTime ?? "").toLocal()) ?? ''}';
                                       }
-                                      return VehicalDetailBottomSheet(
-                                        expiryDate: controller.deviceDetail
-                                            .value.data?[0].subscriptionExp,
-                                        isActive: isActive,
-                                        displayParameters: controller
-                                            .deviceDetail
-                                            .value
-                                            .data?[0]
-                                            .displayParameters,
-                                        imei: controller.deviceDetail.value
+                                      return FutureBuilder<String>(
+                                        future: (trackingData?.location?.latitude != null &&
+                                            trackingData?.location?.longitude != null)
+                                            ? controller.getAddressFromLatLong(
+                                          trackingData?.location?.latitude ?? 0.0,
+                                          trackingData?.location?.longitude ?? 0.0,
+                                        )
+                                            : Future.value("Address Unavailable"),
+                                        builder: (context, snapshot) {
+                                          String address = "Fetching Address...";
+                                          if (snapshot.connectionState == ConnectionState.done) {
+                                            if (snapshot.hasError) {
+                                              address = "Error Fetching Address";
+                                            } else {
+                                              address = snapshot.data ?? "Address Unavailable";
+                                            }
+                                          }
+                                          return VehicalDetailBottomSheet(
+                                            expiryDate: controller.deviceDetail
+                                                .value.data?[0].subscriptionExp,
+                                            isActive: isActive,
+                                            displayParameters: controller
+                                                .deviceDetail
+                                                .value
+                                                .data?[0]
+                                                .displayParameters,
+                                            imei: controller.deviceDetail.value
                                                 .data?[0].imei ??
-                                            "",
-                                        vehicalNo: controller.deviceDetail.value
+                                                "",
+                                            vehicalNo: controller.deviceDetail.value
                                                 .data?[0].vehicleNo ??
-                                            '-',
-                                        dateTime: "$date $time",
-                                        address: '${controller.address.value}',
-                                        totalkm:
+                                                '-',
+                                            dateTime: "$date $time",
+                                            address: address,
+                                            totalkm:
                                             '${trackingData?.totalDistanceCovered ?? ''}',
-                                        currentSpeed: controller
+                                            currentSpeed: controller
                                                 .deviceDetail
                                                 .value
                                                 .data?[0]
                                                 .trackingData
                                                 ?.currentSpeed ??
-                                            0,
-                                        deviceID:
+                                                0,
+                                            deviceID:
                                             '${controller.deviceDetail.value.data?[0].deviceId ?? ""}',
-                                        icon: controller.deviceDetail.value
+                                            icon: controller.deviceDetail.value
                                                 .data?[0].vehicletype?.icons ??
-                                            "",
-                                        ignition:
+                                                "",
+                                            ignition:
                                             trackingData?.ignition?.status,
-                                        network: trackingData?.network == null
-                                            ? null
-                                            : (trackingData?.network ==
+                                            network: trackingData?.network == null
+                                                ? null
+                                                : (trackingData?.network ==
                                                 "Connected"),
-                                        gps: trackingData?.gps,
-                                        ac: trackingData?.ac,
-                                        charging: ((trackingData?.internalBattery ?? 1) <= 0) ? true : false ,
-                                        door: trackingData?.door,
-                                        geofence: controller.deviceDetail.value
+                                            gps: trackingData?.gps,
+                                            ac: trackingData?.ac,
+                                            charging: ((trackingData?.internalBattery ?? 1) <= 0) ? true : false ,
+                                            door: trackingData?.door,
+                                            geofence: controller.deviceDetail.value
                                                 .data?[0].locationStatus ?? false,
-                                        immob: controller.deviceDetail.value
-                                                    .data?[0].immobiliser !=
+                                            immob: controller.deviceDetail.value
+                                                .data?[0].immobiliser !=
                                                 null
-                                            ? (controller.deviceDetail.value
-                                                    .data?[0].immobiliser ==
+                                                ? (controller.deviceDetail.value
+                                                .data?[0].immobiliser ==
                                                 "Stop")
-                                            : null,
-                                        parking: controller.deviceDetail.value
-                                            .data?[0].parking,
-                                        engine: controller.deviceDetail.value
-                                            .data?[0].trackingData?.ignition?.status ?? false,
-                                        fuel:
-                                        controller.deviceDetail.value.data?[0].fuelStatus != "Off" ? "${controller.deviceDetail.value.data?[0]?.fuelLevel ?? "N/A"}" : "N/A",
-                                        vehicleName:
+                                                : null,
+                                            parking: controller.deviceDetail.value
+                                                .data?[0].parking,
+                                            engine: controller.deviceDetail.value
+                                                .data?[0].trackingData?.ignition?.status ?? false,
+                                            fuel:
+                                            controller.deviceDetail.value.data?[0].fuelStatus != "Off" ? "${controller.deviceDetail.value.data?[0]?.fuelLevel ?? "N/A"}" : "N/A",
+                                            vehicleName:
                                             "${controller.deviceDetail.value.data?[0].vehicletype?.vehicleTypeName ?? ""}",
-                                        temp:
+                                            temp:
                                             (trackingData?.temperature ?? "N/A")
                                                 .toString(),
-                                        humid:
+                                            humid:
                                             (trackingData?.humidity0 ?? "N/A")
                                                 .toString(),
-                                        motion: (trackingData?.motion ?? "N/A")
-                                            .toString(),
-                                        bluetooth: (trackingData?.rssi ?? "")
-                                            .toString(),
-                                        extBattery:
-                                            (trackingData?.externalBattery ??
-                                                    "N/A")
+                                            motion: (trackingData?.motion ?? "N/A")
                                                 .toString(),
-                                        intBattery:
+                                            bluetooth: (trackingData?.rssi ?? "")
+                                                .toString(),
+                                            extBattery:
+                                            (trackingData?.externalBattery ??
+                                                "N/A")
+                                                .toString(),
+                                            intBattery:
                                             (trackingData?.internalBattery ??
-                                                    "N/A")
+                                                "N/A")
                                                 .toString(), summary: controller.deviceDetail
-                                          .value.data?[0].summary,
+                                              .value.data?[0].summary,
+                                          );
+                                        } ,
                                       );
                                     }
                                     return SizedBox.shrink();
