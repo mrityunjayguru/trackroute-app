@@ -25,7 +25,7 @@ class Assets {
   static const String fontsSFProTextLight = 'assets/fonts/SF-Pro-Text-Light.ttf';
   static const String fontsSFProTextRegular = 'assets/fonts/SF-Pro-Text-Regular.ttf';
   static const String fontsSFProTextSemibold = 'assets/fonts/SF-Pro-Text-Semibold.ttf';
-  static const String iconAppIcon = 'assets/icon/icon.png';
+  static const String iconIcon = 'assets/icon/icon.png';
   static const String imagesSvgCarIcon = 'assets/images/svg/car_icon.svg';
   static const String pngBlackMarkerIcon = 'assets/images/png/black_marker_icon.png';
   static const String pngDeactivated = 'assets/images/png/deactivated.png';
@@ -106,11 +106,13 @@ class Assets {
   static const String svgInactiveIcon = 'assets/images/svg/inactive_icon.svg';
   static const String svgLogo = 'assets/images/svg/logo.svg';
   static const String svgMaxSpeedIcon = 'assets/images/svg/max_speed_icon.svg';
+  static const String svgMaxSpeedMarker = 'assets/images/svg/max_speed_marker.svg';
   static const String svgNavigation1 = 'assets/images/svg/navigation1.svg';
   static const String svgNotifIconSetting = 'assets/images/svg/notif_icon_setting.svg';
   static const String svgParkingIcon = 'assets/images/svg/parking_icon.svg';
   static const String svgPasteIcon = 'assets/images/svg/paste_icon.svg';
   static const String svgRedCheck = 'assets/images/svg/red_check.svg';
+  static const String svgRedMarker = 'assets/images/svg/red_marker.svg';
   static const String svgReportIcon = 'assets/images/svg/report_icon.svg';
   static const String svgSearch = 'assets/images/svg/search.svg';
   static const String svgSelectedMarker = 'assets/images/svg/selected_marker.svg';

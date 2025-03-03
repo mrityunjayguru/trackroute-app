@@ -319,7 +319,8 @@ class VehicleDataWidget extends StatelessWidget {
               },
               child: Container(
                 // height: 5.h,
-                padding: EdgeInsets.all(8),
+                padding: EdgeInsets.symmetric(
+                    vertical: 12, horizontal: 8),
                 width: 30.w,
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(AppSizes.radius_50),

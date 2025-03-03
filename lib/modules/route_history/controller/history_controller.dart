@@ -28,6 +28,10 @@ class HistoryController extends GetxController {
   RxString imei = ''.obs;
   RxString selectedTime = ''.obs;
   RxString selectedSpeed = ''.obs;
+  RxString markerNumber = ''.obs;
+  RxString markerAddress = ''.obs;
+  RxBool isMaxSpeed = false.obs;
+  RxBool showDetails = false.obs;
   RxBool showMap = false.obs;
   RxBool showLoader = false.obs;
   TextEditingController dateController = TextEditingController();
@@ -81,6 +85,10 @@ class HistoryController extends GetxController {
   Future<void> getRouteHistory() async {
     selectedTime.value = "";
     selectedSpeed.value = "";
+    markerNumber.value = "";
+    markerAddress.value = "Fetching address...";
+    isMaxSpeed.value = false;
+    showDetails.value = false;
     pendingUpdateMap = null;
     pendingUpdate = null;
     if (dateController.text.isEmpty)
@@ -306,21 +314,6 @@ class HistoryController extends GetxController {
     }
   }
 
-  int? findIndexWithMaxSpeed(List<RouteHistoryResponse> data) {
-    int? maxSpeedIndex;
-    double maxSpeed = double.negativeInfinity;
-
-    for (int i = 0; i < data.length; i++) {
-      double? currentSpeed = data[i].trackingData?.currentSpeed;
-      if (currentSpeed != null && currentSpeed > maxSpeed) {
-        maxSpeed = currentSpeed;
-        maxSpeedIndex = i;
-      }
-    }
-
-    return maxSpeedIndex;
-  }
-
   Future<String> getAddressFromLatLong(
       double latitude, double longitude) async {
     try {
@@ -387,19 +380,15 @@ class HistoryController extends GetxController {
           lat ?? 0,
           long ?? 0,
         ),
-        infoWindow: Platform.isAndroid ?  InfoWindow(
-          title: 'Time: $time',
-          snippet:
-              '${maxSpeed ? "Max " : ""}Speed: ${speed?.toStringAsFixed(2) ?? "N/A"} KMPH',
-        ) : InfoWindow.noText,
         icon: markerIcon,
+
         // icon: await createCustomMarker('$index'),
         onTap: () => _onMarkerTapped(index, maxSpeed,
             lat: lat,
             long: long,
             time: time ?? "",
             speed:
-                '${maxSpeed ? "Max " : ""}Speed: ${speed?.toStringAsFixed(2) ?? "N/A"} KMPH'));
+                '${speed?.toStringAsFixed(0) ?? "N/A"}'));
     return marker;
   }
 
@@ -408,19 +397,25 @@ class HistoryController extends GetxController {
       double? long,
       required String time,
       required String speed}) async {
-    if(Platform.isIOS){
-      selectedTime.value = time;
-      selectedSpeed.value = speed;
+    showDetails.value = true;
+    selectedTime.value = time;
+    selectedSpeed.value = speed;
+    isMaxSpeed.value = maxSpeed;
+    markerNumber.value = index.toString();
+
+    /*if(Platform.isIOS){
+
       markers.removeWhere(
             (element) => element.markerId.value.contains("INFOWINDOWMARKER"),
       );
       addCustomMarker(LatLng(lat ?? 0, long ?? 0), time, speed);
-    }
+    }*/
     BitmapDescriptor markerIcon = await createCustomIconWithNumber(index,
         isselected: true, width: 100, height: 100, maxSpeed: maxSpeed);
     markers[index - 1] = markers[index - 1].copyWith(iconParam: markerIcon);
+    markerAddress.value = await getAddressFromLatLong(lat ?? 0, long ?? 0);
     for (int i = 0; i < markers.length; i++) {
-      if (i != index - 1 && !markers[i].markerId.value.contains("INFOWINDOWMARKER")) {
+      if (i != index - 1) {
         BitmapDescriptor markerIconFalse = await createCustomIconWithNumber(
             i + 1,
             isselected: false,
@@ -432,59 +427,6 @@ class HistoryController extends GetxController {
     }
   }
 
-  Future<void> addCustomMarker(
-      LatLng position, String text1, String text2) async {
-    Uint8List? markerIcon = await _captureMarkerWidget();
-
-    if (markerIcon != null) {
-      final marker = Marker(
-        markerId: MarkerId("INFOWINDOWMARKER$text1$text2"),
-        position: position,
-        icon: BitmapDescriptor.fromBytes(markerIcon),
-      );
-
-      markers.add(marker);
-    }
-  }
-
-  Future<Uint8List?> _captureMarkerWidget() async {
-    RenderRepaintBoundary? boundary =
-        markerKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
-    if (boundary != null) {
-      ui.Image image = await boundary.toImage(pixelRatio: 2.0);
-      ByteData? byteData =
-          await image.toByteData(format: ui.ImageByteFormat.png);
-      return byteData?.buffer.asUint8List();
-    }
-    return null;
-  }
-
-  Future<Marker> createMarkerFromNet({
-    double? lat,
-    double? long,
-    String? img,
-    String? speed,
-    String? time,
-    required String imei,
-  }) async {
-    BitmapDescriptor markerIcon =
-        await createMarkerIcon('${ProjectUrls.imgBaseUrl}$img');
-    final markerId = "${ProjectUrls.imgBaseUrl}$img";
-    // String address = await getAddressFromLatLong(lat ?? 0, long ?? 0);
-    final marker = Marker(
-      markerId: MarkerId(markerId),
-      position: LatLng(
-        lat ?? 0,
-        long ?? 0,
-      ),
-      infoWindow: Platform.isAndroid ? InfoWindow(
-        title: 'Time: $time',
-        snippet: 'Speed: $speed',
-      ) : InfoWindow.noText,
-      icon: markerIcon,
-    );
-    return marker;
-  }
 
   Future<BitmapDescriptor> createMarkerIcon(String indexedImage,
       {int width = 100, int height = 100}) async {
@@ -509,28 +451,7 @@ class HistoryController extends GetxController {
     return BitmapDescriptor.fromBytes(resizedBytes);
   }
 
-  Future<BitmapDescriptor> createMarkerIconFromAssets(
-      {int width = 35, int height = 35}) async {
-    final ByteData data =
-        await rootBundle.load("assets/images/png/selected_marker.png");
-    final Uint8List bytes = data.buffer.asUint8List();
 
-    // Decode the image to get its original size and resize it
-    final ui.Codec codec = await ui.instantiateImageCodec(
-      bytes,
-      targetWidth: width,
-      targetHeight: height,
-    );
-    final ui.FrameInfo frameInfo = await codec.getNextFrame();
-
-    // Convert the resized image to bytes
-    final ByteData? resizedData =
-        await frameInfo.image.toByteData(format: ui.ImageByteFormat.png);
-    final Uint8List resizedBytes = resizedData!.buffer.asUint8List();
-
-    // Create and return BitmapDescriptor
-    return BitmapDescriptor.fromBytes(resizedBytes);
-  }
 
   Future<BitmapDescriptor> createCustomIconWithNumber(int number,
       {required int width,
@@ -718,3 +639,79 @@ Future<void> updateRoutes() async {
     }
   }
 }*/
+
+/*Future<void> addCustomMarker(
+      LatLng position, String text1, String text2) async {
+    Uint8List? markerIcon = await _captureMarkerWidget();
+
+    if (markerIcon != null) {
+      final marker = Marker(
+        markerId: MarkerId("INFOWINDOWMARKER$text1$text2"),
+        position: position,
+        icon: BitmapDescriptor.fromBytes(markerIcon),
+      );
+
+      markers.add(marker);
+    }
+  }
+
+  Future<Uint8List?> _captureMarkerWidget() async {
+    RenderRepaintBoundary? boundary =
+        markerKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
+    if (boundary != null) {
+      ui.Image image = await boundary.toImage(pixelRatio: 2.0);
+      ByteData? byteData =
+          await image.toByteData(format: ui.ImageByteFormat.png);
+      return byteData?.buffer.asUint8List();
+    }
+    return null;
+  }
+
+  Future<Marker> createMarkerFromNet({
+    double? lat,
+    double? long,
+    String? img,
+    String? speed,
+    String? time,
+    required String imei,
+  }) async {
+    BitmapDescriptor markerIcon =
+        await createMarkerIcon('${ProjectUrls.imgBaseUrl}$img');
+    final markerId = "${ProjectUrls.imgBaseUrl}$img";
+    // String address = await getAddressFromLatLong(lat ?? 0, long ?? 0);
+    final marker = Marker(
+      markerId: MarkerId(markerId),
+      position: LatLng(
+        lat ?? 0,
+        long ?? 0,
+      ),
+      infoWindow: Platform.isAndroid ? InfoWindow(
+        title: 'Time: $time',
+        snippet: 'Speed: $speed',
+      ) : InfoWindow.noText,
+      icon: markerIcon,
+    );
+    return marker;
+  }
+   Future<BitmapDescriptor> createMarkerIconFromAssets(
+      {int width = 35, int height = 35}) async {
+    final ByteData data =
+        await rootBundle.load("assets/images/png/selected_marker.png");
+    final Uint8List bytes = data.buffer.asUint8List();
+
+    // Decode the image to get its original size and resize it
+    final ui.Codec codec = await ui.instantiateImageCodec(
+      bytes,
+      targetWidth: width,
+      targetHeight: height,
+    );
+    final ui.FrameInfo frameInfo = await codec.getNextFrame();
+
+    // Convert the resized image to bytes
+    final ByteData? resizedData =
+        await frameInfo.image.toByteData(format: ui.ImageByteFormat.png);
+    final Uint8List resizedBytes = resizedData!.buffer.asUint8List();
+
+    // Create and return BitmapDescriptor
+    return BitmapDescriptor.fromBytes(resizedBytes);
+  }*/
