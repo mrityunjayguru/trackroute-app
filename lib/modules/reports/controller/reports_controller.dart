@@ -29,13 +29,23 @@ class ReportsController extends GetxController {
   Rx<NetworkStatus> networkStatus = Rx(NetworkStatus.IDLE);
   Rx<DATE?> selectedDate = Rx<DATE?>(null);
   RxList<Data> selectedVehicles = <Data>[].obs;
+  RxString selectedReport = "".obs;
   RxBool openDay = true.obs;
-  RxBool openVehicle = false.obs;
+  RxBool openReport = false.obs;
   RxBool showDownloaded = false.obs;
   RxList<Data> vehicleData = <Data>[].obs;
   final trackController = Get.isRegistered<TrackRouteController>()
       ? Get.find<TrackRouteController>() // Find if already registered
       : Get.put(TrackRouteController());
+
+  List<String> reports = [
+    "Summary",
+    "Travel Report",
+    "Trip Report",
+    "Event Report",
+    "Stop Idle Report",
+    "Distance Report"
+  ];
 
   void getData() {
     vehicleData.value.clear();
@@ -45,13 +55,14 @@ class ReportsController extends GetxController {
   }
 
   void setData() {
-    getData();
-    openDay.value = true;
-    openVehicle.value = false;
+    // getData();
+    openDay.value = false;
+    openReport.value = true;
     showDownloaded.value = false;
     selectedDate.value = null;
-    selectedVehicles.value = [];
+    // selectedVehicles.value = [];
     link = "";
+    selectedReport.value = "";
   }
 
   void addData(int index) {
@@ -83,17 +94,15 @@ class ReportsController extends GetxController {
     selectedVehicles.value = List.from(selectedVehicles.value);
   }
 
-
-  // Method to fetch About Us data
-  Future<void> fetchData() async {
+  Future<void> fetchData(String imei) async {
     if (selectedDate == null) {
       openDay.value = true;
-      openVehicle.value = false;
-    } else if (selectedVehicles.value.isEmpty) {
-      openVehicle.value = true;
+      openReport.value = false;
+    } else if (selectedReport.value.isEmpty) {
+      openReport.value = true;
       openDay.value = false;
     } else {
-      openVehicle.value = false;
+      openReport.value = false;
       openDay.value = false;
       showDownloaded.value = false;
       try {
@@ -119,7 +128,7 @@ class ReportsController extends GetxController {
         link = response.data ?? "";
         if (link.isNotEmpty) {
           showDownloaded.value = true;
-          Utils.launchLink('${ProjectUrls.imgBaseUrl}$link',showError: true);
+          Utils.launchLink('${ProjectUrls.imgBaseUrl}$link', showError: true);
         } else {
           Utils.getSnackbar(
               "Error", "Unable to fetch report, Please try later");

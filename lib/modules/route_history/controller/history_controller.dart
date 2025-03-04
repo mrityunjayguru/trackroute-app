@@ -14,6 +14,7 @@ import 'package:track_route_pro/service/model/route_history/RouteHistoryResponse
 import 'package:track_route_pro/utils/common_import.dart';
 import 'package:track_route_pro/utils/enums.dart';
 import 'package:track_route_pro/utils/utils.dart';
+import '../../../config/theme/app_colors.dart';
 import '../../../constants/project_urls.dart';
 import 'package:geocoding/geocoding.dart';
 
@@ -186,7 +187,21 @@ class HistoryController extends GetxController {
 */
             _zoomToMarkers();
           } else {
-            Utils.getSnackbar("Error", "No Route History Found");
+            Get.snackbar("", "",
+                snackStyle: SnackStyle.FLOATING,
+                padding: EdgeInsets.fromLTRB(10,0,10,20),
+                messageText: Text(
+                  "No Route History Found",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w800,
+                      color:
+                          AppColors.selextedindexcolor), // Ensure text is visible
+                ),
+                backgroundColor: AppColors.black,
+                colorText: AppColors.selextedindexcolor,
+                snackPosition: SnackPosition.BOTTOM);
+            // Utils.getSnackbar("Error", "No Route History Found");
           }
         } else {
           // log("EXCEPTION ${data}");
@@ -387,8 +402,7 @@ class HistoryController extends GetxController {
             lat: lat,
             long: long,
             time: time ?? "",
-            speed:
-                '${speed?.toStringAsFixed(0) ?? "N/A"}'));
+            speed: '${speed?.toStringAsFixed(0) ?? "N/A"}'));
     return marker;
   }
 
@@ -427,7 +441,6 @@ class HistoryController extends GetxController {
     }
   }
 
-
   Future<BitmapDescriptor> createMarkerIcon(String indexedImage,
       {int width = 100, int height = 100}) async {
     // Load image from network
@@ -450,8 +463,6 @@ class HistoryController extends GetxController {
 
     return BitmapDescriptor.fromBytes(resizedBytes);
   }
-
-
 
   Future<BitmapDescriptor> createCustomIconWithNumber(int number,
       {required int width,

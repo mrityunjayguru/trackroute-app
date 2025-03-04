@@ -181,32 +181,6 @@ class RouteHistoryPage extends StatelessWidget {
                                       SizedBox(
                                         width: 5,
                                       ),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text("Vehicle",
-                                                style: AppTextStyles(context)
-                                                    .display10W500
-                                                    .copyWith(
-                                                        color: AppColors
-                                                            .grayLight)),
-                                            SizedBox(
-                                              height: 4,
-                                            ),
-                                            Text(
-                                              controller.name.value,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: AppTextStyles(context)
-                                                  .display12W500
-                                                  .copyWith(
-                                                      color:
-                                                          AppColors.grayLight),
-                                            ),
-                                          ],
-                                        ),
-                                      )
                                     ],
                                   ).paddingOnly(
                                       left: 6, bottom: 7, top: 7, right: 6),
@@ -233,7 +207,7 @@ class RouteHistoryPage extends StatelessWidget {
                                   ).paddingOnly(left: 6, bottom: 7, top: 7),
                                 ),
                               ],
-                            ).paddingSymmetric(horizontal: 16)
+                            )
                           : SizedBox.shrink())
                       : RouteHistoryFilter(
                           name: controller.name.value,

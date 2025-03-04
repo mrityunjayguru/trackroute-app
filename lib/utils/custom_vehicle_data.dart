@@ -320,7 +320,7 @@ class VehicleDataWidget extends StatelessWidget {
               child: Container(
                 // height: 5.h,
                 padding: EdgeInsets.symmetric(
-                    vertical: 12, horizontal: 8),
+                    vertical: 9, horizontal: 8),
                 width: 30.w,
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(AppSizes.radius_50),
@@ -476,13 +476,13 @@ class VehicleDataWidget extends StatelessWidget {
                         child: InkWell(
                           onTap: () {
                             Get.put(ReportsController()).setData();
-                            Get.to(() => ReportsView(),
+                            Get.to(() => ReportsView(imei: imei,),
                                 transition: Transition.upToDown,
                                 duration: const Duration(milliseconds: 300));
                           },
                           child: Container(
                             padding: EdgeInsets.symmetric(
-                                vertical: 12, horizontal: 8),
+                                vertical: 9, horizontal: 8),
                             decoration: BoxDecoration(
                                 borderRadius:
                                     BorderRadius.circular(AppSizes.radius_50),

@@ -67,8 +67,8 @@ class AlertController extends GetxController {
     vehicleSelected.value = false;
     loadUser().then(
       (value) {
-        getAnnouncements();
         getAlerts();
+        getAnnouncements();
       },
     );
   }

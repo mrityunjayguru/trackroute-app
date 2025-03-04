@@ -6,7 +6,11 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:track_route_pro/constants/constant.dart';
+import 'package:track_route_pro/modules/bottom_screen/controller/bottom_bar_controller.dart';
+import 'package:track_route_pro/modules/bottom_screen/controller/bottom_bar_controller.dart';
+import 'package:track_route_pro/modules/bottom_screen/controller/bottom_bar_controller.dart';
 import 'package:track_route_pro/modules/login_screen/controller/login_controller.dart';
+import 'package:track_route_pro/routes/app_pages.dart';
 import 'package:track_route_pro/utils/app_prefrance.dart';
 Future<void> _firebaseMessagingBackgroundHandler(
     RemoteMessage message) async {
@@ -142,7 +146,46 @@ class FirebaseNotificationService extends GetxService {
       }
     });
 
+
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      _handleNotificationClick(message);
+    });
+
+    RemoteMessage? initialMessage =
+    await FirebaseMessaging.instance.getInitialMessage();
+
+    if (initialMessage != null) {
+      _handleNotificationClick(initialMessage);
+    }
+
     await initMessaging();
+  }
+
+
+  void _handleNotificationClick(RemoteMessage message) {
+      checkTokenAndNavigate();
+  }
+
+  void checkTokenAndNavigate() async {
+    // Delay for 3 seconds
+    await Future.delayed(const Duration(seconds: 3));
+
+    // Check if the API token exists in AppPreference
+    String? apiToken = await AppPreference.getStringFromSF(AppPreference.accessTokenKey);
+    // debugPrint("API TOKEN ========> $apiToken");
+    if (apiToken != null && apiToken.isNotEmpty) {
+      // If token exists, navigate to BottomBar
+
+      Get.offNamed(Routes.BOTTOMBAR);
+      final bottomController = Get.isRegistered<BottomBarController>()
+          ? Get.find<BottomBarController>() // Find if already registered
+          : Get.put(BottomBarController());
+      bottomController.updateIndex(1);
+    } else {
+      // If token doesn't exist, navigate to LoginScreen
+      Get.offNamed(Routes.LOGIN);
+    }
+    Get.put(LoginController()).fetchSplashData();
   }
 
   Future<void> initMessaging() async {
