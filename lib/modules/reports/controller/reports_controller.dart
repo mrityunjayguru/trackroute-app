@@ -14,7 +14,7 @@ import '../../track_route_screen/controller/track_route_controller.dart';
 enum DATE {
   today(name: "Today", key : "today"),
   yesterday(name: "Yesterday", key: "yesterday"),
-  last7Days(name: "Last 7 Days", key: "lastsevendays");
+  last7Days(name: "Last 7 Days", key: "sevendays");
 
   final String name;
   final String key;
