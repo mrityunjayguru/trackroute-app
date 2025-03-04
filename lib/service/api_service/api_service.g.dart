@@ -996,7 +996,7 @@ class _ApiService implements ApiService {
     )
         .compose(
           _dio.options,
-          'SummaryReport/tripSummary',
+          '/SummaryReport/tripSummary',
           queryParameters: queryParameters,
           data: _data,
         )
@@ -1031,7 +1031,7 @@ class _ApiService implements ApiService {
     )
         .compose(
           _dio.options,
-          'SummaryReport/eventReport',
+          '/SummaryReport/eventReport',
           queryParameters: queryParameters,
           data: _data,
         )
@@ -1067,7 +1067,7 @@ class _ApiService implements ApiService {
     )
         .compose(
           _dio.options,
-          'SummaryReport/consolidateSummary',
+          '/SummaryReport/consolidateSummary',
           queryParameters: queryParameters,
           data: _data,
         )
@@ -1102,7 +1102,7 @@ class _ApiService implements ApiService {
     )
         .compose(
           _dio.options,
-          'SummaryReport/travelSummary',
+          '/SummaryReport/travelSummary',
           queryParameters: queryParameters,
           data: _data,
         )
@@ -1137,7 +1137,7 @@ class _ApiService implements ApiService {
     )
         .compose(
           _dio.options,
-          'SummaryReport/monthlyDistance',
+          '/SummaryReport/monthlyDistance',
           queryParameters: queryParameters,
           data: _data,
         )
@@ -1172,7 +1172,7 @@ class _ApiService implements ApiService {
     )
         .compose(
           _dio.options,
-          'SummaryReport/idelLogs',
+          '/SummaryReport/idelLogs',
           queryParameters: queryParameters,
           data: _data,
         )
