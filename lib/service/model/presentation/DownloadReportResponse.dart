@@ -5,13 +5,13 @@ class DownloadReportResponse {
       this.data,});
 
   DownloadReportResponse.fromJson(dynamic json) {
-    data = json['data'];
+    data = json['files'];
   }
   String? data;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
-    map['data'] = data;
+    map['files'] = data;
     return map;
   }
 

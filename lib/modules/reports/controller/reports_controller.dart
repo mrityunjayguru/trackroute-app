@@ -111,16 +111,29 @@ class ReportsController extends GetxController {
         request.days = selectedDate.value!.key;
         request.deviceId = [imei];
         var response;
-       response = fetchReport( request);
-
-        response = await apiservice.idleReport(request);
+        switch (selectedReport.value) {
+          case "Summary":
+            response = await apiservice.consolidateReport(request);
+          case "Travel Report":
+           response = await apiservice.summaryReport(request);
+          case "Trip Report":
+           response = await apiservice.tripReport(request);
+          case "Event Report":
+           response = await apiservice.eventReport(request); // Assuming event uses consolidate API
+          case "Stop Idle Report":
+           response = await apiservice.idleReport(request);
+          case "Distance Report":
+           response = await apiservice.distanceReport(request);
+          default:
+            throw Exception("Invalid report type: ${selectedReport.value}");
+        }
         link = response.data ?? "";
         if (link.isNotEmpty) {
           showDownloaded.value = true;
           Utils.launchLink('${ProjectUrls.imgBaseUrl}$link', showError: true);
         } else {
           Utils.getSnackbar(
-              "Error", "Unable to fetch report, Please try later");
+              "Report Unavailable", "");
         }
         networkStatus.value = NetworkStatus.SUCCESS;
       } catch (e) {
@@ -130,24 +143,6 @@ class ReportsController extends GetxController {
     }
   }
 
-  Future<DownloadReportResponse> fetchReport(ReportsRequest request) async {
 
-    switch (selectedReport.value) {
-      case "Summary":
-        return await apiservice.consolidateReport(request);
-      case "Travel Report":
-        return await apiservice.summaryReport(request);
-      case "Trip Report":
-        return await apiservice.tripReport(request);
-      case "Event Report":
-        return await apiservice.eventReport(request); // Assuming event uses consolidate API
-      case "Stop Idle Report":
-        return await apiservice.idleReport(request);
-      case "Distance Report":
-        return await apiservice.distanceReport(request);
-      default:
-        throw Exception("Invalid report type: ${selectedReport.value}");
-    }
-  }
 
 }
