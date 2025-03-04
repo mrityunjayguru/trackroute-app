@@ -185,7 +185,7 @@ class FirebaseNotificationService extends GetxService {
       // If token doesn't exist, navigate to LoginScreen
       Get.offNamed(Routes.LOGIN);
     }
-    Get.put(LoginController()).fetchSplashData();
+    // Get.put(LoginController()).fetchSplashData();
   }
 
   Future<void> initMessaging() async {
