@@ -1,25 +1,25 @@
-import 'dart:io';
 
-import 'package:permission_handler/permission_handler.dart';
 import 'package:track_route_pro/constants/project_urls.dart';
 import 'package:track_route_pro/service/api_service/api_service.dart';
-import 'package:track_route_pro/service/model/presentation/DownloadReportRequest.dart';
+import 'package:track_route_pro/service/model/ReportsRequest.dart';
 import 'package:track_route_pro/service/model/presentation/track_route/track_route_vehicle_list.dart';
 import 'package:track_route_pro/service/model/privacy_policy/PrivacyPolicyResponse.dart';
 import 'package:track_route_pro/utils/common_import.dart';
 import 'package:track_route_pro/utils/enums.dart';
 
+import '../../../service/model/presentation/DownloadReportResponse.dart';
 import '../../../utils/utils.dart';
 import '../../track_route_screen/controller/track_route_controller.dart';
 
 enum DATE {
-  today(name: "Today"),
-  yesterday(name: "Yesterday"),
-  last7Days(name: "Last 7 Days");
+  today(name: "Today", key : "today"),
+  yesterday(name: "Yesterday", key: "yesterday"),
+  last7Days(name: "Last 7 Days", key: "lastsevendays");
 
   final String name;
+  final String key;
 
-  const DATE({required this.name});
+  const DATE({required this.name, required this.key});
 }
 
 class ReportsController extends GetxController {
@@ -46,13 +46,13 @@ class ReportsController extends GetxController {
     "Stop Idle Report",
     "Distance Report"
   ];
-
+/*
   void getData() {
     vehicleData.value.clear();
     vehicleData.value.add(Data(vehicleNo: "Select All Vehicles"));
     vehicleData.value.addAll(trackController.allVehicles.value);
     vehicleData.value = List.from(vehicleData.value);
-  }
+  }*/
 
   void setData() {
     // getData();
@@ -65,7 +65,7 @@ class ReportsController extends GetxController {
     selectedReport.value = "";
   }
 
-  void addData(int index) {
+/*  void addData(int index) {
     if (index == 0) {
       selectedVehicles.value.clear();
       selectedVehicles.value.add(Data(vehicleNo: "Select All Vehicles"));
@@ -92,10 +92,10 @@ class ReportsController extends GetxController {
         .removeWhere((element) => element.vehicleNo == "Select All Vehicles");
 
     selectedVehicles.value = List.from(selectedVehicles.value);
-  }
+  }*/
 
   Future<void> fetchData(String imei) async {
-    if (selectedDate == null) {
+    if (selectedDate.value == null) {
       openDay.value = true;
       openReport.value = false;
     } else if (selectedReport.value.isEmpty) {
@@ -107,24 +107,13 @@ class ReportsController extends GetxController {
       showDownloaded.value = false;
       try {
         networkStatus.value = NetworkStatus.LOADING;
-        var request = DownloadReportRequest();
-        if (selectedDate.value == DATE.today) {
-          request.today = true;
-        } else if (selectedDate.value == DATE.yesterday) {
-          request.yesterday = true;
-        } else {
-          request.sevendays = true;
-        }
+        var request = ReportsRequest();
+        request.days = selectedDate.value!.key;
+        request.deviceId = [imei];
+        var response;
+       response = fetchReport( request);
 
-        request.deviceId = selectedVehicles.value
-            .where(
-              (element) => element.vehicleNo != "Select All Vehicles",
-            )
-            .map(
-              (e) => e.imei ?? "",
-            )
-            .toList();
-        var response = await apiservice.downloadReport(request);
+        response = await apiservice.idleReport(request);
         link = response.data ?? "";
         if (link.isNotEmpty) {
           showDownloaded.value = true;
@@ -140,4 +129,25 @@ class ReportsController extends GetxController {
       }
     }
   }
+
+  Future<DownloadReportResponse> fetchReport(ReportsRequest request) async {
+
+    switch (selectedReport.value) {
+      case "Summary":
+        return await apiservice.consolidateReport(request);
+      case "Travel Report":
+        return await apiservice.summaryReport(request);
+      case "Trip Report":
+        return await apiservice.tripReport(request);
+      case "Event Report":
+        return await apiservice.eventReport(request); // Assuming event uses consolidate API
+      case "Stop Idle Report":
+        return await apiservice.idleReport(request);
+      case "Distance Report":
+        return await apiservice.distanceReport(request);
+      default:
+        throw Exception("Invalid report type: ${selectedReport.value}");
+    }
+  }
+
 }

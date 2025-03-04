@@ -32,4 +32,10 @@ class ProjectUrls {
   static const String privacyPolicy = "/privacyPolicy/get";
   static const String termsCondition = "/termAndCondition/get";
   static const String downloadReport = "/trackVehicle/summary";
+  static const String idleReport = "SummaryReport/idelLogs";
+  static const String distanceReport = "SummaryReport/monthlyDistance";
+  static const String summaryReport = "SummaryReport/travelSummary";
+  static const String consolidateReport = "SummaryReport/consolidateSummary";
+  static const String eventReport = "SummaryReport/eventReport";
+  static const String tripReport = "SummaryReport/tripSummary";
 }

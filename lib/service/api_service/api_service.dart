@@ -5,6 +5,12 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:track_route_pro/constants/project_urls.dart';
+import 'package:track_route_pro/service/model/ReportsRequest.dart';
+import 'package:track_route_pro/service/model/ReportsRequest.dart';
+import 'package:track_route_pro/service/model/ReportsRequest.dart';
+import 'package:track_route_pro/service/model/ReportsRequest.dart';
+import 'package:track_route_pro/service/model/ReportsRequest.dart';
+import 'package:track_route_pro/service/model/ReportsRequest.dart';
 import 'package:track_route_pro/service/model/alerts/config/get_config/GetAlertsConfig.dart';
 import 'package:track_route_pro/service/model/alerts/config/response/AlertsConfigResponse.dart';
 import 'package:track_route_pro/service/model/auth/FirebaseUpdateRequest.dart';
@@ -188,4 +194,28 @@ abstract class ApiService {
   @POST(ProjectUrls.downloadReport)
   Future<DownloadReportResponse> downloadReport(
       @Body(nullToAbsent: true) DownloadReportRequest request);
+
+  @POST(ProjectUrls.tripReport)
+  Future<DownloadReportResponse> tripReport(
+      @Body(nullToAbsent: true) ReportsRequest request);
+
+  @POST(ProjectUrls.eventReport)
+  Future<DownloadReportResponse> eventReport(
+      @Body(nullToAbsent: true) ReportsRequest request);
+
+  @POST(ProjectUrls.consolidateReport)
+  Future<DownloadReportResponse> consolidateReport(
+      @Body(nullToAbsent: true) ReportsRequest request);
+
+  @POST(ProjectUrls.summaryReport)
+  Future<DownloadReportResponse> summaryReport(
+      @Body(nullToAbsent: true) ReportsRequest request);
+
+  @POST(ProjectUrls.distanceReport)
+  Future<DownloadReportResponse> distanceReport(
+      @Body(nullToAbsent: true) ReportsRequest request);
+
+  @POST(ProjectUrls.idleReport)
+  Future<DownloadReportResponse> idleReport(
+      @Body(nullToAbsent: true) ReportsRequest request);
 }
