@@ -337,6 +337,7 @@ class LoginController extends GetxController {
               ),
             ),
             barrierDismissible: true,
+            barrierColor: Colors.black.withOpacity(0.6)
           );
         });
         break; // Break after showing the first active ad
