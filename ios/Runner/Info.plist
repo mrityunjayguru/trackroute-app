@@ -45,8 +45,6 @@
 	<string>We need your location to show your current position on the map.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>We need access to save downloaded PDFs to your device.</string>
-	<key>NSUserTrackingUsageDescription</key>
-	<string>We use notifications to keep you informed of important updates.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIBackgroundModes</key>
