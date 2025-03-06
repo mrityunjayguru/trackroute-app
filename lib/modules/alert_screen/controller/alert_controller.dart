@@ -169,6 +169,9 @@ class AlertController extends GetxController {
           }
           offset += 20;
         }
+        else if(!isLoadMore){
+          alerts.value = newAlerts;
+        }
 
         alerts.sort((a, b) =>
             DateTime.parse(b.createdAt!).compareTo(DateTime.parse(a.createdAt!)));

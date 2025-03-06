@@ -40,12 +40,12 @@ class AlertNotificationTab extends StatelessWidget {
               ),
                 Expanded(
                   child: Obx(
-                    () => ListView.builder(
+                    () => alertController.alerts.length > 0? ListView.builder(
                       controller: alertController.scrollController,
                       itemCount: alertController.alerts.length,
                       itemBuilder: (context, index) => notificationAlert(
                           context: context, data: alertController.alerts[index]),
-                    ),
+                    ) : Center(child: Text("No Alerts Found!", style: AppTextStyles(context).display18W500,)),
                   ),
                 )
             ],
