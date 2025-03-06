@@ -35,6 +35,7 @@ class Assets {
   static const String pngRouteMarker = 'assets/images/png/route_marker.png';
   static const String pngSelectedMarker = 'assets/images/png/selected_marker.png';
   static const String pngUnselectedMarker = 'assets/images/png/unselected_marker.png';
+  static const String svgAlertsFilter = 'assets/images/svg/alerts_filter.svg';
   static const String svgAllIcon = 'assets/images/svg/all_icon.svg';
   static const String svgArrowIcon = 'assets/images/svg/arrow_icon.svg';
   static const String svgAvgSpeedIcon = 'assets/images/svg/avg_speed_icon.svg';

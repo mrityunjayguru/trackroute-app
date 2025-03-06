@@ -1,7 +1,6 @@
-import 'dart:developer';
-
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:sizer/sizer.dart';
 import 'package:track_route_pro/config/app_sizer.dart';
 import 'package:track_route_pro/config/theme/app_colors.dart';
@@ -9,8 +8,6 @@ import 'package:track_route_pro/config/theme/app_textstyle.dart';
 import 'package:track_route_pro/gen/assets.gen.dart';
 import 'package:track_route_pro/modules/alert_screen/controller/alert_controller.dart';
 import 'package:track_route_pro/utils/common_import.dart';
-
-import '../../../../service/model/AlertDataModel.dart';
 import '../../../../service/model/alerts/alert/AlertsResponse.dart';
 import '../../../track_route_screen/controller/track_route_controller.dart';
 
@@ -26,22 +23,47 @@ class AlertNotificationTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = getAppLocalizations(context)!;
-
-    return Column(
+    return Stack(
       children: [
-        vehicalSelection(localizations, context),
-        SizedBox(
-          height: 1.5.h,
-        ),
-        Expanded(
-          child: Obx(
-            () => ListView.builder(
-              itemCount: alertController.alerts.length,
-              itemBuilder: (context, index) => notificationAlert(
-                  context: context, data: alertController.alerts[index]),
-            ),
+        RefreshIndicator(
+          onRefresh: onRefresh,
+          color: AppColors.selextedindexcolor,
+          child: Column(
+            children: [
+              vehicalSelection(localizations, context),
+              SizedBox(
+                height: 1.5.h,
+              ),
+              alertsSelection(localizations, context),
+              SizedBox(
+                height: 1.5.h,
+              ),
+                Expanded(
+                  child: Obx(
+                    () => ListView.builder(
+                      controller: alertController.scrollController,
+                      itemCount: alertController.alerts.length,
+                      itemBuilder: (context, index) => notificationAlert(
+                          context: context, data: alertController.alerts[index]),
+                    ),
+                  ),
+                )
+            ],
           ),
-        )
+        ),
+        Obx(() {
+          if (alertController.showLoader.value)
+            return Positioned.fill(
+                child: Container(
+              alignment: Alignment.center,
+              color: Colors.grey.withOpacity(0.3),
+              child: LoadingAnimationWidget.threeArchedCircle(
+                color: AppColors.selextedindexcolor,
+                size: 50,
+              ),
+            ));
+          return SizedBox.shrink();
+        })
       ],
     );
   }
@@ -157,11 +179,6 @@ class AlertNotificationTab extends StatelessWidget {
       AppLocalizations localizations, BuildContext context) {
     return Obx(() {
       int itemCount = (controller.vehicleList.value.data?.length ?? 0);
-      double height = 0;
-      height = itemCount * 60;
-      if (height > 500) {
-        height = 500;
-      }
       return Column(
         children: [
           GestureDetector(
@@ -169,6 +186,7 @@ class AlertNotificationTab extends StatelessWidget {
             onTap: () {
               alertController.isExpanded.value =
                   !alertController.isExpanded.value;
+              alertController.closeExpandedAlerts();
             },
             child: Container(
               height: 4.8.h,
@@ -202,8 +220,8 @@ class AlertNotificationTab extends StatelessWidget {
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeInOut,
             child: alertController.isExpanded.value
-                ? SizedBox(
-                    height: height,
+                ? Container(
+                    constraints: BoxConstraints(maxHeight: 400.h),
                     child: Scrollbar(
                       thumbVisibility: true,
                       controller: scrollController,
@@ -217,6 +235,7 @@ class AlertNotificationTab extends StatelessWidget {
                                 alertController.filterAlerts(
                                   false,
                                   "",
+                                  "",
                                   -1,
                                 );
                               },
@@ -224,7 +243,9 @@ class AlertNotificationTab extends StatelessWidget {
                                 width: double.maxFinite,
                                 padding: EdgeInsets.all(8),
                                 decoration: BoxDecoration(
-                                  color: alertController.selectedVehicleIndex.value == -1
+                                  color: alertController
+                                              .selectedVehicleIndex.value ==
+                                          -1
                                       ? AppColors.selextedindexcolor
                                       : AppColors.whiteOff,
                                 ),
@@ -232,26 +253,33 @@ class AlertNotificationTab extends StatelessWidget {
                                   'All',
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
-                                  style: AppTextStyles(context).display16W700.copyWith(
-                                    color: alertController.selectedVehicleIndex.value == -1
-                                        ? AppColors.whiteOff
-                                        : null,
-                                  ),
+                                  style: AppTextStyles(context)
+                                      .display16W700
+                                      .copyWith(
+                                        color: alertController
+                                                    .selectedVehicleIndex
+                                                    .value ==
+                                                -1
+                                            ? AppColors.whiteOff
+                                            : null,
+                                      ),
                                 ),
                               ),
                             ),
                             // Now add the rest of the vehicle list items
                             ...List.generate(
                               itemCount,
-                                  (index) => GestureDetector(
+                              (index) => GestureDetector(
                                 behavior: HitTestBehavior.deferToChild,
                                 onTap: () {
                                   alertController.filterAlerts(
                                       !(index ==
                                           alertController
-                                              .selectedVehicleIndex.value),
+                                              .selectedVehicleIndex.value),controller.vehicleList.value.data?[index]
+                                      .vehicleNo ??
+                                      "",
                                       controller.vehicleList.value.data?[index]
-                                          .vehicleNo ??
+                                              .imei ??
                                           "",
                                       index);
                                 },
@@ -259,10 +287,11 @@ class AlertNotificationTab extends StatelessWidget {
                                   width: double.maxFinite,
                                   padding: EdgeInsets.all(8),
                                   decoration: BoxDecoration(
-                                    color: alertController.selectedVehicleIndex ==
-                                        index
-                                        ? AppColors.selextedindexcolor
-                                        : AppColors.whiteOff,
+                                    color:
+                                        alertController.selectedVehicleIndex ==
+                                                index
+                                            ? AppColors.selextedindexcolor
+                                            : AppColors.whiteOff,
                                   ),
                                   child: Text(
                                     '${controller.vehicleList.value.data?[index].vehicleNo}',
@@ -271,12 +300,12 @@ class AlertNotificationTab extends StatelessWidget {
                                     style: AppTextStyles(context)
                                         .display16W700
                                         .copyWith(
-                                      color: alertController
-                                          .selectedVehicleIndex ==
-                                          index
-                                          ? AppColors.whiteOff
-                                          : null,
-                                    ),
+                                          color: alertController
+                                                      .selectedVehicleIndex ==
+                                                  index
+                                              ? AppColors.whiteOff
+                                              : null,
+                                        ),
                                   ),
                                 ),
                               ),
@@ -290,5 +319,153 @@ class AlertNotificationTab extends StatelessWidget {
         ],
       );
     });
+  }
+
+  Widget alertsSelection(AppLocalizations localizations, BuildContext context) {
+    return Obx(() {
+      int itemCount = (alertController.alertsList.length);
+      /*
+      double height = 0;
+      height = itemCount * 60;
+      if (height > 500) {
+        height = 500;
+      }*/
+      return Column(
+        children: [
+          GestureDetector(
+            behavior: HitTestBehavior.deferToChild,
+            onTap: () {
+              alertController.isExpandedAlerts.value =
+                  !alertController.isExpandedAlerts.value;
+              alertController.closeExpanded();
+            },
+            child: Container(
+              height: 4.8.h,
+              decoration: BoxDecoration(
+                  color: AppColors.whiteOff,
+                  borderRadius: BorderRadius.circular(AppSizes.radius_50)),
+              child: Row(
+                children: [
+                  SvgPicture.asset('assets/images/svg/alerts_filter.svg')
+                      .paddingOnly(right: 10, left: 10),
+                  Text(
+                    alertController.alertSelected.value
+                        ? alertController.selectedAlertName.value
+                        : "Select Alert Type",
+                    style: AppTextStyles(context)
+                        .display16W400
+                        .copyWith(color: AppColors.grayLight),
+                  ),
+                  Spacer(),
+                  SvgPicture.asset(
+                    alertController.isExpandedAlerts.value
+                        ? "assets/images/svg/ic_arrow_up.svg"
+                        : Assets.images.svg.icArrowDown,
+                    color: AppColors.grayLight,
+                  ).paddingOnly(right: 14, left: 10),
+                ],
+              ),
+            ),
+          ),
+          AnimatedSize(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            child: alertController.isExpandedAlerts.value
+                ? Container(
+                    constraints: BoxConstraints(maxHeight: 400.h),
+                    child: Scrollbar(
+                      thumbVisibility: true,
+                      controller: scrollController,
+                      child: SingleChildScrollView(
+                        controller: scrollController,
+                        child: Column(
+                          children: [
+                            GestureDetector(
+                              behavior: HitTestBehavior.deferToChild,
+                              onTap: () {
+                                alertController.filterByAlertType(
+                                  false,
+                                  "",
+                                  -1,
+                                );
+                              },
+                              child: Container(
+                                width: double.maxFinite,
+                                padding: EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: alertController
+                                              .selectedAlertIndex.value ==
+                                          -1
+                                      ? AppColors.selextedindexcolor
+                                      : AppColors.whiteOff,
+                                ),
+                                child: Text(
+                                  'All',
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: AppTextStyles(context)
+                                      .display16W700
+                                      .copyWith(
+                                        color: alertController
+                                                    .selectedAlertIndex.value ==
+                                                -1
+                                            ? AppColors.whiteOff
+                                            : null,
+                                      ),
+                                ),
+                              ),
+                            ),
+                            // Now add the rest of the vehicle list items
+                            ...List.generate(
+                              itemCount,
+                              (index) => GestureDetector(
+                                behavior: HitTestBehavior.deferToChild,
+                                onTap: () {
+                                  alertController.filterByAlertType(
+                                      !(index ==
+                                          alertController
+                                              .selectedAlertIndex.value),
+                                      alertController.alertsList[index],
+                                      index);
+                                },
+                                child: Container(
+                                  width: double.maxFinite,
+                                  padding: EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: alertController.selectedAlertIndex ==
+                                            index
+                                        ? AppColors.selextedindexcolor
+                                        : AppColors.whiteOff,
+                                  ),
+                                  child: Text(
+                                    '${alertController.alertsList[index]}',
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: AppTextStyles(context)
+                                        .display16W700
+                                        .copyWith(
+                                          color: alertController
+                                                      .selectedAlertIndex ==
+                                                  index
+                                              ? AppColors.whiteOff
+                                              : null,
+                                        ),
+                                  ),
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    )).paddingSymmetric(horizontal: 10)
+                : SizedBox.shrink(),
+          ),
+        ],
+      );
+    });
+  }
+
+  Future<void> onRefresh() async {
+    await alertController.getAlerts(isLoadMore: false);
   }
 }

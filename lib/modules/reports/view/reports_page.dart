@@ -53,12 +53,6 @@ class ReportsView extends StatelessWidget {
                         "Reports",
                         style: AppTextStyles(context).display20W500,
                       ).paddingOnly(right: 5),
-                      Text(
-                        "Download Consolidated Events Report",
-                        style: AppTextStyles(context)
-                            .display10W400
-                            .copyWith(color: AppColors.grayLight),
-                      ),
                       Spacer(),
                       InkWell(
                           onTap: () {
@@ -228,7 +222,7 @@ class ReportsView extends StatelessWidget {
               borderRadius: BorderRadius.circular(AppSizes.radius_10),
               color: AppColors.selextedindexcolor),
           child: Center(
-            child: Text('Report Selected',
+            child: Text(controller.selectedReport.value,
                 style: AppTextStyles(context).display18W600),
           ),
         ),

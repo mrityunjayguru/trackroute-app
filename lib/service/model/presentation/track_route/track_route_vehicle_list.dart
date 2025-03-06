@@ -123,6 +123,7 @@ class Data {
   });
 
   Data.fromJson(Map<String, dynamic> json) {
+    debugPrint("SUMMARY ${json['summary']}");
     summary = json['summary'] != null
         ? Summary.fromJson(json['summary'])
         : null;

@@ -340,7 +340,7 @@ class VehicleDataWidget extends StatelessWidget {
         ),
         SizedBox(height: 1.5.h),
         if (isNotExpired) ...[
-          Container(
+          if(isBottomSheet)Container(
             decoration: BoxDecoration(
                 color: AppColors.whiteOff,
                 boxShadow: [
@@ -367,7 +367,7 @@ class VehicleDataWidget extends StatelessWidget {
                       ).paddingOnly(left: 3, right: 3),
                       Flexible(
                         child: AutoSizeText(
-                          "${Utils.toStringAsFixed(data: speed)}",
+                          "${Utils.formatInt(data: speed)}",
                           style: AppTextStyles(context).display21W600,
                           maxLines: 4,
                           minFontSize: 9,
@@ -438,7 +438,7 @@ class VehicleDataWidget extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(height: 1.5.h),
+          if(isBottomSheet)SizedBox(height: 1.5.h),
           if (displayParameters != null)
             SizedBox(
               height: 9.h,

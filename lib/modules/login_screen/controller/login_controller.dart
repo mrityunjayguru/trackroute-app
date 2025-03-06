@@ -4,8 +4,6 @@ import 'package:dio/dio.dart';
 import 'package:track_route_pro/constants/constant.dart';
 import 'package:track_route_pro/constants/project_urls.dart';
 import 'package:track_route_pro/firebase_controller.dart';
-import 'package:track_route_pro/firebase_controller.dart';
-import 'package:track_route_pro/firebase_controller.dart';
 import 'package:track_route_pro/modules/login_screen/view/widget/banner.dart';
 import 'package:track_route_pro/modules/profile/controller/profile_controller.dart';
 import 'package:track_route_pro/routes/app_pages.dart';
@@ -26,9 +24,8 @@ class LoginController extends GetxController {
   final profileController = Get.put(ProfileController());
   ApiService apiService = ApiService.create();
   final dio = Dio();
-  // late ApiService apiService;
   RxBool obscureText = RxBool(true); // Default to hide password
-  RxBool showLoader = RxBool(false); // Default to hide password
+  RxBool showLoader = RxBool(false);
   bool isChangeRememberMe = false;
   RxString errorEmail = ''.obs;
   RxString errorPassword = ''.obs;
@@ -40,8 +37,6 @@ class LoginController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    // apiService = ApiService(dio);
-
   }
 
   void validateEmail(AppLocalizations localizations) {
@@ -144,15 +139,10 @@ class LoginController extends GetxController {
   // Function to fetch splash data from the API
   Future<void> fetchSplashData() async {
     try {
-
       networkStatus.value =
-          NetworkStatus.LOADING; // Set network status to loading
-
-
-
+          NetworkStatus.LOADING;
       final dio = Dio();
 
-// Add interceptors to log request and response details
       dio.interceptors.add(InterceptorsWrapper(
         onRequest: (options, handler) {
           // Log the request details
@@ -210,45 +200,7 @@ class LoginController extends GetxController {
           if (res.data.isNotEmpty) {
             networkStatus.value = NetworkStatus.SUCCESS;
             splashAddResponse.value = response;
-           /* print('splash message message:::::>${splashAddResponse.value.message}');
-            print('data:::::>${splashAddResponse.value.data}');*/
             showActiveAds(response.data);
-            // if (response.data[0].status == 'Active') {
-            //   Future.delayed(Duration.zero, () {
-            //     Get.dialog(
-            //       AdvertiseBanner(
-            //         child: Expanded(
-            //           child: InkWell(
-            //             onTap: () async {
-            //               final url =
-            //                   '${splashAddResponse.value.data[0].hyperLink ?? ''}';
-            //               if (await canLaunchUrl(Uri.parse(url))) {
-            //                 await launchUrl(Uri.parse(url));
-            //               } else {
-            //                 throw 'Could not launch $url';
-            //               }
-            //             },
-            //             child: Container(
-            //               child: CachedNetworkImage(
-            //                 progressIndicatorBuilder: (context, url, progress) =>
-            //                     Center(
-            //                       child: CircularProgressIndicator(
-            //                         value: progress.progress,
-            //                       ),
-            //                     ),
-            //                 imageUrl:
-            //                 '${ProjectUrls.imgBaseUrl}${splashAddResponse.value.data[0].image}',
-            //               ),
-            //               // Image.network(
-            //               //     splashAddResponse.value.data[0].hyperLink ?? ''),
-            //             ),
-            //           ),
-            //         ),
-            //       ),
-            //       barrierDismissible: true,
-            //     );
-            //   });
-            // }
           }
         } else {
           // print('Failed with status code: ${res.statusCode}');

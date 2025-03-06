@@ -14,17 +14,45 @@ import '../../../utils/app_prefrance.dart';
 import '../../../utils/enums.dart';
 
 class AlertController extends GetxController {
+  int offset = 0;
   RxInt selectedIndex = RxInt(0);
   RxInt selectedVehicleIndex = RxInt(-1);
+  RxInt selectedAlertIndex = RxInt(-1);
   RxString devicesOwnerID = RxString('');
   RxString selectedVehicleName = RxString('');
+  RxString selectedVehicleImei = RxString('');
+  RxString selectedAlertName = RxString('');
   RxBool vehicleSelected = RxBool(false);
+  RxBool alertSelected = RxBool(false);
   RxBool isExpanded = RxBool(false);
+  RxBool showLoader = RxBool(false);
+  RxBool isExpandedAlerts = RxBool(false);
   RxList<AnnouncementResponse> announcements = <AnnouncementResponse>[].obs;
   RxList<AlertsResponse> alerts = <AlertsResponse>[].obs;
+  Map<String, String> alertsMap = {
+    'Door': 'door',
+    'Parking': 'parking',
+    'Battery': 'battery',
+    'Fuel': 'fuel',
+    'Speed': 'speed',
+    'AC': 'ac',
+    'Area': 'area',
+    'Ignition': 'ignition',
+    'Security': 'security',
+  };
 
-  // RxList<AlertDataModel> alertsData = <AlertDataModel>[].obs;
-  RxList<AlertsResponse> unfilteredAlerts = <AlertsResponse>[].obs;
+  List<String> alertsList = [
+    'Door',
+    'Parking',
+    'Battery',
+    'Fuel',
+    'Speed',
+    'AC',
+    'Area',
+    'Ignition',
+    'Security',
+  ];
+
   final ApiService apiService = ApiService.create();
   Rx<NetworkStatus> networkStatus = Rx(NetworkStatus.IDLE);
   final Ignition = ValueNotifier<bool>(true);
@@ -47,7 +75,7 @@ class AlertController extends GetxController {
     // description
     importance: Importance.max,
   );
-
+  final ScrollController scrollController = ScrollController();
   @override
   void onInit() {
     super.onInit();
@@ -58,16 +86,29 @@ class AlertController extends GetxController {
         checkNotification();
       },
     );
+
+    scrollController.addListener(() {
+      if (scrollController.position.pixels >=
+          scrollController.position.maxScrollExtent - 100) {
+       getAlerts(isLoadMore: true);
+      }
+    });
   }
 
   void getData() {
-    isExpanded.value = false;
+    closeExpanded();
+    closeExpandedAlerts();
+    offset=0;
     selectedVehicleIndex.value = -1;
     selectedVehicleName.value = "";
+    selectedVehicleImei.value = "";
     vehicleSelected.value = false;
+    alertSelected.value = false;
+    selectedAlertIndex.value = -1;
+    selectedAlertName.value = "";
     loadUser().then(
       (value) {
-        getAlerts();
+        getAlerts(isLoadMore: false);
         getAnnouncements();
       },
     );
@@ -100,18 +141,38 @@ class AlertController extends GetxController {
     }
   }
 
-  Future<void> getAlerts() async {
+  Future<void> getAlerts({bool isLoadMore = false}) async {
     try {
-      final body = {"ownerID": "${devicesOwnerID.value}"};
+      showLoader.value = true;
+      String filter= "";
+      if(!isLoadMore){
+        offset =0;
+        scrollController.jumpTo(0);
+      }
+      if(alertSelected.value){
+        filter = (alertsMap[selectedAlertName.value] ?? "");
+      }
+      final body = {"ownerID": "${devicesOwnerID.value}", "eventType" : filter, "offset" : offset, "limit" : "20", "imei" : selectedVehicleImei.value};
       networkStatus.value = NetworkStatus.LOADING;
 
       final response = await apiService.alerts(body);
 
       if (response.message?.toLowerCase() == "success") {
         networkStatus.value = NetworkStatus.SUCCESS;
-        unfilteredAlerts.value = response.data ?? [];
-        alerts.value = unfilteredAlerts;
-        // _filterData();
+        var newAlerts = response.data ?? [];
+
+        if (newAlerts.isNotEmpty) {
+          if (isLoadMore) {
+            alerts.addAll(newAlerts); // Append data
+          } else {
+            alerts.value = newAlerts; // Replace data on first load
+          }
+          offset += 20;
+        }
+
+        alerts.sort((a, b) =>
+            DateTime.parse(b.createdAt!).compareTo(DateTime.parse(a.createdAt!)));
+
       } else {
         networkStatus.value = NetworkStatus.ERROR;
       }
@@ -119,6 +180,7 @@ class AlertController extends GetxController {
       log("ERROR ALERTS $e $s");
       networkStatus.value = NetworkStatus.ERROR;
     }
+    showLoader.value = false;
   }
 
   Future<String> getAddressFromLatLong(
@@ -139,24 +201,35 @@ class AlertController extends GetxController {
     }
   }
 
-  void filterAlerts(bool isSelected, String vehicleNo, int index) {
-    isExpanded.value = false;
+  void filterAlerts(bool isSelected, String vehicleNo,String imei, int index) {
+    closeExpanded();
+    closeExpandedAlerts();
     vehicleSelected.value = isSelected;
     if (isSelected) {
       selectedVehicleName.value = vehicleNo;
+      selectedVehicleImei.value = imei;
       selectedVehicleIndex.value = index;
-      alerts.value = unfilteredAlerts
-          .where(
-            (element) => element.deviceDetails?.vehicleNo == vehicleNo,
-          )
-          .toList();
     } else {
       selectedVehicleName.value = "";
+      selectedVehicleImei.value = "";
       selectedVehicleIndex.value = -1;
-      alerts.value = unfilteredAlerts;
     }
-    alerts.sort((a, b) =>
-        DateTime.parse(b.createdAt!).compareTo(DateTime.parse(a.createdAt!)));
+    getAlerts(isLoadMore: false);
+
+  }
+
+  void filterByAlertType(bool isSelected, String alertName,int index){
+    closeExpanded();
+    closeExpandedAlerts();
+    alertSelected.value = isSelected;
+    if (isSelected) {
+      selectedAlertName.value = alertName;
+      selectedAlertIndex.value = index;
+    } else {
+      selectedAlertName.value = "";
+      selectedAlertIndex.value = -1;
+    }
+    getAlerts(isLoadMore: false);
   }
 
   Future<void> setAlertsConfig() async {
@@ -240,7 +313,6 @@ class AlertController extends GetxController {
 
   void checkNotification() {
     if (!notification.value) {
-      log("FALSE NOTIFICATION =======>");
       Ignition.value = false;
       Parking.value = false;
       Geofencing.value = false;
@@ -294,4 +366,17 @@ class AlertController extends GetxController {
       }
     }
   }
+
+  void closeExpanded(){
+    if(isExpanded.value){
+      isExpanded.value = false;
+    }
+  }
+
+  void closeExpandedAlerts(){
+    if(isExpandedAlerts.value){
+      isExpandedAlerts.value = false;
+    }
+  }
+
 }
