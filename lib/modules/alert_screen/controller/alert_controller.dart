@@ -108,7 +108,7 @@ class AlertController extends GetxController {
     selectedAlertName.value = "";
     loadUser().then(
       (value) {
-        getAlerts(isLoadMore: false);
+        getAlerts(isLoadMore: false, jump: false);
         getAnnouncements();
       },
     );
@@ -141,13 +141,16 @@ class AlertController extends GetxController {
     }
   }
 
-  Future<void> getAlerts({bool isLoadMore = false}) async {
+  Future<void> getAlerts({bool isLoadMore = false, bool jump = true}) async {
     try {
       showLoader.value = true;
       String filter= "";
       if(!isLoadMore){
         offset =0;
-        scrollController.jumpTo(0);
+        if(jump && alerts.value.isNotEmpty){
+          scrollController.jumpTo(0);
+        }
+
       }
       if(alertSelected.value){
         filter = (alertsMap[selectedAlertName.value] ?? "");
