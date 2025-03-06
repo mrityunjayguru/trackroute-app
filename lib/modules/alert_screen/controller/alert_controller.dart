@@ -32,13 +32,13 @@ class AlertController extends GetxController {
   Map<String, String> alertsMap = {
     'Door': 'door',
     'Parking': 'parking',
-    'Battery': 'battery',
-    'Fuel': 'fuel',
-    'Speed': 'speed',
+    'Battery': 'Battery',
+    'Fuel': 'Fuel',
+    'Speed': 'Speed',
     'AC': 'ac',
-    'Area': 'area',
-    'Ignition': 'ignition',
-    'Security': 'security',
+    'Area': 'Area',
+    'Ignition': 'Ignition',
+    'Security': 'Security',
   };
 
   List<String> alertsList = [
