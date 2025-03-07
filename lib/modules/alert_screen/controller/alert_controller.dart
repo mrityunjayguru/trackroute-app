@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:intl/intl.dart';
 import 'package:track_route_pro/service/model/notification/AnnouncementResponse.dart';
 import 'package:track_route_pro/utils/common_import.dart';
 import '../../../constants/constant.dart';
@@ -10,6 +11,7 @@ import '../../../service/api_service/api_service.dart';
 import '../../../service/model/alerts/UpdateAlertsRequest.dart';
 import '../../../service/model/alerts/alert/AlertsResponse.dart';
 import '../../../service/model/alerts/config/get_config/NotificationPermission.dart';
+import '../../../service/model/time_model.dart';
 import '../../../utils/app_prefrance.dart';
 import '../../../utils/enums.dart';
 
@@ -21,9 +23,7 @@ class AlertController extends GetxController {
   RxString devicesOwnerID = RxString('');
   RxString selectedVehicleName = RxString('');
   RxString selectedVehicleImei = RxString('');
-  RxString selectedAlertName = RxString('');
-  RxBool vehicleSelected = RxBool(false);
-  RxBool alertSelected = RxBool(false);
+  RxSet<String> selectedAlertName = <String>{}.obs;
   RxBool isExpanded = RxBool(false);
   RxBool showLoader = RxBool(false);
   RxBool isExpandedAlerts = RxBool(false);
@@ -102,10 +102,7 @@ class AlertController extends GetxController {
     selectedVehicleIndex.value = -1;
     selectedVehicleName.value = "";
     selectedVehicleImei.value = "";
-    vehicleSelected.value = false;
-    alertSelected.value = false;
-    selectedAlertIndex.value = -1;
-    selectedAlertName.value = "";
+    selectedAlertName.value = {};
     loadUser().then(
       (value) {
         getAlerts(isLoadMore: false, jump: false);
@@ -152,9 +149,9 @@ class AlertController extends GetxController {
         }
 
       }
-      if(alertSelected.value){
+    /*  if(alertSelected.value){
         filter = (alertsMap[selectedAlertName.value] ?? "");
-      }
+      }*/
       final body = {"ownerID": "${devicesOwnerID.value}", "eventType" : filter, "offset" : offset, "limit" : "20", "imei" : selectedVehicleImei.value};
       networkStatus.value = NetworkStatus.LOADING;
 
@@ -210,7 +207,7 @@ class AlertController extends GetxController {
   void filterAlerts(bool isSelected, String vehicleNo,String imei, int index) {
     closeExpanded();
     closeExpandedAlerts();
-    vehicleSelected.value = isSelected;
+    // vehicleSelected.value = isSelected;
     if (isSelected) {
       selectedVehicleName.value = vehicleNo;
       selectedVehicleImei.value = imei;
@@ -227,12 +224,12 @@ class AlertController extends GetxController {
   void filterByAlertType(bool isSelected, String alertName,int index){
     closeExpanded();
     closeExpandedAlerts();
-    alertSelected.value = isSelected;
+    // alertSelected.value = isSelected;
     if (isSelected) {
-      selectedAlertName.value = alertName;
+      selectedAlertName.value = {};
       selectedAlertIndex.value = index;
     } else {
-      selectedAlertName.value = "";
+      selectedAlertName.value = {};
       selectedAlertIndex.value = -1;
     }
     getAlerts(isLoadMore: false);
@@ -383,6 +380,58 @@ class AlertController extends GetxController {
     if(isExpandedAlerts.value){
       isExpandedAlerts.value = false;
     }
+  }
+
+
+
+  ///alerts filter
+
+
+
+  String startDate = "";
+  String endDate = "";
+  TextEditingController dateController = TextEditingController();
+  TextEditingController endDateController = TextEditingController();
+  var time1 = Rx<TimeOption?>(null); // Observable
+  var time2 = Rx<TimeOption?>(null); // Observable
+  RxList<TimeOption> timeList = <TimeOption>[].obs;
+
+  void selectDate(context, TextEditingController controller, bool isStart) async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now().subtract(Duration(days: 7)),
+      lastDate: DateTime.now(),
+    );
+
+    if (pickedDate != null) {
+      // Formatting the picked date
+      String formattedDate = DateFormat('dd-MM-yyyy').format(pickedDate);
+
+      controller.text = formattedDate;
+      if(isStart){
+        startDate =  DateFormat('yyyy-MM-dd').format(pickedDate);
+      }
+      else{
+        endDate =  DateFormat('yyyy-MM-dd').format(pickedDate);
+      }
+
+    }
+  }
+
+  void generateTimeList() {
+    timeList.value = [];
+    for (int hour = 0; hour < 24; hour++) {
+      for (int minute = 0; minute < 60; minute += 30) {
+        // Adjust interval as needed
+        String formattedTime =
+            '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
+        timeList.add(TimeOption(formattedTime));
+      }
+    }
+  }
+
+  void addAlert(label) {
   }
 
 }

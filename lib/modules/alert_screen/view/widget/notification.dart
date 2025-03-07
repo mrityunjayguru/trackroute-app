@@ -7,6 +7,8 @@ import 'package:track_route_pro/config/theme/app_colors.dart';
 import 'package:track_route_pro/config/theme/app_textstyle.dart';
 import 'package:track_route_pro/gen/assets.gen.dart';
 import 'package:track_route_pro/modules/alert_screen/controller/alert_controller.dart';
+import 'package:track_route_pro/modules/alert_screen/view/alerts_filter.dart';
+import 'package:track_route_pro/modules/alert_screen/view/date_filter.dart';
 import 'package:track_route_pro/utils/common_import.dart';
 import '../../../../service/model/alerts/alert/AlertsResponse.dart';
 import '../../../track_route_screen/controller/track_route_controller.dart';
@@ -30,11 +32,12 @@ class AlertNotificationTab extends StatelessWidget {
           color: AppColors.selextedindexcolor,
           child: Column(
             children: [
-              vehicalSelection(localizations, context),
+              filter(localizations, context),
+              /*vehicalSelection(localizations, context),
               SizedBox(
                 height: 1.5.h,
               ),
-              alertsSelection(localizations, context),
+              alertsSelection(localizations, context),*/
               SizedBox(
                 height: 1.5.h,
               ),
@@ -175,6 +178,113 @@ class AlertNotificationTab extends StatelessWidget {
     );
   }
 
+  Widget filter(localizations, BuildContext context){
+    return Container(
+      width: context.width,
+      constraints: BoxConstraints(maxHeight: 100),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: InkWell(
+                  onTap: (){
+                    Get.to(() => AlertsFilterPage(),
+                        transition: Transition.upToDown,
+                        duration: const Duration(milliseconds: 300));
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: AppColors.black,
+                      borderRadius: BorderRadius.circular(AppSizes.radius_50),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SvgPicture.asset('assets/images/svg/filter_icon.svg'),
+                        Text(
+                          "Filter",
+                          style: AppTextStyles(context).display13W500.copyWith(color: AppColors.selextedindexcolor),
+                        ).paddingOnly(left: 5)
+                      ],
+                    ).paddingSymmetric(horizontal: 20,vertical: 10),
+                  ),
+                ),
+              ),
+              SizedBox(width: 10,),
+              Expanded(
+                child: InkWell(
+                  onTap: (){
+                    Get.to(() => DateFilterPage(),
+                        transition: Transition.upToDown,
+                        duration: const Duration(milliseconds: 300));
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: AppColors.selextedindexcolor,
+                      borderRadius: BorderRadius.circular(AppSizes.radius_50),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SvgPicture.asset('assets/images/svg/date_time_icon.svg'),
+                        Text(
+                          "Date & Time",
+                          style: AppTextStyles(context).display13W500.copyWith(color: AppColors.black),
+                        ).paddingOnly(left: 5)
+                      ],
+                    ).paddingSymmetric(horizontal: 20,vertical: 10),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 10,),
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: AppColors.white,
+                    borderRadius: BorderRadius.circular(AppSizes.radius_50),
+                  ),
+                  child: Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          "Alert Count : ",
+                          style: AppTextStyles(context).display13W500.copyWith(color: AppColors.grayLight),
+                        ).paddingOnly(left: 5),
+                      ),
+                      Flexible(
+                        child: Text(
+                          "0",
+                          style: AppTextStyles(context).display13W500.copyWith(color: AppColors.grayLight),
+                        )
+                      )
+                    ],
+                  ).paddingSymmetric(horizontal: 20,vertical: 10),
+                ),
+              ),
+              SizedBox(width: 10,),
+              Container(
+                decoration: BoxDecoration(
+                  color: AppColors.grayLighter,
+                  borderRadius: BorderRadius.circular(AppSizes.radius_50),
+                ),
+                child: Text(
+                  "Reset",
+                  style: AppTextStyles(context).display13W500.copyWith(color: AppColors.purpleColor),
+                ).paddingSymmetric(horizontal: 20,vertical: 10),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+/*
   Widget vehicalSelection(
       AppLocalizations localizations, BuildContext context) {
     return Obx(() {
@@ -319,17 +429,17 @@ class AlertNotificationTab extends StatelessWidget {
         ],
       );
     });
-  }
-
+  }*/
+/*
   Widget alertsSelection(AppLocalizations localizations, BuildContext context) {
     return Obx(() {
       int itemCount = (alertController.alertsList.length);
-      /*
+      *//*
       double height = 0;
       height = itemCount * 60;
       if (height > 500) {
         height = 500;
-      }*/
+      }*//*
       return Column(
         children: [
           GestureDetector(
@@ -463,7 +573,7 @@ class AlertNotificationTab extends StatelessWidget {
         ],
       );
     });
-  }
+  }*/
 
   Future<void> onRefresh() async {
     await alertController.getAlerts(isLoadMore: false);

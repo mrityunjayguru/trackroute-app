@@ -14,6 +14,7 @@ import 'package:track_route_pro/modules/privacy_policy/view/terms_cond_page.dart
 import 'package:track_route_pro/utils/common_import.dart';
 
 import '../../../config/app_sizer.dart';
+import '../../register_user/view/register_device.dart';
 
 class LoginView extends StatelessWidget {
   LoginView({super.key});
@@ -28,26 +29,26 @@ class LoginView extends StatelessWidget {
       () => Stack(
         children: [
           Scaffold(
+            resizeToAvoidBottomInset: false ,
             backgroundColor: AppColors.whiteOff,
-            body: SingleChildScrollView(
-              child: Form(
-                key: controller.formKey,
-                child: Column(
-                  children: [
-                    Container(
-                      height: 35.h,
-                      color: AppColors.black,
-                      child: Center(
-                          child: SvgPicture.asset(Assets.images.svg.logo)),
-                    ),
-                    Padding(
+            body: Form(
+              key: controller.formKey,
+              child: Column(
+                children: [
+                  Container(
+                    height: 35.h,
+                    color: AppColors.black,
+                    child: Center(
+                        child: SvgPicture.asset(Assets.images.svg.logo)),
+                  ),
+                  Expanded(
+                    child: Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 10.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           AppTextFormField(
-
                             color: AppColors.textfield,
                             controller: controller.emailController,
                             hintText: localizations.userID,
@@ -77,7 +78,7 @@ class LoginView extends StatelessWidget {
                               suffixIcon: !controller.obscureText.value
                                   ? 'assets/images/svg/eye_open_icon.svg'
                                   : 'assets/images/svg/eye_close_icon.svg',
-
+                    
                               color: AppColors.textfield,
                               controller: controller.passwordController,
                               hintText: localizations.password,
@@ -123,7 +124,7 @@ class LoginView extends StatelessWidget {
                                   : SizedBox.shrink();
                             },
                           ),
-                          SizedBox(height: 10.h),
+                          SizedBox(height: 5.h),
                           InkWell(
                             onTap: () {
                               controller.checkCredentials(localizations);
@@ -139,13 +140,47 @@ class LoginView extends StatelessWidget {
                                 ),
                               ),
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(AppSizes.radius_50),
+                                borderRadius: BorderRadius.circular(AppSizes.radius_10),
                                 color: AppColors.black,
                               ),
                             ),
-                          ).paddingOnly(bottom: 20),
+                          ).paddingOnly(bottom: 10),
                           forgotPasswordMethod(localization: localizations, context: context),
-
+                          SizedBox(height: 5.h),
+                          Spacer(),
+                          InkWell(
+                            onTap: () {
+                              Get.to(() => RegisterDevicePage(),
+                                  transition: Transition.upToDown,
+                                  duration: const Duration(milliseconds: 300));
+                            },
+                            child: Container(
+                              height: 6.h,
+                              child: Center(
+                                child: RichText(
+                                  text: TextSpan(
+                                    text: 'New User? ',
+                                    style: AppTextStyles(context).display16W400.copyWith(color: Colors.white),
+                                    children: [
+                                      TextSpan(
+                                          text: 'Register Device',
+                                          style: AppTextStyles(context).display16W400.copyWith(
+                                            height: 2,
+                                            color: AppColors.selextedindexcolor,
+                                          ),
+                    
+                                      ),
+                    
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(AppSizes.radius_10),
+                                color: AppColors.black,
+                              ),
+                            ),
+                          ).paddingOnly(bottom: 5.h),
                           RichText(
                             textAlign: TextAlign.center,
                             text: TextSpan(
@@ -189,12 +224,12 @@ class LoginView extends StatelessWidget {
                                 ),
                               ],
                             ),
-                          ).paddingOnly(top: 40, bottom: 8),
+                          ).paddingOnly( bottom: 8),
                         ],
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),

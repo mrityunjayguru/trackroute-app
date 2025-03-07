@@ -14,6 +14,7 @@ import 'package:track_route_pro/modules/track_route_screen/controller/track_rout
 import 'package:track_route_pro/modules/vehicales/controller/vehicales_controller.dart';
 
 import '../modules/privacy_policy/controller/privacy_policy_controller.dart';
+import '../modules/register_user/controller/register_controller.dart';
 import '../modules/route_history/controller/history_controller.dart';
 import '../modules/splash_screen/controller/data_controller.dart';
 
@@ -148,6 +149,15 @@ class ReportsBindings extends Bindings {
   void dependencies() {
     Get.lazyPut<ReportsController>(
           () => ReportsController(),
+    );
+  }
+}
+
+class RegisterUserBindings extends Bindings {
+  @override
+  void dependencies() {
+    Get.lazyPut<RegisterController>(
+          () => RegisterController(),
     );
   }
 }

@@ -55,6 +55,7 @@ class Assets {
   static const String svgCopy = 'assets/images/svg/copy.svg';
   static const String svgCopyIcon = 'assets/images/svg/copy_icon.svg';
   static const String svgDateIcon = 'assets/images/svg/date_icon.svg';
+  static const String svgDateTimeIcon = 'assets/images/svg/date_time_icon.svg';
   static const String svgDeactivated = 'assets/images/svg/deactivated.svg';
   static const String svgDeactivatedIcon = 'assets/images/svg/deactivated-icon.svg';
   static const String svgDestinationIcon = 'assets/images/svg/destination_icon.svg';
@@ -63,6 +64,7 @@ class Assets {
   static const String svgEyeClose = 'assets/images/svg/eye_close.svg';
   static const String svgEyeCloseIcon = 'assets/images/svg/eye_close_icon.svg';
   static const String svgEyeOpenIcon = 'assets/images/svg/eye_open_icon.svg';
+  static const String svgFilterIcon = 'assets/images/svg/filter_icon.svg';
   static const String svgGeoIcon = 'assets/images/svg/geo_icon.svg';
   static const String svgGps = 'assets/images/svg/gps.svg';
   static const String svgGreenCheck = 'assets/images/svg/green_check.svg';
@@ -114,6 +116,7 @@ class Assets {
   static const String svgPasteIcon = 'assets/images/svg/paste_icon.svg';
   static const String svgRedCheck = 'assets/images/svg/red_check.svg';
   static const String svgRedMarker = 'assets/images/svg/red_marker.svg';
+  static const String svgRegisterIcon = 'assets/images/svg/register_icon.svg';
   static const String svgReportIcon = 'assets/images/svg/report_icon.svg';
   static const String svgSearch = 'assets/images/svg/search.svg';
   static const String svgSelectedMarker = 'assets/images/svg/selected_marker.svg';
