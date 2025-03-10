@@ -692,34 +692,33 @@ class _ApiService implements ApiService {
   }
 
   @override
-  Future<ListingBaseResponse<AlertsResponse>> alerts(
+  Future<AlertsListing<AlertsResponse>> alerts(
       Map<String, dynamic> body) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     _data.addAll(body);
-    final _options =
-        _setStreamType<ListingBaseResponse<AlertsResponse>>(Options(
+    final _options = _setStreamType<AlertsListing<AlertsResponse>>(Options(
       method: 'POST',
       headers: _headers,
       extra: _extra,
     )
-            .compose(
-              _dio.options,
-              '/notification/alerts',
-              queryParameters: queryParameters,
-              data: _data,
-            )
-            .copyWith(
-                baseUrl: _combineBaseUrls(
-              _dio.options.baseUrl,
-              baseUrl,
-            )));
+        .compose(
+          _dio.options,
+          '/notification/alerts',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        )));
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late ListingBaseResponse<AlertsResponse> _value;
+    late AlertsListing<AlertsResponse> _value;
     try {
-      _value = ListingBaseResponse<AlertsResponse>.fromJson(
+      _value = AlertsListing<AlertsResponse>.fromJson(
         _result.data!,
         (json) => AlertsResponse.fromJson(json as Map<String, dynamic>),
       );

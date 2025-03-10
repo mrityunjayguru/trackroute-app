@@ -37,6 +37,7 @@ import '../../modules/login_screen/controller/login_controller.dart';
 import '../../routes/app_pages.dart';
 import '../model/alerts/UpdateAlertsRequest.dart';
 import '../model/alerts/alert/AlertsResponse.dart';
+import '../model/alerts_listing.dart';
 import '../model/faq/Topic.dart';
 import '../model/notification/AnnouncementResponse.dart';
 import '../model/presentation/DownloadReportRequest.dart';
@@ -169,7 +170,7 @@ abstract class ApiService {
       @Body() Map<String, dynamic> body);
 
   @POST(ProjectUrls.alerts)
-  Future<ListingBaseResponse<AlertsResponse>> alerts(
+  Future<AlertsListing<AlertsResponse>> alerts(
       @Body() Map<String, dynamic> body);
 
   @POST(ProjectUrls.relayCheckStatus)

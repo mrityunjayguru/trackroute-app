@@ -139,6 +139,14 @@ class DateFilterPage extends StatelessWidget {
                       Expanded(
                         child: InkWell(
                           onTap: (){
+                            if(controller.dateController.text.isEmpty){
+                              Utils.getSnackbar("Please select start date", "");
+                            }
+                              else{
+                              Get.back();
+                              controller.selectedDate.value = true;
+                              controller.getAlerts(isLoadMore: false, jump: true);
+                            }
 
                           },
                           child: Container(

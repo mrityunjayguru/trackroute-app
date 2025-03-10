@@ -10,8 +10,14 @@ import 'package:track_route_pro/utils/common_import.dart';
 
 import '../../../common/textfield/apptextfield.dart';
 import '../../../config/app_sizer.dart';
+import '../../../utils/search_drop_down.dart';
+import '../controller/register_controller.dart';
 
 class DevicePage extends StatelessWidget {
+  final controller = Get.isRegistered<RegisterController>()
+      ? Get.find<RegisterController>() // Find if already registered
+      : Get.put(RegisterController());
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,19 +53,34 @@ class DevicePage extends StatelessWidget {
                         .display12W500
                         .copyWith(color: AppColors.color_4B4749,height: 1.5),
                   ),
-                  textfield(controller: TextEditingController(), hint: "Device IMEI No."),
-                  textfield(controller: TextEditingController(), hint: "Device SIM No."),
-                  textfield(controller: TextEditingController(), hint: "Vehicle Number"),
-                  textfield(
-                      controller: TextEditingController(),
-                      hint: "Gender",
-                      readOnly: true,
-                      suffixIcon: "assets/images/avg/ic_arrow_down.svg",
-                      onTap: () {}),
-                  textfield(controller: TextEditingController(), hint: "Dealer Code(Optional)"),
+                  textfield(controller: controller.imeiController, hint: "Device IMEI No."),
+                  textfield(controller: controller.simController, hint: "Device SIM No."),
+                  textfield(controller: controller.vehicleNumberController, hint: "Vehicle Number"),
+                  SizedBox(height: 20,),
+                  SearchDropDown<SearchDropDownModel>(
+                    dropDownFillColor: AppColors.white,
+                    containerColor: AppColors.white,
+                    showBorder: false,
+                    hintStyle: AppTextStyles(context)
+                        .display16W400
+                        .copyWith(color: AppColors.grayLight),
+                    height: 50,
+                    items:
+                    controller.genderList.toList(),
+                    selectedItem:
+                    controller.vehicleCategory.value,
+                    onChanged: (value) {
+                      controller.vehicleCategory.value= value;
+                    },
+                    hint: "Vehicle Category",
+                    showSearch: false,
+                  ),
+                  textfield(controller: controller.dealerCodeController, hint: "Dealer Code(Optional)"),
                   SizedBox(height: 5.h),
                   InkWell(
                     onTap: () {
+                      Get.back();
+                      Get.back();
                       Get.to(() => SubmissionPage(),
                           transition: Transition.upToDown,
                           duration: const Duration(milliseconds: 300));

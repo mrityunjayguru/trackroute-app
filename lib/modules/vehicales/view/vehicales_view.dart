@@ -7,7 +7,10 @@ import 'package:track_route_pro/modules/vehicales/controller/vehicales_controlle
 import 'package:track_route_pro/modules/vehicales/view/widget/vehical_detail_card.dart';
 import 'package:track_route_pro/utils/common_import.dart';
 
+import '../../../config/app_sizer.dart';
 import '../../../utils/utils.dart';
+import '../../register_user/controller/register_controller.dart';
+import '../../register_user/view/register_device.dart';
 
 class VehicalesView extends StatefulWidget {
   VehicalesView({super.key});
@@ -81,13 +84,49 @@ class _VehicalesViewState extends State<VehicalesView> {
             ),
 
             // Search text field
-            searchApptextfield(
-              color: AppColors.whiteOff,
-              prefixIcon: 'assets/images/svg/search.svg',
-              hintText: 'Search Vehicle',
-              controller: controller.searchController,
-              onChanged: (query) =>
-                  controller.updateFilteredList(), // Enable search filtering
+            Row(
+              children: [
+                Expanded(
+                  flex: 5,
+                  child: searchApptextfield(
+                    color: AppColors.whiteOff,
+                    prefixIcon: 'assets/images/svg/search.svg',
+                    hintText: 'Search Vehicle',
+                    controller: controller.searchController,
+                    onChanged: (query) =>
+                        controller.updateFilteredList(), // Enable search filtering
+                  ).paddingOnly(right: 10),
+                ),
+                Expanded(
+                  flex: 3,
+                  child: InkWell(
+                    onTap: () {
+                      final controller = Get.isRegistered<RegisterController>()
+                          ? Get.find<RegisterController>() // Find if already registered
+                          : Get.put(RegisterController());
+                      controller.clearAllData();
+                      controller.loginPage = false;
+                      Get.to(() => RegisterDevicePage(),
+                          transition: Transition.upToDown,
+                          duration: const Duration(milliseconds: 300));
+                    },
+                    child: Container(
+                      height: 40,
+                      child: Center(
+                        child:  Text(
+                          'Add Vehicle',
+                          style: AppTextStyles(context).display16W400.copyWith(
+                            color: AppColors.selextedindexcolor,
+                          ),
+                        ),),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(AppSizes.radius_50),
+                        color: AppColors.black,
+                      ),
+                    ),
+                  ).paddingOnly(top: 24),
+                ),
+              ],
             ),
 
             SizedBox(height: 2.h),

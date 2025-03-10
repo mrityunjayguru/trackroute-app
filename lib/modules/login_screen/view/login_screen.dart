@@ -14,6 +14,7 @@ import 'package:track_route_pro/modules/privacy_policy/view/terms_cond_page.dart
 import 'package:track_route_pro/utils/common_import.dart';
 
 import '../../../config/app_sizer.dart';
+import '../../register_user/controller/register_controller.dart';
 import '../../register_user/view/register_device.dart';
 
 class LoginView extends StatelessWidget {
@@ -150,6 +151,11 @@ class LoginView extends StatelessWidget {
                           Spacer(),
                           InkWell(
                             onTap: () {
+                              final controller = Get.isRegistered<RegisterController>()
+                                  ? Get.find<RegisterController>() // Find if already registered
+                                  : Get.put(RegisterController());
+                              controller.clearAllData();
+                              controller.loginPage = true;
                               Get.to(() => RegisterDevicePage(),
                                   transition: Transition.upToDown,
                                   duration: const Duration(milliseconds: 300));
