@@ -51,7 +51,7 @@ class RegisterDevicePage extends StatelessWidget {
                   InkWell(
                     onTap: () async {
                       try {
-                        // controller.validatePage1();
+                        controller.validatePage1();
                         controller.showLoader.value = true;
                         await controller.getVehicleTypeList();
                         Get.to(() => DevicePage(),
