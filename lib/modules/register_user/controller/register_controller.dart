@@ -3,27 +3,34 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:track_route_pro/service/api_service/api_service.dart';
+import 'package:track_route_pro/service/model/NewVehicleRequest.dart';
 import 'package:track_route_pro/utils/common_import.dart';
 import 'package:track_route_pro/utils/search_drop_down.dart';
 
+import '../../../service/model/presentation/vehicle_type/Data.dart';
 import '../../../utils/utils.dart';
+import '../view/submission_page.dart';
 
 class RegisterController extends GetxController {
-  ApiService apiservice = ApiService.create();
+  final ApiService apiService = ApiService.create();
 
   bool loginPage = true;
   final fullNameController = TextEditingController();
   final emailController = TextEditingController();
   final mobileNumberController = TextEditingController();
-  final dateOfBirthController = TextEditingController();
+  final dateOfBirthController = RxString('');
   final permanentAddressController = TextEditingController();
   final cityController = TextEditingController();
   final stateController = TextEditingController();
   final idNumberController = TextEditingController();
+  final country = TextEditingController(text: "India");
+  final pincode = TextEditingController();
+  final passwd = TextEditingController();
+  final cnfPasswd = TextEditingController();
   var gender = Rx<SearchDropDownModel?>(null); // Observable
-  var vehicleCategory = Rx<SearchDropDownModel?>(null); // Observable
+  var vehicleCategory = Rx<DataVehicleType?>(null); // Observable
 
-  var selectedID = ''.obs;
+  var idType = Rx<SearchDropDownModel?>(null);
 
   // TextEditingControllers for Vehicle Form
   final imeiController = TextEditingController();
@@ -32,6 +39,11 @@ class RegisterController extends GetxController {
   final dealerCodeController = TextEditingController();
 
   var selectedFile = Rxn<File>();
+  String date ="";
+
+  RxBool  showLoader = false.obs;
+  RxBool obscureText = true.obs;
+  RxBool obscureTextCnf = true.obs;
 
   Future<void> pickFile() async {
     final result = await FilePicker.platform.pickFiles(
@@ -60,23 +72,36 @@ class RegisterController extends GetxController {
   List<SearchDropDownModel> genderList = [
     SearchDropDownModel(name: "Male"),
     SearchDropDownModel(name: "Female"),
+    SearchDropDownModel(name: "Other"),
   ];
 
-  void selectDate(
-      context, TextEditingController controller) async {
-    DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now().subtract(Duration(days: 100000)),
-      lastDate: DateTime.now(),
-    );
+  List<SearchDropDownModel> idTypeList = [
+    SearchDropDownModel(name: "Aadhar Card"),
+    SearchDropDownModel(name: "PAN Card"),
+    SearchDropDownModel(name: "Driving License"),
+  ];
 
-    if (pickedDate != null) {
-      // Formatting the picked date
-      String formattedDate = DateFormat('dd-MM-yyyy').format(pickedDate);
+  void selectDate(BuildContext context) async {
+    try{
+      DateTime? pickedDate = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime.now().subtract(Duration(days: 100000)),
+        lastDate: DateTime.now(),
+      );
 
-      controller.text = formattedDate;
+      if (pickedDate != null) {
+        // Formatting the picked date
+        String formattedDate = DateFormat('dd-MM-yyyy').format(pickedDate);
+
+        dateOfBirthController.value = formattedDate;
+        date=DateFormat('yyyy-MM-dd').format(pickedDate);
+      }
     }
+    catch(e){
+      debugPrint("$e");
+    }
+
   }
 
   void clearAllData() {
@@ -84,7 +109,7 @@ class RegisterController extends GetxController {
     fullNameController.clear();
     emailController.clear();
     mobileNumberController.clear();
-    dateOfBirthController.clear();
+    dateOfBirthController.value = "";
     permanentAddressController.clear();
     cityController.clear();
     stateController.clear();
@@ -93,13 +118,115 @@ class RegisterController extends GetxController {
     simController.clear();
     vehicleNumberController.clear();
     dealerCodeController.clear();
+    country.text = "India";
+    pincode.clear();
+    passwd.clear();
+    cnfPasswd.clear();
 
     // Reset Observables
     gender.value = null;
     vehicleCategory.value = null;
-    selectedID.value = '';
+    idType.value = null;
     selectedFile.value = null;
+    date="";
+    obscureText = true.obs;
+    obscureTextCnf = true.obs;
+  }
+
+  Future<void> sendData() async {
+
+      showLoader.value = true;
+      try {
+        var request = NewVehicleRequest();
+        request.role="User";
+        request.subscribeType="Individual";
+        request.isAppCreated=true;
+        request.name = fullNameController.text.trim();
+        request.emailAddress = emailController.text.trim();
+        request.phone = mobileNumberController.text.trim();
+        request.dob = date;
+        request.address = permanentAddressController.text.trim();
+        request.city = cityController.text.trim();
+        request.state = stateController.text.trim();
+        request.idno = idNumberController.text.trim();
+        request.gender = gender.value?.name;
+        request.vehicleType = vehicleCategory.value?.id;
+        request.idDocument = idType.value?.name;
+        request.imei = imeiController.text.trim();
+        request.country = country.text.trim();
+        request.pinCode = pincode.text.trim();
+        request.password = passwd.text.trim();
+        request.confirmPassword = cnfPasswd.text.trim();
+        // request.deviceSimNumber = simController.text.trim();
+        request.vehicleNo = vehicleNumberController.text.trim();
+        request.dealerCode = dealerCodeController.text.trim();
+        // request.deviceStatus = "Active";
+        request.validateRequest();
+        if(selectedFile.value==null){
+          throw ValidationException(errorMsg: "Please upload a file for ID document");
+        }
+
+        var response = await NewVehicleRequest().submitForm(request,img: selectedFile.value);
+
+        if (response.message == "Success") {
+          Get.back();
+          Get.back();
+          Get.to(() => SubmissionPage(),
+              transition: Transition.upToDown,
+              duration: const Duration(milliseconds: 300));
+        } else {
+          Utils.getSnackbar("Error", "Something went wrong ${response.message}");
+        }
+      } on ValidationException catch(e){
+        Utils.getSnackbar("Error", "${e.errorMsg}");
+      }
+      catch (e, s) {
+        Utils.getSnackbar("Error", "Something went wrong $e");
+      }
+
+    showLoader.value = false;
   }
 
 
+  void validatePage1(){
+    var request = NewVehicleRequest();
+    request.name = fullNameController.text.trim();
+    request.emailAddress = emailController.text.trim();
+    request.phone = mobileNumberController.text.trim();
+    request.dob = dateOfBirthController.value.trim();
+    request.address = permanentAddressController.text.trim();
+    request.city = cityController.text.trim();
+    request.state = stateController.text.trim();
+    request.idno = idNumberController.text.trim();
+    request.country = country.text.trim();
+    request.pinCode = pincode.text.trim();
+    request.password = passwd.text.trim();
+    request.confirmPassword = cnfPasswd.text.trim();
+    request.gender = gender.value?.name;
+    request.idDocument = idType.value?.name;
+    request.validateRequestPage1();
+    if(selectedFile.value==null){
+      throw ValidationException(errorMsg: "Please upload a file for ID document");
+    }
+  }
+
+  Future<void> getVehicleTypeList() async {
+    try {
+      final response = await apiService.getVehicleType();
+
+      if (response.status == 200) {
+
+        vehicleTypeList.value = response.data ?? [];
+
+        // log("vehicle type list ===>${jsonEncode(vehicleTypeList)}");
+      } else if (response.status == 400) {
+      }
+    } catch (e) {
+
+      // print("Error during OTP verification: $e");
+    }
+
+  }
+
+  RxList<DataVehicleType> vehicleTypeList = <DataVehicleType>[].obs;
 }

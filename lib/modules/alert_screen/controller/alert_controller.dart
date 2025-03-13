@@ -86,7 +86,7 @@ class AlertController extends GetxController {
         checkNotification();
       },
     );
-
+    generateTimeList();
     scrollController.addListener(() {
       if (scrollController.position.pixels >=
           scrollController.position.maxScrollExtent - 100) {
@@ -147,24 +147,24 @@ class AlertController extends GetxController {
       String endDateText = endDate;
       if (startDateText.isNotEmpty) {
         if (time1.value != null) {
-          startDateText += " " + time1.value!.name;
+          startDateText += "T" + time1.value!.name+":00.000Z";
         } else {
-          startDateText += " " + "00:01";
+          startDateText += "T" + "00:01"+":00.000Z";
         }
       }
       if (endDateText.isNotEmpty) {
         if (time2.value != null) {
-          endDateText += " " + time2.value!.name;
+          endDateText += "T" + time2.value!.name+":00.000Z";
         } else {
-          endDateText += " " + "24:00";
+          endDateText += "T" + "24:00"+":00.000Z";
         }
       } else {
         if (startDateText.isNotEmpty) {
           endDateText = startDate;
           if (time2.value != null) {
-            endDateText += " " + time2.value!.name;
+            endDateText += "T" + time2.value!.name+":00.000Z";
           } else {
-            endDateText += " " + "24:00";
+            endDateText += "T" + "24:00"+":00.000Z";
           }
         }
       }

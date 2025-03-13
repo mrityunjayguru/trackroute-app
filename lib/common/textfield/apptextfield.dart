@@ -87,7 +87,6 @@ class AppTextFormField extends StatelessWidget {
                     //     color: errorText.isNotEmpty
                     //         ? Colors.red
                     //         : Colors.transparent
-
                     //     // color ??
                     //     //     (()
                     //     //         ? Colors.red

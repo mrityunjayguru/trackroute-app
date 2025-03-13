@@ -104,14 +104,14 @@ class HistoryController extends GetxController {
         String startDate = endDateController.text;
         String endDate = endDateController.text;
         if (time1.value != null) {
-          startDate += " " + time1.value!.name;
+          startDate += "T" + time1.value!.name+":00.000Z";
         } else {
-          startDate += " " + "00:01";
+          startDate += "T" + "00:01"+":00.000Z";
         }
         if (time2.value != null) {
-          endDate += " " + time2.value!.name;
+          endDate += "T" + time2.value!.name+":00.000Z";
         } else {
-          endDate += " " + "24:00";
+          endDate += "T" + "24:00"+":00.000Z";
         }
 
         final body = {

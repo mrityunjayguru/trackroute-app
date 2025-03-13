@@ -6,6 +6,7 @@ import 'package:track_route_pro/config/theme/app_colors.dart';
 import 'package:track_route_pro/config/theme/app_textstyle.dart';
 import 'package:track_route_pro/gen/assets.gen.dart';
 import 'package:track_route_pro/modules/register_user/view/submission_page.dart';
+import 'package:track_route_pro/service/model/presentation/vehicle_type/Data.dart';
 import 'package:track_route_pro/utils/common_import.dart';
 
 import '../../../common/textfield/apptextfield.dart';
@@ -54,10 +55,10 @@ class DevicePage extends StatelessWidget {
                         .copyWith(color: AppColors.color_4B4749,height: 1.5),
                   ),
                   textfield(controller: controller.imeiController, hint: "Device IMEI No."),
-                  textfield(controller: controller.simController, hint: "Device SIM No."),
+                  // textfield(controller: controller.simController, hint: "Device SIM No."),
                   textfield(controller: controller.vehicleNumberController, hint: "Vehicle Number"),
                   SizedBox(height: 20,),
-                  SearchDropDown<SearchDropDownModel>(
+                  SearchDropDown<DataVehicleType>(
                     dropDownFillColor: AppColors.white,
                     containerColor: AppColors.white,
                     showBorder: false,
@@ -65,10 +66,8 @@ class DevicePage extends StatelessWidget {
                         .display16W400
                         .copyWith(color: AppColors.grayLight),
                     height: 50,
-                    items:
-                    controller.genderList.toList(),
-                    selectedItem:
-                    controller.vehicleCategory.value,
+                    items: controller.vehicleTypeList.toList(),
+                    selectedItem: controller.vehicleCategory.value,
                     onChanged: (value) {
                       controller.vehicleCategory.value= value;
                     },
@@ -79,11 +78,7 @@ class DevicePage extends StatelessWidget {
                   SizedBox(height: 5.h),
                   InkWell(
                     onTap: () {
-                      Get.back();
-                      Get.back();
-                      Get.to(() => SubmissionPage(),
-                          transition: Transition.upToDown,
-                          duration: const Duration(milliseconds: 300));
+                    controller.sendData();
                     },
                     child: Container(
                       height: 6.h,

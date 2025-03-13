@@ -38,4 +38,5 @@ class ProjectUrls {
   static const String consolidateReport = "/SummaryReport/consolidateSummary";
   static const String eventReport = "/SummaryReport/eventReport";
   static const String tripReport = "/SummaryReport/tripSummary";
+  static const String newVehicle = "/Auth/createNewUser";
 }

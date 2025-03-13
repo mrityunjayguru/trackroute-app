@@ -1017,9 +1017,9 @@ class TrackRouteController extends GetxController {
       networkStatus.value =
           NetworkStatus.LOADING; // Set network status to loading
       final body = {"imei": imei};
-      log("CHECK RELAY $body");
+      // log("CHECK RELAY $body");
       response = await apiService.relayStatus(body);
-      debugPrint("RESPONSE $response");
+      // debugPrint("RESPONSE $response");
       if (response.data.status != null && response.data.status == "success") {
         relayStatus.value = response.data.response.type;
         networkStatus.value = NetworkStatus.SUCCESS;
@@ -1027,7 +1027,7 @@ class TrackRouteController extends GetxController {
         Utils.getSnackbar("Engine Status", response.data.message);
       }
     } catch (e) {
-      debugPrint("EXCEPTION $e");
+      // debugPrint("EXCEPTION $e");
       networkStatus.value = NetworkStatus.ERROR;
     }
   }
@@ -1050,7 +1050,7 @@ class TrackRouteController extends GetxController {
       }
       Utils.getSnackbar("Engine", response.data.message);
     } catch (e) {
-      debugPrint("EXCEPTION $e");
+      // debugPrint("EXCEPTION $e");
       networkStatus.value = NetworkStatus.ERROR;
     }
   }
@@ -1071,7 +1071,7 @@ class TrackRouteController extends GetxController {
         networkStatus.value = NetworkStatus.SUCCESS;
       }
     } catch (e) {
-      debugPrint("EXCEPTION $e");
+      // debugPrint("EXCEPTION $e");
       networkStatus.value = NetworkStatus.ERROR;
     }
   }

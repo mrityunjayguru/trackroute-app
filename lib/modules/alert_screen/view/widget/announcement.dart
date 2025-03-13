@@ -16,11 +16,15 @@ class AnnouncementTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(
-      () => ListView.builder(
-        itemCount: controller.announcements.length,
-        itemBuilder: (context, index) => notificationAlert(
-          context: context,
-          data: controller.announcements[index],
+      () => RefreshIndicator(
+        onRefresh: onRefresh,
+        color: AppColors.selextedindexcolor,
+        child: ListView.builder(
+          itemCount: controller.announcements.length,
+          itemBuilder: (context, index) => notificationAlert(
+            context: context,
+            data: controller.announcements[index],
+          ),
         ),
       ),
     );
@@ -79,5 +83,9 @@ class AnnouncementTab extends StatelessWidget {
         ],
       ).paddingAll(0.8.h),
     ).paddingOnly(bottom: 12);
+  }
+
+  Future<void> onRefresh() async {
+    await controller.getAnnouncements();
   }
 }

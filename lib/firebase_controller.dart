@@ -114,14 +114,14 @@ class FirebaseNotificationService extends GetxService {
   Future<void> _initializeFirebaseMessaging() async {
     // Request permissions for iOS
     final settings = await _firebaseMessaging.requestPermission();
-    debugPrint('User granted permission: ${settings.authorizationStatus}');
+    // debugPrint('User granted permission: ${settings.authorizationStatus}');
 
-    debugPrint("INIT");
+    // debugPrint("INIT");
     // Get the token
     token = await _firebaseMessaging.getToken();
 
     if (token != null) {
-      debugPrint('FirebaseMessaging token: $token');
+      // debugPrint('FirebaseMessaging token: $token');
       await AppPreference.addStringToSF(Constants.fcmToken, token ?? "");
       Get.put(LoginController()).sendTokenData();
     }
