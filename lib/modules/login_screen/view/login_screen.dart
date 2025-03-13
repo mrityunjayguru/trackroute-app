@@ -186,7 +186,8 @@ class LoginView extends StatelessWidget {
                                 color: AppColors.black,
                               ),
                             ),
-                          ).paddingOnly(bottom: 5.h),
+                          ).paddingOnly(bottom: 1.h),
+                          Spacer(),
                           RichText(
                             textAlign: TextAlign.center,
                             text: TextSpan(
