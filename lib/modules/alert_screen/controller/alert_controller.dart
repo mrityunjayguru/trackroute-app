@@ -171,7 +171,10 @@ class AlertController extends GetxController {
 
       List<String> alertsList = [];
       List<String> imei = [];
-      alertsList = selectedAlertName.value.toList();
+       alertsList = selectedAlertName.value.toList()
+          .where((key) => alertsMap.containsKey(key)) // Ensure key exists in map
+          .map((key) => alertsMap[key]!) // Get corresponding values
+          .toList();
       imei = selectedVehicleIMEI.value.toList();
       final body = {
         "ownerID": "${devicesOwnerID.value}",

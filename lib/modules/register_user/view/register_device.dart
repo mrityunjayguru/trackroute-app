@@ -45,6 +45,31 @@ class RegisterDevicePage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Register",
+                        style: AppTextStyles(context).display24W500,
+                      ),
+                      InkWell(
+                        onTap: () {
+                          Get.back();
+                        },
+                        child: SvgPicture.asset(
+                          'assets/images/svg/ic_arrow_left.svg',
+                          colorFilter: ColorFilter.mode(
+                              AppColors.black, BlendMode.srcIn),
+                        ).paddingOnly(right: 12, left: 7.w),
+                      )
+                    ],
+                  ).paddingOnly(bottom: 10),
+                  Text(
+                    "Create an account to continue!",
+                    style: AppTextStyles(context)
+                        .display12W500
+                        .copyWith(color: AppColors.color_4B4749, height: 1.5),
+                  ).paddingOnly(bottom: 10),
                   personalInfo(context),
                   address(context),
                   documentation(context),
@@ -58,7 +83,7 @@ class RegisterDevicePage extends StatelessWidget {
                             transition: Transition.upToDown,
                             duration: const Duration(milliseconds: 300));
                       } on ValidationException catch (e) {
-                       Utils.getSnackbar(
+                        Utils.getSnackbar(
                             "All Fields Are Compulsory", "${e.errorMsg}");
                       }
 
@@ -88,13 +113,13 @@ class RegisterDevicePage extends StatelessWidget {
             if (controller.showLoader.value)
               return Positioned.fill(
                   child: Container(
-                    alignment: Alignment.center,
-                    color: Colors.grey.withOpacity(0.3),
-                    child: LoadingAnimationWidget.threeArchedCircle(
-                      color: AppColors.selextedindexcolor,
-                      size: 50,
-                    ),
-                  ));
+                alignment: Alignment.center,
+                color: Colors.grey.withOpacity(0.3),
+                child: LoadingAnimationWidget.threeArchedCircle(
+                  color: AppColors.selextedindexcolor,
+                  size: 50,
+                ),
+              ));
             return SizedBox.shrink();
           })
         ],
@@ -138,31 +163,31 @@ class RegisterDevicePage extends StatelessWidget {
         SizedBox(
           height: 20,
         ),
-        Obx(()=> GestureDetector(
+        Obx(
+          () => GestureDetector(
             onTap: () {
               controller.selectDate(context);
             },
-            child:  Container(
-              height:  50,
+            child: Container(
+              height: 50,
               width: double.maxFinite,
               decoration: BoxDecoration(
                 color: AppColors.white,
                 borderRadius: BorderRadius.circular(15),
-
               ),
               child: Padding(
-                padding:
-                    const EdgeInsets.all( 16),
-                child: controller.dateOfBirthController.value.isEmpty ? Text(
-                  "Date Of Birth",
-                  style: AppTextStyles(context)
-                      .display16W400
-                      .copyWith(color: AppColors.grayLight),
-                ) : Text(
-                  controller.dateOfBirthController.value,
-                  style: AppTextStyles(context)
-                      .display16W400,
-                ),
+                padding: const EdgeInsets.all(16),
+                child: controller.dateOfBirthController.value.isEmpty
+                    ? Text(
+                        "Date Of Birth",
+                        style: AppTextStyles(context)
+                            .display16W400
+                            .copyWith(color: AppColors.grayLight),
+                      )
+                    : Text(
+                        controller.dateOfBirthController.value,
+                        style: AppTextStyles(context).display16W400,
+                      ),
               ),
             ),
           ),
@@ -212,7 +237,7 @@ class RegisterDevicePage extends StatelessWidget {
             hint: "Permanent Address"),
         textfield(controller: controller.cityController, hint: "City"),
         textfield(controller: controller.stateController, hint: "State"),
-        textfield(controller: controller.country, hint: "Country"),
+        textfield(controller: controller.country, hint: "Country", readOnly: true),
         textfield(
             controller: controller.pincode,
             hint: "Pincode",
@@ -350,7 +375,7 @@ class RegisterDevicePage extends StatelessWidget {
       height: 50,
       readOnly: readOnly,
       onTap: onTap,
-      onSuffixTap:  onSuffixTap,
+      onSuffixTap: onSuffixTap,
       suffixIcon: suffixIcon,
       color: AppColors.white,
       controller: controller,

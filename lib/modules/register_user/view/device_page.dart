@@ -47,7 +47,7 @@ class DevicePage extends StatelessWidget {
                   Text(
                     "Add Vehicle",
                     style: AppTextStyles(context).display24W500,
-                  ),
+                  ).paddingOnly(bottom: 10),
                   Text(
                     "Register your First Vehicle!",
                     style: AppTextStyles(context)
@@ -93,6 +93,28 @@ class DevicePage extends StatelessWidget {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(AppSizes.radius_10),
                         color: AppColors.black,
+                      ),
+                    ),
+                  ).paddingOnly(bottom: 1.h),
+                  SizedBox(height: 1.h),
+                  InkWell(
+                    onTap: () {
+                      Get.back();
+                      Get.back();
+                    },
+                    child: Container(
+                      height: 6.h,
+                      child: Center(
+                        child: Text(
+                          "Cancel",
+                          style: AppTextStyles(context)
+                              .display16W400
+                              .copyWith(color: AppColors.black),
+                        ),
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(AppSizes.radius_10),
+                        color: AppColors.selextedindexcolor,
                       ),
                     ),
                   ).paddingOnly(bottom: 1.h),

@@ -151,7 +151,7 @@ class AlertsFilterPage extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 maxLines: 2,
                 // Display the vehicle number
-                style: AppTextStyles(context).display14W600,
+                style: AppTextStyles(context).display14W600.copyWith(color: isSelected? AppColors.black : AppColors.grayLight),
               ),
             ),
             SizedBox(
