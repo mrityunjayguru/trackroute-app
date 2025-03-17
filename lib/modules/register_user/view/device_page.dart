@@ -78,7 +78,12 @@ class DevicePage extends StatelessWidget {
                   SizedBox(height: 5.h),
                   InkWell(
                     onTap: () {
-                    controller.sendData();
+                      if(controller.loginPage){
+                        controller.sendData();
+                      }
+                      else{
+                        controller.sendDataVehicle();
+                      }
                     },
                     child: Container(
                       height: 6.h,
@@ -100,7 +105,9 @@ class DevicePage extends StatelessWidget {
                   InkWell(
                     onTap: () {
                       Get.back();
-                      Get.back();
+                      if(controller.loginPage){
+                        Get.back();
+                      }
                     },
                     child: Container(
                       height: 6.h,

@@ -211,16 +211,13 @@ class VehicleSelected extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Flexible(
-              child: SizedBox(
-                height: 2.h,
-                child: Text(
-                  labelText,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTextStyles(context)
-                      .display14W400
-                      .copyWith(color: AppColors.color_444650),
-                ),
+              child: Text(
+                labelText,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyles(context)
+                    .display14W400
+                    .copyWith(color: AppColors.color_444650),
               ),
             ),
             SizedBox(width: 4.w),

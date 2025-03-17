@@ -574,7 +574,6 @@ class VehicleDataWidget extends StatelessWidget {
                         ),
                         Expanded(
                           child: Container(
-                              height: 6.h,
                               padding: EdgeInsets.symmetric(
                                   vertical: 6, horizontal: 10),
                               decoration: BoxDecoration(

@@ -3,11 +3,14 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:track_route_pro/service/api_service/api_service.dart';
+import 'package:track_route_pro/service/model/NewVehicleByUserRequest.dart';
 import 'package:track_route_pro/service/model/NewVehicleRequest.dart';
 import 'package:track_route_pro/utils/common_import.dart';
 import 'package:track_route_pro/utils/search_drop_down.dart';
 
+import '../../../constants/constant.dart';
 import '../../../service/model/presentation/vehicle_type/Data.dart';
+import '../../../utils/app_prefrance.dart';
 import '../../../utils/utils.dart';
 import '../view/submission_page.dart';
 
@@ -21,13 +24,14 @@ class RegisterController extends GetxController {
   final dateOfBirthController = RxString('');
   final permanentAddressController = TextEditingController();
   final cityController = TextEditingController();
-  final stateController = TextEditingController();
+  // final stateController = TextEditingController();
   final idNumberController = TextEditingController();
   final country = TextEditingController(text: "India");
   final pincode = TextEditingController();
   final passwd = TextEditingController();
   final cnfPasswd = TextEditingController();
   var gender = Rx<SearchDropDownModel?>(null); // Observable
+  var state = Rx<SearchDropDownModel?>(null); // Observable
   var vehicleCategory = Rx<DataVehicleType?>(null); // Observable
 
   var idType = Rx<SearchDropDownModel?>(null);
@@ -44,6 +48,7 @@ class RegisterController extends GetxController {
   RxBool  showLoader = false.obs;
   RxBool obscureText = true.obs;
   RxBool obscureTextCnf = true.obs;
+  RxBool check = false.obs;
 
   Future<void> pickFile() async {
     final result = await FilePicker.platform.pickFiles(
@@ -67,6 +72,44 @@ class RegisterController extends GetxController {
       Get.snackbar("File Selection", "No file selected.");
     }
   }
+
+  List<SearchDropDownModel> indianStatesList = [
+    SearchDropDownModel(name: "Andhra Pradesh"),
+    SearchDropDownModel(name: "Arunachal Pradesh"),
+    SearchDropDownModel(name: "Assam"),
+    SearchDropDownModel(name: "Bihar"),
+    SearchDropDownModel(name: "Chhattisgarh"),
+    SearchDropDownModel(name: "Goa"),
+    SearchDropDownModel(name: "Gujarat"),
+    SearchDropDownModel(name: "Haryana"),
+    SearchDropDownModel(name: "Himachal Pradesh"),
+    SearchDropDownModel(name: "Jharkhand"),
+    SearchDropDownModel(name: "Karnataka"),
+    SearchDropDownModel(name: "Kerala"),
+    SearchDropDownModel(name: "Madhya Pradesh"),
+    SearchDropDownModel(name: "Maharashtra"),
+    SearchDropDownModel(name: "Manipur"),
+    SearchDropDownModel(name: "Meghalaya"),
+    SearchDropDownModel(name: "Mizoram"),
+    SearchDropDownModel(name: "Nagaland"),
+    SearchDropDownModel(name: "Odisha"),
+    SearchDropDownModel(name: "Punjab"),
+    SearchDropDownModel(name: "Rajasthan"),
+    SearchDropDownModel(name: "Sikkim"),
+    SearchDropDownModel(name: "Tamil Nadu"),
+    SearchDropDownModel(name: "Telangana"),
+    SearchDropDownModel(name: "Tripura"),
+    SearchDropDownModel(name: "Uttar Pradesh"),
+    SearchDropDownModel(name: "Uttarakhand"),
+    SearchDropDownModel(name: "West Bengal"),
+    SearchDropDownModel(name: "Andaman and Nicobar Islands"),
+    SearchDropDownModel(name: "Chandigarh"),
+    SearchDropDownModel(name: "Lakshadweep"),
+    SearchDropDownModel(name: "Delhi"),
+    SearchDropDownModel(name: "Puducherry"),
+    SearchDropDownModel(name: "Ladakh"),
+    SearchDropDownModel(name: "Jammu and Kashmir"),
+  ];
 
 
   List<SearchDropDownModel> genderList = [
@@ -112,7 +155,6 @@ class RegisterController extends GetxController {
     dateOfBirthController.value = "";
     permanentAddressController.clear();
     cityController.clear();
-    stateController.clear();
     idNumberController.clear();
     imeiController.clear();
     simController.clear();
@@ -125,12 +167,14 @@ class RegisterController extends GetxController {
 
     // Reset Observables
     gender.value = null;
+    state.value = null;
     vehicleCategory.value = null;
     idType.value = null;
     selectedFile.value = null;
     date="";
     obscureText = true.obs;
     obscureTextCnf = true.obs;
+    check = false.obs;
   }
 
   Future<void> sendData() async {
@@ -147,7 +191,7 @@ class RegisterController extends GetxController {
         request.dob = date;
         request.address = permanentAddressController.text.trim();
         request.city = cityController.text.trim();
-        request.state = stateController.text.trim();
+        request.state = state.value?.name;
         request.idno = idNumberController.text.trim();
         request.gender = gender.value?.name;
         request.vehicleType = vehicleCategory.value?.id;
@@ -170,7 +214,9 @@ class RegisterController extends GetxController {
 
         if (response.message == "Success") {
           Get.back();
-          Get.back();
+          if(loginPage){
+            Get.back();
+          }
           Get.to(() => SubmissionPage(),
               transition: Transition.upToDown,
               duration: const Duration(milliseconds: 300));
@@ -187,6 +233,45 @@ class RegisterController extends GetxController {
     showLoader.value = false;
   }
 
+  Future<void> sendDataVehicle() async {
+
+    showLoader.value = true;
+    try {
+      var request = NewVehicleByUserRequest();
+      String? userId = await AppPreference.getStringFromSF(Constants.userId);
+      // request.role="User";
+      // request.subscribeType="Individual";
+      request.isAppCreated=true;
+      request.ownerID = userId;
+      request.vehicleType = vehicleCategory.value?.id;
+      request.imei = imeiController.text.trim();
+      // request.deviceSimNumber = simController.text.trim();
+      request.vehicleNo = vehicleNumberController.text.trim();
+      request.dealerCode = dealerCodeController.text.trim();
+      // request.deviceStatus = "Active";
+      request.validateRequest();
+
+
+      var response = await NewVehicleByUserRequest().submitForm(request);
+
+      if (response.message == "Success") {
+        Get.back();
+        Get.to(() => SubmissionPage(),
+            transition: Transition.upToDown,
+            duration: const Duration(milliseconds: 300));
+      } else {
+        Utils.getSnackbar("Error", "Something went wrong ${response.message}");
+      }
+    } on ValidationException catch(e){
+      Utils.getSnackbar("Error", "${e.errorMsg}");
+    }
+    catch (e, s) {
+      Utils.getSnackbar("Error", "Something went wrong, Please enter valid imei");
+    }
+
+    showLoader.value = false;
+  }
+
 
   void validatePage1(){
     var request = NewVehicleRequest();
@@ -196,7 +281,7 @@ class RegisterController extends GetxController {
     request.dob = dateOfBirthController.value.trim();
     request.address = permanentAddressController.text.trim();
     request.city = cityController.text.trim();
-    request.state = stateController.text.trim();
+    request.state = state.value?.name;
     request.idno = idNumberController.text.trim();
     request.country = country.text.trim();
     request.pinCode = pincode.text.trim();

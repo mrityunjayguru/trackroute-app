@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -13,6 +14,8 @@ import '../../../config/app_sizer.dart';
 import '../../../service/model/NewVehicleRequest.dart';
 import '../../../utils/search_drop_down.dart';
 import '../../../utils/utils.dart';
+import '../../privacy_policy/view/privacy_policy_page.dart';
+import '../../privacy_policy/view/terms_cond_page.dart';
 import 'device_page.dart';
 
 class RegisterDevicePage extends StatelessWidget {
@@ -73,38 +76,44 @@ class RegisterDevicePage extends StatelessWidget {
                   personalInfo(context),
                   address(context),
                   documentation(context),
-                  InkWell(
-                    onTap: () async {
-                      try {
-                        controller.validatePage1();
-                        controller.showLoader.value = true;
-                        await controller.getVehicleTypeList();
-                        Get.to(() => DevicePage(),
-                            transition: Transition.upToDown,
-                            duration: const Duration(milliseconds: 300));
-                      } on ValidationException catch (e) {
-                        Utils.getSnackbar(
-                            "All Fields Are Compulsory", "${e.errorMsg}");
-                      }
-
-                      controller.showLoader.value = false;
-                    },
-                    child: Container(
-                      height: 6.h,
-                      child: Center(
-                        child: Text(
-                          "Add Vehicle",
-                          style: AppTextStyles(context)
-                              .display16W400
-                              .copyWith(color: AppColors.selextedindexcolor),
+                  Obx(()=>
+                     InkWell(
+                      onTap: () async {
+                        if (controller.check.value) {
+                          try {
+                            controller.validatePage1();
+                            controller.showLoader.value = true;
+                            await controller.getVehicleTypeList();
+                            Get.to(() => DevicePage(),
+                                transition: Transition.upToDown,
+                                duration: const Duration(milliseconds: 300));
+                          } on ValidationException catch (e) {
+                            Utils.getSnackbar(
+                                "All Fields Are Compulsory", "${e.errorMsg}");
+                          }
+                          controller.showLoader.value = false;
+                        }
+                      },
+                      child: Container(
+                        height: 6.h,
+                        child: Center(
+                          child: Text(
+                            "Add Vehicle",
+                            style: AppTextStyles(context).display16W400.copyWith(
+                                color: controller.check.value
+                                    ? AppColors.selextedindexcolor
+                                    : AppColors.grayLight),
+                          ),
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(AppSizes.radius_10),
+                          color: controller.check.value
+                              ? AppColors.black
+                              : AppColors.color_D9D9D9C6,
                         ),
                       ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(AppSizes.radius_10),
-                        color: AppColors.black,
-                      ),
-                    ),
-                  ).paddingOnly(bottom: 1.h),
+                    ).paddingOnly(bottom: 1.h),
+                  ),
                 ],
               ),
             ),
@@ -236,8 +245,27 @@ class RegisterDevicePage extends StatelessWidget {
             controller: controller.permanentAddressController,
             hint: "Permanent Address"),
         textfield(controller: controller.cityController, hint: "City"),
-        textfield(controller: controller.stateController, hint: "State"),
-        textfield(controller: controller.country, hint: "Country", readOnly: true),
+        SizedBox(
+          height: 20,
+        ),
+        SearchDropDown<SearchDropDownModel>(
+          dropDownFillColor: AppColors.white,
+          containerColor: AppColors.white,
+          showBorder: false,
+          hintStyle: AppTextStyles(context)
+              .display16W400
+              .copyWith(color: AppColors.grayLight),
+          height: 50,
+          items: controller.indianStatesList.toList(),
+          selectedItem: controller.state.value,
+          onChanged: (value) {
+            controller.state.value = value;
+          },
+          hint: "State",
+          showSearch: false,
+        ),
+        textfield(
+            controller: controller.country, hint: "Country", readOnly: true),
         textfield(
             controller: controller.pincode,
             hint: "Pincode",
@@ -357,6 +385,70 @@ class RegisterDevicePage extends StatelessWidget {
             ),
           ),
           SizedBox(height: 2.h),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Checkbox(
+                  visualDensity: VisualDensity.compact,
+                  value: controller.check.value,
+                  activeColor: AppColors.selextedindexcolor,
+
+                  // fillColor: WidgetStatePropertyAll(Colors.white),
+                  side: BorderSide(color: AppColors.black),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5), // Adjust radius as needed
+                  ),
+                  onChanged: (value) {
+                    controller.check.value = value ?? false;
+                  }).paddingOnly(bottom: 10),
+              Expanded(
+                child: RichText(
+                  textAlign: TextAlign.start,
+                  maxLines: 3,
+                  text: TextSpan(
+                    text:
+                        'By submitting, I confirm that I have read, understood, and agree to the ',
+                    style: AppTextStyles(context).display11W500.copyWith(
+                          color: AppColors.grayLight,
+                        ),
+                    children: [
+                      TextSpan(
+                          text: 'Terms of Use ',
+                          style: AppTextStyles(context).display11W500.copyWith(
+                                height: 2,
+                                color: AppColors.purpleColor,
+                              ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              Get.to(() => TermsConditionView(),
+                                  transition: Transition.upToDown,
+                                  duration: const Duration(milliseconds: 300));
+                            }),
+                      TextSpan(
+                        text: 'and ',
+                        style: AppTextStyles(context).display11W500.copyWith(
+                              height: 2,
+                              color: AppColors.grayLight,
+                            ),
+                      ),
+                      TextSpan(
+                          text: 'Privacy Policy.',
+                          style: AppTextStyles(context).display11W500.copyWith(
+                                height: 2,
+                                color: AppColors.purpleColor,
+                              ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              Get.to(() => PrivacyPolicyView(),
+                                  transition: Transition.upToDown,
+                                  duration: const Duration(milliseconds: 300));
+                            }),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ).paddingOnly(bottom: 8)
         ],
       ),
     );

@@ -1,8 +1,10 @@
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:sizer/sizer.dart';
 import 'package:track_route_pro/common/textfield/search_textfield.dart';
 import 'package:track_route_pro/config/theme/app_colors.dart';
 import 'package:track_route_pro/config/theme/app_textstyle.dart';
 import 'package:track_route_pro/modules/bottom_screen/controller/bottom_bar_controller.dart';
+import 'package:track_route_pro/modules/register_user/view/device_page.dart';
 import 'package:track_route_pro/modules/vehicales/controller/vehicales_controller.dart';
 import 'package:track_route_pro/modules/vehicales/view/widget/vehical_detail_card.dart';
 import 'package:track_route_pro/utils/common_import.dart';
@@ -21,7 +23,9 @@ class VehicalesView extends StatefulWidget {
 
 class _VehicalesViewState extends State<VehicalesView> {
   final controller = Get.put(VehicalesController());
-
+  final registerController = Get.isRegistered<RegisterController>()
+      ? Get.find<RegisterController>() // Find if already registered
+      : Get.put(RegisterController());
   void initState() {
     super.initState();
   }
@@ -99,32 +103,44 @@ class _VehicalesViewState extends State<VehicalesView> {
                 ),
                 Expanded(
                   flex: 3,
-                  child: InkWell(
-                    onTap: () {
-                      final controller = Get.isRegistered<RegisterController>()
-                          ? Get.find<RegisterController>() // Find if already registered
-                          : Get.put(RegisterController());
-                      controller.clearAllData();
-                      controller.loginPage = false;
-                      Get.to(() => RegisterDevicePage(),
-                          transition: Transition.upToDown,
-                          duration: const Duration(milliseconds: 300));
-                    },
-                    child: Container(
-                      height: 40,
-                      child: Center(
-                        child:  Text(
-                          'Add Vehicle',
-                          style: AppTextStyles(context).display16W400.copyWith(
+                  child: Obx((){
+                    return InkWell(
+                      onTap: () async {
+                        if(!registerController.showLoader.value){
+                          registerController.clearAllData();
+                          registerController.loginPage = false;
+                          registerController.showLoader.value = true;
+                          try{
+                            await registerController.getVehicleTypeList();
+                          }
+                          catch(e){}
+
+                          registerController.showLoader.value = false;
+                          Get.to(() => DevicePage(),
+                              transition: Transition.upToDown,
+                              duration: const Duration(milliseconds: 300));
+                        }
+                      },
+                      child: Container(
+                        height: 40,
+                        child: Center(
+                          child: registerController.showLoader.value ? LoadingAnimationWidget.threeArchedCircle(
                             color: AppColors.selextedindexcolor,
-                          ),
-                        ),),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(AppSizes.radius_50),
-                        color: AppColors.black,
+                            size: 16,
+                          ) : Text(
+                            'Add Vehicle',
+                            style: AppTextStyles(context).display16W400.copyWith(
+                              color: AppColors.selextedindexcolor,
+                            ),
+                          ),),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(AppSizes.radius_50),
+                          color: AppColors.black,
+                        ),
                       ),
-                    ),
-                  ).paddingOnly(top: 24),
+                    ).paddingOnly(top: 24);
+                  }
+                  ),
                 ),
               ],
             ),

@@ -35,6 +35,7 @@ import 'package:track_route_pro/service/model/route_history/RouteHistoryResponse
 import 'package:track_route_pro/utils/app_prefrance.dart';
 import '../../modules/login_screen/controller/login_controller.dart';
 import '../../routes/app_pages.dart';
+import '../model/NewVehicleByUserRequest.dart';
 import '../model/NewVehicleRequest.dart';
 import '../model/alerts/UpdateAlertsRequest.dart';
 import '../model/alerts/alert/AlertsResponse.dart';
@@ -224,4 +225,8 @@ abstract class ApiService {
   @POST(ProjectUrls.newVehicle)
   Future<ListingBaseResponse> newVehicle(
       @Body(nullToAbsent: true) NewVehicleRequest request);
+
+  @POST(ProjectUrls.newVehicleByUser)
+  Future<ListingBaseResponse> newVehicleByUser(
+      @Body(nullToAbsent: true) NewVehicleByUserRequest request);
 }

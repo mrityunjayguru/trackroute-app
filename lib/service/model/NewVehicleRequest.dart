@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:track_route_pro/constants/project_urls.dart';
 import 'package:track_route_pro/service/model/CommonResponseModel.dart';
-import 'package:track_route_pro/service/model/CommonResponseModel.dart';
 import '../../utils/app_prefrance.dart';
 import '../../utils/common_import.dart';
 import 'listing_base_response.dart';

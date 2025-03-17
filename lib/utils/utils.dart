@@ -107,16 +107,15 @@ class Utils{
           children: [
             Obx(()=>
                Image.network(
-                  width: 50,
-                  height: 50,
+                  width: 25,
+                  height: 25,
                   "${ProjectUrls.imgBaseUrl}${dataController.settings.value.logo}",
                   errorBuilder: (context, error, stackTrace) =>
                       SvgPicture.asset(
                         Assets.images.svg.icIsolationMode,
                         color: AppColors.black,
-                      )),
+                      )).paddingSymmetric(horizontal: 10),
             ),
-
             Expanded(
               child: Text(
                name,
@@ -130,7 +129,7 @@ class Utils{
             SvgPicture.asset(rightIcon)
                 .paddingOnly(right: 12, left: 7.w)
           ],
-        ).paddingOnly(top: 12, bottom: 12, left: 8, right: 8),
+        ).paddingOnly(left: 8, right: 8),
       ),
     );
   }
