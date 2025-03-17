@@ -234,8 +234,14 @@ extension FormRequestValidator on NewVehicleRequest {
     if (emailAddress == null || emailAddress!.isEmpty) {
       throw ValidationException(errorMsg: "Please enter email address");
     }
+    if (!GetUtils.isEmail(emailAddress ?? "") ) {
+      throw ValidationException(errorMsg: "Please enter a valid email address");
+    }
     if (phone == null || phone!.isEmpty) {
       throw ValidationException(errorMsg: "Please enter phone number");
+    }
+    if (phone?.length !=10) {
+      throw ValidationException(errorMsg: "Please enter a 10 digit phone number");
     }
     if (password == null || password!.isEmpty) {
       throw ValidationException(errorMsg: "Please enter password");

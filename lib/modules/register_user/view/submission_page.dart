@@ -81,13 +81,8 @@ class SubmissionPage extends StatelessWidget {
                           ),
                           recognizer: TapGestureRecognizer()
                             ..  onTap= () {
-                            if(controller.loginPage){
+
                               Get.back();
-                            }
-                            else{
-                              Get.back();
-                            }
-        
                             }
                       ),
                       TextSpan(

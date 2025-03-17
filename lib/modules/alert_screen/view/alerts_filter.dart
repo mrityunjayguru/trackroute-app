@@ -141,7 +141,7 @@ class AlertsFilterPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SvgPicture.asset((isSelected)
-                    ? "assets/images/svg/blue_check_icon.svg"
+                    ? "assets/images/svg/check_alerts.svg"
                     : "assets/images/svg/grey_check_icon.svg")
                 .paddingOnly(right: 5.w),
             Expanded(

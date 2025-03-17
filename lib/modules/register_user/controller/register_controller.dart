@@ -17,7 +17,6 @@ import '../view/submission_page.dart';
 class RegisterController extends GetxController {
   final ApiService apiService = ApiService.create();
 
-  bool loginPage = true;
   final fullNameController = TextEditingController();
   final emailController = TextEditingController();
   final mobileNumberController = TextEditingController();
@@ -49,7 +48,7 @@ class RegisterController extends GetxController {
   RxBool obscureText = true.obs;
   RxBool obscureTextCnf = true.obs;
   RxBool check = false.obs;
-
+ bool loginPage = true;
   Future<void> pickFile() async {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
@@ -214,9 +213,6 @@ class RegisterController extends GetxController {
 
         if (response.message == "Success") {
           Get.back();
-          if(loginPage){
-            Get.back();
-          }
           Get.to(() => SubmissionPage(),
               transition: Transition.upToDown,
               duration: const Duration(milliseconds: 300));
@@ -266,7 +262,7 @@ class RegisterController extends GetxController {
       Utils.getSnackbar("Error", "${e.errorMsg}");
     }
     catch (e, s) {
-      Utils.getSnackbar("Error", "Something went wrong, Please enter valid imei");
+      Utils.getSnackbar("Error", "Something went wrong, Please retry later");
     }
 
     showLoader.value = false;
@@ -308,7 +304,7 @@ class RegisterController extends GetxController {
       }
     } catch (e) {
 
-      // print("Error during OTP verification: $e");
+      print("Error during vehicle list fetch: $e");
     }
 
   }

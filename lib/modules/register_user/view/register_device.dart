@@ -12,6 +12,7 @@ import 'package:track_route_pro/utils/common_import.dart';
 import '../../../common/textfield/apptextfield.dart';
 import '../../../config/app_sizer.dart';
 import '../../../service/model/NewVehicleRequest.dart';
+import '../../../service/model/presentation/vehicle_type/Data.dart';
 import '../../../utils/search_drop_down.dart';
 import '../../../utils/utils.dart';
 import '../../privacy_policy/view/privacy_policy_page.dart';
@@ -76,22 +77,12 @@ class RegisterDevicePage extends StatelessWidget {
                   personalInfo(context),
                   address(context),
                   documentation(context),
+                  addVehicle(context),
                   Obx(()=>
                      InkWell(
                       onTap: () async {
                         if (controller.check.value) {
-                          try {
-                            controller.validatePage1();
-                            controller.showLoader.value = true;
-                            await controller.getVehicleTypeList();
-                            Get.to(() => DevicePage(),
-                                transition: Transition.upToDown,
-                                duration: const Duration(milliseconds: 300));
-                          } on ValidationException catch (e) {
-                            Utils.getSnackbar(
-                                "All Fields Are Compulsory", "${e.errorMsg}");
-                          }
-                          controller.showLoader.value = false;
+                          controller.sendData();
                         }
                       },
                       child: Container(
@@ -114,6 +105,27 @@ class RegisterDevicePage extends StatelessWidget {
                       ),
                     ).paddingOnly(bottom: 1.h),
                   ),
+                  SizedBox(height: 1.h),
+                  InkWell(
+                    onTap: () {
+                      Get.back();
+                    },
+                    child: Container(
+                      height: 6.h,
+                      child: Center(
+                        child: Text(
+                          "Cancel",
+                          style: AppTextStyles(context)
+                              .display16W400
+                              .copyWith(color: AppColors.black),
+                        ),
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(AppSizes.radius_10),
+                        color: AppColors.selextedindexcolor,
+                      ),
+                    ),
+                  ).paddingOnly(bottom: 1.h),
                 ],
               ),
             ),
@@ -147,6 +159,7 @@ class RegisterDevicePage extends StatelessWidget {
         textfield(controller: controller.fullNameController, hint: "Full Name"),
         textfield(controller: controller.emailController, hint: "Email ID"),
         textfield(
+
             controller: controller.mobileNumberController,
             hint: "Mobile Number",
             inputFormatter: [Utils.intFormatter()]),
@@ -341,7 +354,7 @@ class RegisterDevicePage extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: AppTextStyles(context)
                     .display16W400
-                    .copyWith(color: AppColors.color_239B41),
+                    .copyWith(color: AppColors.black),
               ),
             ),
           SizedBox(height: 0.7.h),
@@ -384,71 +397,7 @@ class RegisterDevicePage extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(height: 2.h),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Checkbox(
-                  visualDensity: VisualDensity.compact,
-                  value: controller.check.value,
-                  activeColor: AppColors.selextedindexcolor,
 
-                  // fillColor: WidgetStatePropertyAll(Colors.white),
-                  side: BorderSide(color: AppColors.black),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(5), // Adjust radius as needed
-                  ),
-                  onChanged: (value) {
-                    controller.check.value = value ?? false;
-                  }).paddingOnly(bottom: 10),
-              Expanded(
-                child: RichText(
-                  textAlign: TextAlign.start,
-                  maxLines: 3,
-                  text: TextSpan(
-                    text:
-                        'By submitting, I confirm that I have read, understood, and agree to the ',
-                    style: AppTextStyles(context).display11W500.copyWith(
-                          color: AppColors.grayLight,
-                        ),
-                    children: [
-                      TextSpan(
-                          text: 'Terms of Use ',
-                          style: AppTextStyles(context).display11W500.copyWith(
-                                height: 2,
-                                color: AppColors.purpleColor,
-                              ),
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () {
-                              Get.to(() => TermsConditionView(),
-                                  transition: Transition.upToDown,
-                                  duration: const Duration(milliseconds: 300));
-                            }),
-                      TextSpan(
-                        text: 'and ',
-                        style: AppTextStyles(context).display11W500.copyWith(
-                              height: 2,
-                              color: AppColors.grayLight,
-                            ),
-                      ),
-                      TextSpan(
-                          text: 'Privacy Policy.',
-                          style: AppTextStyles(context).display11W500.copyWith(
-                                height: 2,
-                                color: AppColors.purpleColor,
-                              ),
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () {
-                              Get.to(() => PrivacyPolicyView(),
-                                  transition: Transition.upToDown,
-                                  duration: const Duration(milliseconds: 300));
-                            }),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ).paddingOnly(bottom: 8)
         ],
       ),
     );
@@ -474,6 +423,111 @@ class RegisterDevicePage extends StatelessWidget {
       hintText: hint,
       inputFormatters: inputFormatter,
       obscureText: obscureText,
+    );
+  }
+
+
+  Widget addVehicle(BuildContext context){
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Add Vehicle",
+          style: AppTextStyles(context).display18W500,
+        ).paddingOnly(bottom: 10, top: 16),
+        Text(
+          "Register your First Vehicle!",
+          style: AppTextStyles(context)
+              .display12W500
+              .copyWith(color: AppColors.color_4B4749,height: 1.5),
+        ),
+        textfield(controller: controller.imeiController, hint: "Device IMEI No.", inputFormatter: [Utils.intFormatter()]),
+        // textfield(controller: controller.simController, hint: "Device SIM No."),
+        textfield(controller: controller.vehicleNumberController, hint: "Vehicle Number"),
+        SizedBox(height: 20,),
+        SearchDropDown<DataVehicleType>(
+          dropDownFillColor: AppColors.white,
+          containerColor: AppColors.white,
+          showBorder: false,
+          hintStyle: AppTextStyles(context)
+              .display16W400
+              .copyWith(color: AppColors.grayLight),
+          height: 50,
+          items: controller.vehicleTypeList.toList(),
+          selectedItem: controller.vehicleCategory.value,
+          onChanged: (value) {
+            controller.vehicleCategory.value= value;
+          },
+          hint: "Vehicle Category",
+          showSearch: false,
+        ),
+        textfield(controller: controller.dealerCodeController, hint: "Dealer Code(Optional)"),
+        SizedBox(height: 2.h),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Checkbox(
+                visualDensity: VisualDensity.compact,
+                value: controller.check.value,
+                activeColor: AppColors.selextedindexcolor,
+
+                // fillColor: WidgetStatePropertyAll(Colors.white),
+                side: BorderSide(color: AppColors.black),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5), // Adjust radius as needed
+                ),
+                onChanged: (value) {
+                  controller.check.value = value ?? false;
+                }).paddingOnly(bottom: 10),
+            Expanded(
+              child: RichText(
+                textAlign: TextAlign.start,
+                maxLines: 3,
+                text: TextSpan(
+                  text:
+                  'By submitting, I confirm that I have read, understood, and agree to the ',
+                  style: AppTextStyles(context).display11W500.copyWith(
+                    color: AppColors.grayLight,
+                  ),
+                  children: [
+                    TextSpan(
+                        text: 'Terms of Use ',
+                        style: AppTextStyles(context).display11W500.copyWith(
+                          height: 2,
+                          color: AppColors.purpleColor,
+                        ),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            Get.to(() => TermsConditionView(),
+                                transition: Transition.upToDown,
+                                duration: const Duration(milliseconds: 300));
+                          }),
+                    TextSpan(
+                      text: 'and ',
+                      style: AppTextStyles(context).display11W500.copyWith(
+                        height: 2,
+                        color: AppColors.grayLight,
+                      ),
+                    ),
+                    TextSpan(
+                        text: 'Privacy Policy.',
+                        style: AppTextStyles(context).display11W500.copyWith(
+                          height: 2,
+                          color: AppColors.purpleColor,
+                        ),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            Get.to(() => PrivacyPolicyView(),
+                                transition: Transition.upToDown,
+                                duration: const Duration(milliseconds: 300));
+                          }),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ).paddingOnly(bottom: 8)
+      ],
     );
   }
 }

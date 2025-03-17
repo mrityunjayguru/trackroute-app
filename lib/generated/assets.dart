@@ -50,6 +50,7 @@ class Assets {
   static const String svgCar = 'assets/images/svg/car.svg';
   static const String svgCarIcon = 'assets/images/svg/car-icon.svg';
   static const String svgChargingIcon = 'assets/images/svg/charging_icon.svg';
+  static const String svgCheckAlerts = 'assets/images/svg/check_alerts.svg';
   static const String svgCloseIcon = 'assets/images/svg/close_icon.svg';
   static const String svgCloseIconDialog = 'assets/images/svg/close_icon_dialog.svg';
   static const String svgCopy = 'assets/images/svg/copy.svg';
@@ -112,6 +113,7 @@ class Assets {
   static const String svgMaxSpeedMarker = 'assets/images/svg/max_speed_marker.svg';
   static const String svgNavigation1 = 'assets/images/svg/navigation1.svg';
   static const String svgNotifIconSetting = 'assets/images/svg/notif_icon_setting.svg';
+  static const String svgParking = 'assets/images/svg/Parking.svg';
   static const String svgParkingIcon = 'assets/images/svg/parking_icon.svg';
   static const String svgPasteIcon = 'assets/images/svg/paste_icon.svg';
   static const String svgRedCheck = 'assets/images/svg/red_check.svg';

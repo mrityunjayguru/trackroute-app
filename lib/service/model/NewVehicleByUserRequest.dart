@@ -53,12 +53,11 @@ class NewVehicleByUserRequest {
 
 extension FormRequestValidator on NewVehicleByUserRequest {
   void validateRequest() {
-
-    if (vehicleNo == null || vehicleNo!.isEmpty) {
-      throw ValidationException(errorMsg: "Please enter vehicle number");
-    }
     if (imei == null || imei!.isEmpty) {
       throw ValidationException(errorMsg: "Please enter IMEI number");
+    }
+    if (vehicleNo == null || vehicleNo!.isEmpty) {
+      throw ValidationException(errorMsg: "Please enter vehicle number");
     }
     if (vehicleType == null || vehicleType!.isEmpty) {
       throw ValidationException(errorMsg: "Please enter vehicle type");

@@ -114,7 +114,6 @@ class _VehicalesViewState extends State<VehicalesView> {
                             await registerController.getVehicleTypeList();
                           }
                           catch(e){}
-
                           registerController.showLoader.value = false;
                           Get.to(() => DevicePage(),
                               transition: Transition.upToDown,

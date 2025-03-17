@@ -1,11 +1,8 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:sizer/sizer.dart';
 import 'package:track_route_pro/config/theme/app_colors.dart';
 import 'package:track_route_pro/config/theme/app_textstyle.dart';
 import 'package:track_route_pro/gen/assets.gen.dart';
-import 'package:track_route_pro/modules/register_user/view/submission_page.dart';
 import 'package:track_route_pro/service/model/presentation/vehicle_type/Data.dart';
 import 'package:track_route_pro/utils/common_import.dart';
 
@@ -44,20 +41,42 @@ class DevicePage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    "Add Vehicle",
-                    style: AppTextStyles(context).display24W500,
-                  ).paddingOnly(bottom: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Add Vehicle",
+                        style: AppTextStyles(context).display24W500,
+                      ).paddingOnly(bottom: 10),
+                      InkWell(
+                        onTap: () {
+                          Get.back();
+                        },
+                        child: SvgPicture.asset(
+                          'assets/images/svg/ic_arrow_left.svg',
+                          colorFilter: ColorFilter.mode(
+                              AppColors.black, BlendMode.srcIn),
+                        ).paddingOnly(right: 12, left: 7.w),
+                      )
+                    ],
+                  ),
                   Text(
                     "Register your First Vehicle!",
                     style: AppTextStyles(context)
                         .display12W500
-                        .copyWith(color: AppColors.color_4B4749,height: 1.5),
+                        .copyWith(color: AppColors.color_4B4749, height: 1.5),
                   ),
-                  textfield(controller: controller.imeiController, hint: "Device IMEI No."),
+                  textfield(
+                    controller: controller.imeiController,
+                    hint: "Device IMEI No.",
+                  ),
                   // textfield(controller: controller.simController, hint: "Device SIM No."),
-                  textfield(controller: controller.vehicleNumberController, hint: "Vehicle Number"),
-                  SizedBox(height: 20,),
+                  textfield(
+                      controller: controller.vehicleNumberController,
+                      hint: "Vehicle Number"),
+                  SizedBox(
+                    height: 20,
+                  ),
                   SearchDropDown<DataVehicleType>(
                     dropDownFillColor: AppColors.white,
                     containerColor: AppColors.white,
@@ -69,21 +88,18 @@ class DevicePage extends StatelessWidget {
                     items: controller.vehicleTypeList.toList(),
                     selectedItem: controller.vehicleCategory.value,
                     onChanged: (value) {
-                      controller.vehicleCategory.value= value;
+                      controller.vehicleCategory.value = value;
                     },
                     hint: "Vehicle Category",
                     showSearch: false,
                   ),
-                  textfield(controller: controller.dealerCodeController, hint: "Dealer Code(Optional)"),
+                  textfield(
+                      controller: controller.dealerCodeController,
+                      hint: "Dealer Code(Optional)"),
                   SizedBox(height: 5.h),
                   InkWell(
                     onTap: () {
-                      if(controller.loginPage){
-                        controller.sendData();
-                      }
-                      else{
-                        controller.sendDataVehicle();
-                      }
+                      controller.sendDataVehicle();
                     },
                     child: Container(
                       height: 6.h,
@@ -105,9 +121,6 @@ class DevicePage extends StatelessWidget {
                   InkWell(
                     onTap: () {
                       Get.back();
-                      if(controller.loginPage){
-                        Get.back();
-                      }
                     },
                     child: Container(
                       height: 6.h,
@@ -136,10 +149,10 @@ class DevicePage extends StatelessWidget {
 
   Widget textfield(
       {bool readOnly = false,
-        required TextEditingController controller,
-        VoidCallback? onTap,
-        String? suffixIcon,
-        required String hint}) {
+      required TextEditingController controller,
+      VoidCallback? onTap,
+      String? suffixIcon,
+      required String hint}) {
     return AppTextFormField(
       height: 50,
       readOnly: readOnly,
