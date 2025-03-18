@@ -1192,15 +1192,14 @@ class _ApiService implements ApiService {
   }
 
   @override
-  Future<ListingBaseResponse<dynamic>> newVehicle(
-      NewVehicleRequest request) async {
+  Future<CommonResponseModel> newVehicle(NewVehicleRequest request) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     _data.addAll(request.toJson());
     _data.removeWhere((k, v) => v == null);
-    final _options = _setStreamType<ListingBaseResponse<dynamic>>(Options(
+    final _options = _setStreamType<CommonResponseModel>(Options(
       method: 'POST',
       headers: _headers,
       extra: _extra,
@@ -1217,12 +1216,9 @@ class _ApiService implements ApiService {
           baseUrl,
         )));
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late ListingBaseResponse<dynamic> _value;
+    late CommonResponseModel _value;
     try {
-      _value = ListingBaseResponse<dynamic>.fromJson(
-        _result.data!,
-        (json) => json as dynamic,
-      );
+      _value = CommonResponseModel.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
@@ -1231,7 +1227,7 @@ class _ApiService implements ApiService {
   }
 
   @override
-  Future<ListingBaseResponse<dynamic>> newVehicleByUser(
+  Future<CommonResponseModel> newVehicleByUser(
       NewVehicleByUserRequest request) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -1239,7 +1235,7 @@ class _ApiService implements ApiService {
     final _data = <String, dynamic>{};
     _data.addAll(request.toJson());
     _data.removeWhere((k, v) => v == null);
-    final _options = _setStreamType<ListingBaseResponse<dynamic>>(Options(
+    final _options = _setStreamType<CommonResponseModel>(Options(
       method: 'POST',
       headers: _headers,
       extra: _extra,
@@ -1256,12 +1252,9 @@ class _ApiService implements ApiService {
           baseUrl,
         )));
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late ListingBaseResponse<dynamic> _value;
+    late CommonResponseModel _value;
     try {
-      _value = ListingBaseResponse<dynamic>.fromJson(
-        _result.data!,
-        (json) => json as dynamic,
-      );
+      _value = CommonResponseModel.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;

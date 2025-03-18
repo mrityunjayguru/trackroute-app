@@ -5,6 +5,7 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:track_route_pro/constants/project_urls.dart';
+import 'package:track_route_pro/service/model/CommonResponseModel.dart';
 import 'package:track_route_pro/service/model/ReportsRequest.dart';
 import 'package:track_route_pro/service/model/ReportsRequest.dart';
 import 'package:track_route_pro/service/model/ReportsRequest.dart';
@@ -223,10 +224,10 @@ abstract class ApiService {
       @Body(nullToAbsent: true) ReportsRequest request);
 
   @POST(ProjectUrls.newVehicle)
-  Future<ListingBaseResponse> newVehicle(
+  Future<CommonResponseModel> newVehicle(
       @Body(nullToAbsent: true) NewVehicleRequest request);
 
   @POST(ProjectUrls.newVehicleByUser)
-  Future<ListingBaseResponse> newVehicleByUser(
+  Future<CommonResponseModel> newVehicleByUser(
       @Body(nullToAbsent: true) NewVehicleByUserRequest request);
 }

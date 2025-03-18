@@ -241,6 +241,7 @@ class RegisterController extends GetxController {
       request.ownerID = userId;
       request.vehicleType = vehicleCategory.value?.id;
       request.imei = imeiController.text.trim();
+      request.imei = "861908228015760";
       // request.deviceSimNumber = simController.text.trim();
       request.vehicleNo = vehicleNumberController.text.trim();
       request.dealerCode = dealerCodeController.text.trim();
@@ -248,7 +249,7 @@ class RegisterController extends GetxController {
       request.validateRequest();
 
 
-      var response = await NewVehicleByUserRequest().submitForm(request);
+      var response = await apiService.newVehicleByUser(request);
 
       if (response.message == "Success") {
         Get.back();
@@ -262,34 +263,12 @@ class RegisterController extends GetxController {
       Utils.getSnackbar("Error", "${e.errorMsg}");
     }
     catch (e, s) {
-      Utils.getSnackbar("Error", "Something went wrong, Please retry later");
+      Utils.getSnackbar("Error", "Something went wrong, Please  ");
     }
 
     showLoader.value = false;
   }
 
-
-  void validatePage1(){
-    var request = NewVehicleRequest();
-    request.name = fullNameController.text.trim();
-    request.emailAddress = emailController.text.trim();
-    request.phone = mobileNumberController.text.trim();
-    request.dob = dateOfBirthController.value.trim();
-    request.address = permanentAddressController.text.trim();
-    request.city = cityController.text.trim();
-    request.state = state.value?.name;
-    request.idno = idNumberController.text.trim();
-    request.country = country.text.trim();
-    request.pinCode = pincode.text.trim();
-    request.password = passwd.text.trim();
-    request.confirmPassword = cnfPasswd.text.trim();
-    request.gender = gender.value?.name;
-    request.idDocument = idType.value?.name;
-    request.validateRequestPage1();
-    if(selectedFile.value==null){
-      throw ValidationException(errorMsg: "Please upload a file for ID document");
-    }
-  }
 
   Future<void> getVehicleTypeList() async {
     try {

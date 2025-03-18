@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../../constants/project_urls.dart';
 import '../../utils/app_prefrance.dart';
+import '../../utils/common_import.dart';
 import 'CommonResponseModel.dart';
 import 'NewVehicleRequest.dart';
 
@@ -68,12 +69,12 @@ extension FormRequestValidator on NewVehicleByUserRequest {
   Future<CommonResponseModel> submitForm(NewVehicleByUserRequest requestForm) async {
     try {
       var request = http.MultipartRequest(
-          'POST', Uri.parse("${ProjectUrls.baseUrl}${ProjectUrls.newVehicle}"));
-
+          'POST', Uri.parse("${ProjectUrls.baseUrl}${ProjectUrls.newVehicleByUser}"));
+      debugPrint("Field: ${Uri.parse("${ProjectUrls.baseUrl}${ProjectUrls.newVehicleByUser}")}");
       // Add fields from requestForm to the request
       requestForm.toJson().forEach((key, value) {
         request.fields[key] = value.toString();
-        // debugPrint("Field: $key = $value");
+        debugPrint("Field: $key = $value");
       });
 
       final accessToken =
@@ -86,11 +87,13 @@ extension FormRequestValidator on NewVehicleByUserRequest {
 
       // Send the request and get the response
       http.StreamedResponse streamedResponse = await request.send();
-
+      debugPrint("Status Code: ${streamedResponse.statusCode}");
+      debugPrint("Headers: ${streamedResponse.headers}");
       // Check if the response status is successful
       if (streamedResponse.statusCode == 200) {
         // Decode the response body
         final responseBody = await streamedResponse.stream.bytesToString();
+        debugPrint("Response Body: $responseBody");
         final jsonResponse = jsonDecode(responseBody);
 
         // Parse the response into BaseDataResponse
@@ -99,6 +102,7 @@ extension FormRequestValidator on NewVehicleByUserRequest {
         if (streamedResponse.statusCode == 400 || streamedResponse.statusCode == 409) {
           // Decode the response body
           final responseBody = await streamedResponse.stream.bytesToString();
+          debugPrint("Response Body: $responseBody");
           final jsonResponse = jsonDecode(responseBody);
 
           // Parse the response into BaseDataResponse
