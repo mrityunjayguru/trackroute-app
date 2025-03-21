@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -788,18 +789,68 @@ class VehicleDataWidget extends StatelessWidget {
                 color: AppColors.color_e5e7e9,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Column(
+              child: StaggeredGrid.count(
+                crossAxisCount: 3,
+                mainAxisSpacing: 5,
+                crossAxisSpacing: 4,
+                children:[
+                  if (displayParameters?.extBattery != null &&
+                      (displayParameters?.extBattery ?? false))detailItem(
+                      "Vehicle Battery",
+                      "${Utils.toStringAsFixed(data: extBattery)}",
+                      "assets/images/svg/batt_icon.svg",
+                      16),
+                  if (displayParameters?.internalBattery != null &&
+                      (displayParameters?.internalBattery ?? false))detailItem(
+                      "Device Battery",
+                      "${Utils.toStringAsFixed(data: intBattery)}",
+                      "assets/images/svg/charging_icon.svg",
+                      12),
+                  if (displayParameters?.vehicleMotion != null &&
+                      (displayParameters?.vehicleMotion ?? false))detailItem(
+                      "Vehicle Motion",
+                      motion.toLowerCase() == "true" ? "True" : "False",
+                      "assets/images/svg/car_icon.svg",
+                      16),
+                  if (displayParameters?.temperature != null &&
+                      (displayParameters?.temperature ?? false))
+                    detailItem(
+                        "Temp. \nin °C",
+                        "${Utils.toStringAsFixed(data: temp)}",
+                        "assets/images/svg/temp_icon.svg",
+                        16),
+                  if (displayParameters?.humidity != null &&
+                      (displayParameters?.humidity ?? false))
+                    detailItem(
+                        "Humidity \nin %",
+                        "${Utils.toStringAsFixed(data: humid)}",
+                        "assets/images/svg/humid_icon.svg",
+                        16),
+                  if (displayParameters?.bluetooth != null &&
+                      (displayParameters?.bluetooth ?? false))
+                    detailItem(
+                        "Bluetooth Strength",
+                        double.tryParse(bluetooth) != null
+                            ? ((double.tryParse(bluetooth) ?? 0) > 10
+                            ? "Strong"
+                            : "Weak")
+                            : "N/A",
+                        "assets/images/svg/bluetooth_icon.svg",
+                        16),
+                ]
+              ),
+              /*child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Row(
                     children: [
                       detailItem(
-                          "External Battery",
+                          "Vehicle Battery",
                           "${Utils.toStringAsFixed(data: extBattery)}",
                           "assets/images/svg/batt_icon.svg",
                           16),
                       detailItem(
-                          "Internal Battery",
+                          "Device Battery",
                           "${Utils.toStringAsFixed(data: intBattery)}",
                           "assets/images/svg/charging_icon.svg",
                           12),
@@ -841,7 +892,7 @@ class VehicleDataWidget extends StatelessWidget {
                     ],
                   )
                 ],
-              ),
+              ),*/
             ).paddingOnly(bottom: 10),
         ] else
           InkWell(
@@ -873,47 +924,45 @@ class VehicleDataWidget extends StatelessWidget {
 
   Widget detailItem(String title, String text, String icon, double size) {
     return Builder(builder: (context) {
-      return Flexible(
-        child: Container(
-            constraints: BoxConstraints(maxHeight: 11.h, maxWidth: 29.w),
-            padding: EdgeInsets.symmetric(vertical: 6, horizontal: 10),
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Text(title,
-                              style: AppTextStyles(context).display11W400)
-                          .paddingOnly(right: 2),
-                    ),
-                    CircleAvatar(
-                      maxRadius: 16,
-                      child: SvgPicture.asset(
-                        icon,
-                        width: size,
-                        height: size,
-                      ),
-                      backgroundColor: AppColors.selextedindexcolor,
-                    )
-                  ],
-                ),
-                Flexible(
-                  child: Text(
-                    text,
-                    overflow: TextOverflow.fade,
-                    style: AppTextStyles(context).display18W600,
+      return Container(
+          constraints: BoxConstraints(maxHeight: 11.h, maxWidth: 29.w),
+          padding: EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Text(title,
+                            style: AppTextStyles(context).display11W400)
+                        .paddingOnly(right: 2),
                   ),
+                  CircleAvatar(
+                    maxRadius: 16,
+                    child: SvgPicture.asset(
+                      icon,
+                      width: size,
+                      height: size,
+                    ),
+                    backgroundColor: AppColors.selextedindexcolor,
+                  )
+                ],
+              ),
+              Flexible(
+                child: Text(
+                  text,
+                  overflow: TextOverflow.fade,
+                  style: AppTextStyles(context).display18W600,
                 ),
-              ],
-            )).paddingSymmetric(horizontal: 3, vertical: 4),
-      );
+              ),
+            ],
+          )).paddingSymmetric(horizontal: 3, vertical: 4);
     });
   }
 

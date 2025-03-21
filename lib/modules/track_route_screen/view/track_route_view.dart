@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:defer_pointer/defer_pointer.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:geolocator/geolocator.dart';
@@ -69,7 +67,6 @@ class TrackRouteView extends StatelessWidget {
                     (controller.deviceDetail.value.data?.isNotEmpty ??
                         false)) ...[
                   DraggableScrollableSheet(
-
                     initialChildSize: 0.55, // Initial size of the sheet
                     minChildSize: 0.1, // Minimum size before closing
                     maxChildSize: 0.55, // Maximum size of the sheet
@@ -83,7 +80,6 @@ class TrackRouteView extends StatelessWidget {
                       }
                       return NotificationListener<
                           DraggableScrollableNotification>(
-
                         onNotification: (notification) {
                           // When dragged down enough, close the bottom sheet
                           if (notification.extent <= 0.2) {
@@ -124,8 +120,7 @@ class TrackRouteView extends StatelessWidget {
                                               0.0,
                                         );
                                       } else {
-                                        address =
-                                            "Address Unavailable";
+                                        address = "Address Unavailable";
                                       }
 
                                       String date = 'Update unavailable';
@@ -139,20 +134,33 @@ class TrackRouteView extends StatelessWidget {
                                             '${DateFormat("HH:mm").format(DateTime.parse(trackingData?.lastUpdateTime ?? "").toLocal()) ?? ''}';
                                       }
                                       return FutureBuilder<String>(
-                                        future: (trackingData?.location?.latitude != null &&
-                                            trackingData?.location?.longitude != null)
+                                        future: (trackingData
+                                                        ?.location?.latitude !=
+                                                    null &&
+                                                trackingData
+                                                        ?.location?.longitude !=
+                                                    null)
                                             ? controller.getAddressFromLatLong(
-                                          trackingData?.location?.latitude ?? 0.0,
-                                          trackingData?.location?.longitude ?? 0.0,
-                                        )
-                                            : Future.value("Address Unavailable"),
+                                                trackingData
+                                                        ?.location?.latitude ??
+                                                    0.0,
+                                                trackingData
+                                                        ?.location?.longitude ??
+                                                    0.0,
+                                              )
+                                            : Future.value(
+                                                "Address Unavailable"),
                                         builder: (context, snapshot) {
-                                          String address = "Fetching Address...";
-                                          if (snapshot.connectionState == ConnectionState.done) {
+                                          String address =
+                                              "Fetching Address...";
+                                          if (snapshot.connectionState ==
+                                              ConnectionState.done) {
                                             if (snapshot.hasError) {
-                                              address = "Error Fetching Address";
+                                              address =
+                                                  "Error Fetching Address";
                                             } else {
-                                              address = snapshot.data ?? "Address Unavailable";
+                                              address = snapshot.data ??
+                                                  "Address Unavailable";
                                             }
                                           }
                                           return VehicalDetailBottomSheet(
@@ -165,75 +173,101 @@ class TrackRouteView extends StatelessWidget {
                                                 .data?[0]
                                                 .displayParameters,
                                             imei: controller.deviceDetail.value
-                                                .data?[0].imei ??
+                                                    .data?[0].imei ??
                                                 "",
-                                            vehicalNo: controller.deviceDetail.value
-                                                .data?[0].vehicleNo ??
+                                            vehicalNo: controller.deviceDetail
+                                                    .value.data?[0].vehicleNo ??
                                                 '-',
                                             dateTime: "$date $time",
                                             address: address,
                                             totalkm:
-                                            '${trackingData?.totalDistanceCovered ?? ''}',
+                                                '${trackingData?.totalDistanceCovered ?? ''}',
                                             currentSpeed: controller
-                                                .deviceDetail
-                                                .value
-                                                .data?[0]
-                                                .trackingData
-                                                ?.currentSpeed ??
+                                                    .deviceDetail
+                                                    .value
+                                                    .data?[0]
+                                                    .trackingData
+                                                    ?.currentSpeed ??
                                                 0,
                                             deviceID:
-                                            '${controller.deviceDetail.value.data?[0].deviceId ?? ""}',
-                                            icon: controller.deviceDetail.value
-                                                .data?[0].vehicletype?.icons ??
+                                                '${controller.deviceDetail.value.data?[0].deviceId ?? ""}',
+                                            icon: controller
+                                                    .deviceDetail
+                                                    .value
+                                                    .data?[0]
+                                                    .vehicletype
+                                                    ?.icons ??
                                                 "",
                                             ignition:
-                                            trackingData?.ignition?.status,
-                                            network: trackingData?.network == null
-                                                ? null
-                                                : (trackingData?.network ==
-                                                "Connected"),
+                                                trackingData?.ignition?.status,
+                                            network:
+                                                trackingData?.network == null
+                                                    ? null
+                                                    : (trackingData?.network ==
+                                                        "Connected"),
                                             gps: trackingData?.gps,
                                             ac: trackingData?.ac,
-                                            charging: ((trackingData?.internalBattery ?? 1) <= 0) ? true : false ,
+                                            charging: ((trackingData
+                                                            ?.internalBattery ??
+                                                        1) <=
+                                                    0)
+                                                ? true
+                                                : false,
                                             door: trackingData?.door,
-                                            geofence: controller.deviceDetail.value
-                                                .data?[0].locationStatus ?? false,
+                                            geofence: controller
+                                                    .deviceDetail
+                                                    .value
+                                                    .data?[0]
+                                                    .locationStatus ??
+                                                false,
                                             immob: controller.deviceDetail.value
-                                                .data?[0].immobiliser !=
-                                                null
+                                                        .data?[0].immobiliser !=
+                                                    null
                                                 ? (controller.deviceDetail.value
-                                                .data?[0].immobiliser ==
-                                                "Stop")
+                                                        .data?[0].immobiliser ==
+                                                    "Stop")
                                                 : null,
-                                            parking: controller.deviceDetail.value
-                                                .data?[0].parking,
-                                            engine: controller.deviceDetail.value
-                                                .data?[0].trackingData?.ignition?.status ?? false,
-                                            fuel:
-                                            controller.deviceDetail.value.data?[0].fuelStatus != "Off" ? "${controller.deviceDetail.value.data?[0]?.fuelLevel ?? "N/A"}" : "N/A",
+                                            parking: controller.deviceDetail
+                                                .value.data?[0].parking,
+                                            engine: controller
+                                                    .deviceDetail
+                                                    .value
+                                                    .data?[0]
+                                                    .trackingData
+                                                    ?.ignition
+                                                    ?.status ??
+                                                false,
+                                            fuel: controller.deviceDetail.value
+                                                        .data?[0].fuelStatus !=
+                                                    "Off"
+                                                ? "${controller.deviceDetail.value.data?[0]?.fuelLevel ?? "N/A"}"
+                                                : "N/A",
                                             vehicleName:
-                                            "${controller.deviceDetail.value.data?[0].vehicletype?.vehicleTypeName ?? ""}",
-                                            temp:
-                                            (trackingData?.temperature ?? "N/A")
+                                                "${controller.deviceDetail.value.data?[0].vehicletype?.vehicleTypeName ?? ""}",
+                                            temp: (trackingData?.temperature ??
+                                                    "N/A")
                                                 .toString(),
-                                            humid:
-                                            (trackingData?.humidity0 ?? "N/A")
+                                            humid: (trackingData?.humidity0 ??
+                                                    "N/A")
                                                 .toString(),
-                                            motion: (trackingData?.motion ?? "N/A")
+                                            motion:
+                                                (trackingData?.motion ?? "N/A")
+                                                    .toString(),
+                                            bluetooth:
+                                                (trackingData?.rssi ?? "")
+                                                    .toString(),
+                                            extBattery: (trackingData
+                                                        ?.externalBattery ??
+                                                    "N/A")
                                                 .toString(),
-                                            bluetooth: (trackingData?.rssi ?? "")
+                                            intBattery: (trackingData
+                                                        ?.internalBattery ??
+                                                    "N/A")
                                                 .toString(),
-                                            extBattery:
-                                            (trackingData?.externalBattery ??
-                                                "N/A")
-                                                .toString(),
-                                            intBattery:
-                                            (trackingData?.internalBattery ??
-                                                "N/A")
-                                                .toString(), summary: controller.deviceDetail
-                                              .value.data?[0].summary,
+                                            summary: controller.deviceDetail
+                                                .value.data?[0].summary,
                                           );
-                                        } ,
+                                        },
                                       );
                                     }
                                     return SizedBox.shrink();
@@ -246,9 +280,31 @@ class TrackRouteView extends StatelessWidget {
                                 left: 2.w,
                                 child: InkWell(
                                   onTap: () {
-                                    if (isActive) {
+                                    if (isActive &&
+                                        (controller.deviceDetail.value.data?[0]
+                                                .mobileNo?.isNotEmpty ??
+                                            false)) {
                                       Utils.makePhoneCall(
                                           '${controller.deviceDetail.value.data?[0].mobileNo}');
+                                    } else if (controller.deviceDetail.value
+                                            .data?[0].mobileNo?.isNotEmpty ??
+                                        true) {
+                                      Get.snackbar("", "",
+                                          snackStyle: SnackStyle.FLOATING,
+                                          padding: EdgeInsets.fromLTRB(
+                                              10, 0, 10, 20),
+                                          messageText: Text(
+                                            "Please add a calling number in manage device",
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w800,
+                                                color: AppColors
+                                                    .selextedindexcolor), // Ensure text is visible
+                                          ),
+                                          backgroundColor: AppColors.black,
+                                          colorText:
+                                              AppColors.selextedindexcolor,
+                                          snackPosition: SnackPosition.BOTTOM);
                                     }
                                   },
                                   child: Container(
@@ -346,8 +402,8 @@ class TrackRouteView extends StatelessWidget {
                                       backgroundColor:
                                           AppColors.selextedindexcolor,
                                       shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(AppSizes.radius_50),
+                                        borderRadius: BorderRadius.circular(
+                                            AppSizes.radius_50),
                                       ),
                                       onPressed: () async {
                                         // Fetch the current location

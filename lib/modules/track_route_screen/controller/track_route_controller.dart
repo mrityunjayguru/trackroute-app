@@ -828,7 +828,7 @@ class TrackRouteController extends GetxController {
       await apiService.editDevicesByOwnerID(body);
       devicesByDetails(deviceDetail.value.data?[0].imei ?? "",
           updateCamera: false);
-      Utils.getSnackbar('Success', 'Your detail is Updated');
+      Utils.getSnackbar('Success', 'Your detail is updated');
       // deviceDetail.value.data?.clear();
       // deviceDetail.value.data?.clear();
       //  if (response.message == "success") {
@@ -856,7 +856,7 @@ class TrackRouteController extends GetxController {
       await apiService.editDevicesByOwnerID(body);
       devicesByDetails(deviceDetail.value.data?[0].imei ?? "",
           updateCamera: false);
-      Utils.getSnackbar('Success', 'Your detail is Updated');
+      Utils.getSnackbar('Success', 'Your detail is updated');
     } catch (e) {
       networkStatus.value = NetworkStatus.ERROR;
 
@@ -886,7 +886,7 @@ class TrackRouteController extends GetxController {
   Future<void> editSpeedToggle(BuildContext context) async {
     try {
       final body = {
-        "speedStatus": speedUpdate,
+        "speedStatus": speedUpdate.value,
         "_id": deviceDetail.value.data?[0].sId ?? '',
       };
       networkStatus.value = NetworkStatus.LOADING;
@@ -920,7 +920,7 @@ class TrackRouteController extends GetxController {
 
     final markerId = "${ProjectUrls.imgBaseUrl}$img$imei";
     final marker = Marker(
-        rotation: 90,
+        rotation: course,
         markerId: MarkerId(markerId),
         position: LatLng(
           lat ?? 0,

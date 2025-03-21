@@ -139,8 +139,11 @@ class SettingView extends StatelessWidget {
                 Expanded(
                   child: InkWell(
                     onTap: () {
-                      Utils.makePhoneCall(
-                          dataController.settings.value.mobileSupport ?? "");
+                      if(dataController.settings.value.mobileSupport?.isNotEmpty ?? false){
+                        Utils.makePhoneCall(
+                            dataController.settings.value.mobileSupport ?? "");
+                      }
+
                     },
                     child: Container(
                         padding:

@@ -20,7 +20,8 @@ class NotificationPermission {
       this.parkingAlert, 
       this.aCDoorAlert, 
       this.fuelAlert, 
-      this.expiryReminders, 
+      this.vehicleLowBattery,
+      this.expiryReminders,
       this.vibration, 
       this.devicePowerCut, 
       this.deviceLowBattery, 
@@ -39,6 +40,7 @@ class NotificationPermission {
     devicePowerCut = json['Device_Power_Cut'];
     deviceLowBattery = json['Device_Low_Battery'];
     otherAlerts = json['Other_Alerts'];
+    vehicleLowBattery = json['vehicleLowBattery'];
   }
   bool? all;
   bool? ignition;
@@ -51,6 +53,7 @@ class NotificationPermission {
   bool? vibration;
   bool? devicePowerCut;
   bool? deviceLowBattery;
+  bool? vehicleLowBattery;
   bool? otherAlerts;
 
   Map<String, dynamic> toJson() {
@@ -67,6 +70,7 @@ class NotificationPermission {
     map['Device_Power_Cut'] = devicePowerCut;
     map['Device_Low_Battery'] = deviceLowBattery;
     map['Other_Alerts'] = otherAlerts;
+    map['vehicleLowBattery'] = vehicleLowBattery;
     return map;
   }
 

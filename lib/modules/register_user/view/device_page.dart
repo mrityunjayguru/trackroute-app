@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sizer/sizer.dart';
 import 'package:track_route_pro/config/theme/app_colors.dart';
@@ -9,6 +10,7 @@ import 'package:track_route_pro/utils/common_import.dart';
 import '../../../common/textfield/apptextfield.dart';
 import '../../../config/app_sizer.dart';
 import '../../../utils/search_drop_down.dart';
+import '../../../utils/utils.dart';
 import '../controller/register_controller.dart';
 
 class DevicePage extends StatelessWidget {
@@ -67,36 +69,67 @@ class DevicePage extends StatelessWidget {
                         .copyWith(color: AppColors.color_4B4749, height: 1.5),
                   ),
                   textfield(
-                    controller: controller.imeiController,
-                    hint: "Device IMEI No.",
-                  ),
-                  // textfield(controller: controller.simController, hint: "Device SIM No."),
+                      controller: controller.imeiController,
+                      hint: "Device IMEI No.",
+                      inputFormatter: [Utils.intFormatter()],
+                      errorText: controller.imeiError),
+                  textfield(
+                      controller: controller.simController,
+                      hint: "SIM No.(Provided with device)",
+                      errorText: controller.simError,
+                      inputFormatter: [Utils.intFormatter()],
+                      maxLength: 13),
                   textfield(
                       controller: controller.vehicleNumberController,
-                      hint: "Vehicle Number"),
+                      hint: "Vehicle Number",
+                      errorText: controller.vehicleNoError),
                   SizedBox(
                     height: 20,
                   ),
-                  SearchDropDown<DataVehicleType>(
-                    dropDownFillColor: AppColors.white,
-                    containerColor: AppColors.white,
-                    showBorder: false,
-                    hintStyle: AppTextStyles(context)
-                        .display16W400
-                        .copyWith(color: AppColors.grayLight),
-                    height: 50,
-                    items: controller.vehicleTypeList.toList(),
-                    selectedItem: controller.vehicleCategory.value,
-                    onChanged: (value) {
-                      controller.vehicleCategory.value = value;
-                    },
-                    hint: "Vehicle Category",
-                    showSearch: false,
+                  Obx(()=>
+                     Container(
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                              width: 1,
+                              color: controller.vehicleTypeError.value.isNotEmpty
+                                  ? Colors.red
+                                  : Colors.transparent),
+                          borderRadius: BorderRadius.circular(16)),
+                      child: SearchDropDown<DataVehicleType>(
+                        dropDownFillColor: AppColors.white,
+                        containerColor: AppColors.white,
+                        showBorder: false,
+                        hintStyle: AppTextStyles(context)
+                            .display16W400
+                            .copyWith(color: AppColors.grayLight),
+                        height: 50,
+                        items: controller.vehicleTypeList.toList(),
+                        selectedItem: controller.vehicleCategory.value,
+                        onChanged: (value) {
+                          controller.vehicleCategory.value = value;
+                          controller.vehicleTypeError.value = "";
+                        },
+                        hint: "Vehicle Category",
+                        showSearch: false,
+                      ),
+                    ),
                   ),
+                  if (controller.vehicleTypeError.value.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      controller.vehicleTypeError.value.tr,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyles(context)
+                          .display14W400
+                          .copyWith(color: AppColors.dangerDark),
+                    ).paddingOnly(left: 5),
+                  ],
                   textfield(
                       controller: controller.dealerCodeController,
-                      hint: "Dealer Code(Optional)"),
-                  SizedBox(height: 5.h),
+                      hint: "Dealer Code(Optional)",
+                      errorText: "".obs),
+                  SizedBox(height: 2.h),
                   InkWell(
                     onTap: () {
                       controller.sendDataVehicle();
@@ -118,26 +151,6 @@ class DevicePage extends StatelessWidget {
                     ),
                   ).paddingOnly(bottom: 1.h),
                   SizedBox(height: 1.h),
-                  InkWell(
-                    onTap: () {
-                      Get.back();
-                    },
-                    child: Container(
-                      height: 6.h,
-                      child: Center(
-                        child: Text(
-                          "Cancel",
-                          style: AppTextStyles(context)
-                              .display16W400
-                              .copyWith(color: AppColors.black),
-                        ),
-                      ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(AppSizes.radius_10),
-                        color: AppColors.selextedindexcolor,
-                      ),
-                    ),
-                  ).paddingOnly(bottom: 1.h),
                 ],
               ),
             ),
@@ -151,17 +164,36 @@ class DevicePage extends StatelessWidget {
       {bool readOnly = false,
       required TextEditingController controller,
       VoidCallback? onTap,
+      VoidCallback? onSuffixTap,
+      bool obscureText = false,
+      List<TextInputFormatter>? inputFormatter,
       String? suffixIcon,
+      int? maxLength,
+      required RxString errorText,
       required String hint}) {
-    return AppTextFormField(
-      height: 50,
-      readOnly: readOnly,
-      onTap: () => onTap,
-      onSuffixTap: () => onTap,
-      suffixIcon: suffixIcon,
-      color: AppColors.white,
-      controller: controller,
-      hintText: hint,
+    return Obx(()=>
+       AppTextFormField(
+        maxLength: maxLength,
+        height: 50,
+        readOnly: readOnly,
+        onTap: onTap,
+        onSuffixTap: onSuffixTap,
+        suffixIcon: suffixIcon,
+        color: AppColors.white,
+        controller: controller,
+        hintText: hint,
+        inputFormatters: inputFormatter,
+        obscureText: obscureText,
+        errorText: errorText.value,
+        onChanged: (val) {
+          if (val.trim().isNotEmpty && errorText.value.isNotEmpty) {
+            errorText.value = "";
+          }
+        },
+        border: Border.all(
+            width: 1,
+            color: errorText.isNotEmpty ? Colors.red : Colors.transparent),
+      ),
     );
   }
 }

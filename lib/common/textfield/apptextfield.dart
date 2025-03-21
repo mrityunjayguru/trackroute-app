@@ -17,6 +17,7 @@ class AppTextFormField extends StatelessWidget {
     this.suffixIcon,
     this.onSuffixTap,
     this.onChanged,
+    this.maxLength,
     this.hintTextSize,
     this.readOnly = false,
     this.onTap,
@@ -57,6 +58,7 @@ class AppTextFormField extends StatelessWidget {
   final Decoration? decoration;
   final int? maxLines;
   final int? minLine;
+  final int? maxLength;
   final TextInputAction? textInputAction;
   final EdgeInsetsGeometry? contentPadding;
   final double? suffixIconHeight;
@@ -123,6 +125,7 @@ class AppTextFormField extends StatelessWidget {
                       validator: validator,
                       maxLines: maxLines,
                       minLines: minLine,
+                      maxLength: maxLength,
                       textInputAction: textInputAction ?? TextInputAction.next,
                       decoration: InputDecoration(
                         fillColor: AppColors.textfield,

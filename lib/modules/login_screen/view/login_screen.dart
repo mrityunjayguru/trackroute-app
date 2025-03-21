@@ -177,28 +177,27 @@ class LoginView extends StatelessWidget {
                               }
                             },
                             child: Container(
-                              height: 6.h,
+                              height: 5.h,
                               child: Center(
                                 child: registerController.showLoader.value
                                     ? LoadingAnimationWidget.threeArchedCircle(
-                                        color: AppColors.selextedindexcolor,
-                                        size: 20,
+                                        color: AppColors.black,
+                                        size: 16,
                                       )
                                     : RichText(
                                         text: TextSpan(
                                           text: 'New User? ',
                                           style: AppTextStyles(context)
-                                              .display16W400
-                                              .copyWith(color: Colors.white),
+                                              .display14W400
+                                              .copyWith(color: Colors.black),
                                           children: [
                                             TextSpan(
                                               text: 'Register Device',
                                               style: AppTextStyles(context)
-                                                  .display16W400
+                                                  .display14W400
                                                   .copyWith(
-                                                    height: 2,
                                                     color: AppColors
-                                                        .selextedindexcolor,
+                                                        .black,
                                                   ),
                                             ),
                                           ],
@@ -207,11 +206,11 @@ class LoginView extends StatelessWidget {
                               ),
                               decoration: BoxDecoration(
                                 borderRadius:
-                                    BorderRadius.circular(AppSizes.radius_10),
-                                color: AppColors.black,
+                                    BorderRadius.circular(AppSizes.radius_50),
+                                color: AppColors.selextedindexcolor,
                               ),
                             ),
-                          ).paddingOnly(bottom: 1.h),
+                          ).paddingOnly(bottom: 1.h, left: 30, right: 30),
                           Spacer(),
                           RichText(
                             textAlign: TextAlign.center,

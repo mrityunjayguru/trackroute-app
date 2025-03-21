@@ -38,6 +38,9 @@ class AlertController extends GetxController {
     'Area': 'Area',
     'Ignition': 'Ignition',
     'Security': 'Security',
+    'Veh Expiry' : "Expiry Reminder",
+    'Vibration': "Vibration",
+    'Power Cut' : "Power Cut"
   };
 
   List<String> alertsList = [
@@ -50,6 +53,9 @@ class AlertController extends GetxController {
     'Area',
     'Ignition',
     'Security',
+    'Veh Expiry',
+    'Vibration',
+    'Power Cut'
   ];
 
   final ApiService apiService = ApiService.create();
@@ -62,6 +68,7 @@ class AlertController extends GetxController {
   final Vibration = ValueNotifier<bool>(true);
   final DevicePowerCut = ValueNotifier<bool>(true);
   final DeviceLowBattery = ValueNotifier<bool>(true);
+  final VehicleLowBattery = ValueNotifier<bool>(true);
   final notification = ValueNotifier<bool>(true);
   final Fuel = ValueNotifier<bool>(true);
   final ExpiryReminder = ValueNotifier<bool>(true);
@@ -284,6 +291,7 @@ class AlertController extends GetxController {
           vibration: notificationDataApi.vibration ?? true,
           devicePowerCut: notificationDataApi.devicePowerCut ?? true,
           deviceLowBattery: notificationDataApi.deviceLowBattery ?? true,
+          vehicleLowBattery: notificationDataApi.vehicleLowBattery ?? true,
           all: false,
           fuelAlert: notificationDataApi.fuelAlert ?? true,
           expiryReminders: notificationDataApi.expiryReminders ?? true,
@@ -303,6 +311,7 @@ class AlertController extends GetxController {
           vibration: Vibration.value,
           devicePowerCut: DevicePowerCut.value,
           deviceLowBattery: DeviceLowBattery.value,
+          vehicleLowBattery: VehicleLowBattery.value,
           otherAlerts: OtherAlerts.value,
         );
       }
@@ -354,6 +363,7 @@ class AlertController extends GetxController {
       Vibration.value = false;
       DevicePowerCut.value = false;
       DeviceLowBattery.value = false;
+      VehicleLowBattery.value = false;
       notification.value = false;
       Fuel.value = false;
       ExpiryReminder.value = false;
@@ -368,6 +378,7 @@ class AlertController extends GetxController {
       Vibration.value = notificationDataApi.vibration ?? true;
       DevicePowerCut.value = notificationDataApi.devicePowerCut ?? true;
       DeviceLowBattery.value = notificationDataApi.deviceLowBattery ?? true;
+      VehicleLowBattery.value = notificationDataApi.vehicleLowBattery ?? true;
       // notification.value = notificationDataApi.all ?? true;
       Fuel.value = notificationDataApi.fuelAlert ?? true;
       ExpiryReminder.value = notificationDataApi.expiryReminders ?? true;

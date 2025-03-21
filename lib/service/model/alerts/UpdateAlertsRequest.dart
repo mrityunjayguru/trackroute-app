@@ -25,6 +25,7 @@ class UpdateAlertsRequest {
       this.vibration, 
       this.devicePowerCut, 
       this.deviceLowBattery, 
+      this.vehicleLowBattery,
       this.otherAlerts,});
 
   UpdateAlertsRequest.fromJson(dynamic json) {
@@ -40,6 +41,7 @@ class UpdateAlertsRequest {
     vibration = json['Vibration'];
     devicePowerCut = json['Device_Power_Cut'];
     deviceLowBattery = json['Device_Low_Battery'];
+    vehicleLowBattery = json['vehicleLowBattery'];
     otherAlerts = json['Other_Alerts'];
   }
   bool? all;
@@ -53,6 +55,7 @@ class UpdateAlertsRequest {
   bool? vibration;
   bool? devicePowerCut;
   bool? deviceLowBattery;
+  bool? vehicleLowBattery;
   bool? otherAlerts;
   String? id;
 
@@ -69,6 +72,7 @@ class UpdateAlertsRequest {
     map['Vibration'] = vibration;
     map['Device_Power_Cut'] = devicePowerCut;
     map['Device_Low_Battery'] = deviceLowBattery;
+    map['vehicleLowBattery'] = vehicleLowBattery;
     map['Other_Alerts'] = otherAlerts;
     map['_id'] = id;
     return map;

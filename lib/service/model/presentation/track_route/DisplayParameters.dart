@@ -22,6 +22,9 @@ class DisplayParameters {
       this.temperature,
       this.bluetooth,
       this.overspeed,
+      this.extBattery,
+      this.internalBattery,
+      this.vehicleMotion,
       this.gps,});
 
   DisplayParameters.fromJson(dynamic json) {
@@ -38,6 +41,10 @@ class DisplayParameters {
     temperature = json['temperature'];
     bluetooth = json['bluetooth'];
     overspeed = json['overspeed'];
+    extBattery = json['externalBattery'];
+    internalBattery = json['internalBattery'];
+    extBattery = json['extBattery'];
+    vehicleMotion = json['vehicleMotion'];
   }
   bool? ac;
   bool? door;
@@ -52,6 +59,9 @@ class DisplayParameters {
   bool? temperature;
   bool? bluetooth;
   bool? overspeed;
+  bool? extBattery;
+  bool? internalBattery;
+  bool? vehicleMotion;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -64,6 +74,9 @@ class DisplayParameters {
     map['Network'] = network;
     map['Charging'] = charging;
     map['GPS'] = gps;
+    map['extBattery'] = extBattery;
+    map['internalBattery'] = internalBattery;
+    map['vehicleMotion'] = vehicleMotion;
     return map;
   }
 

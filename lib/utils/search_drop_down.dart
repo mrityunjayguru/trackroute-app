@@ -101,7 +101,7 @@ class SearchDropDown<T extends SearchDropDownModel> extends StatelessWidget {
             ],
           ),
         SizedBox(
-          height: height ?? 20,
+          height: 49,
           width: width,
           child: DropdownSearch<T>(
             onChanged: onChanged,

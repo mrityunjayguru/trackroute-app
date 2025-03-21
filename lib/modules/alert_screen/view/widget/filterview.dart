@@ -73,7 +73,7 @@ class AlertsNotificationView extends StatelessWidget {
                     alertData(
                         isOn: controller.Vibration,
                         title: 'Vibration',
-                        img: 'assets/images/svg/ic_charging_icon.svg'),
+                        img: 'assets/images/svg/vibration_alert_icon.svg'),
                     alertData(
                         isOn: controller.DevicePowerCut,
                         title: 'Device Power Cut',
@@ -81,6 +81,10 @@ class AlertsNotificationView extends StatelessWidget {
                     alertData(
                         isOn: controller.DeviceLowBattery,
                         title: 'Device Low Battery',
+                        img: 'assets/images/svg/ic_low_batt.svg'),
+                    alertData(
+                        isOn: controller.VehicleLowBattery,
+                        title: 'Vehicle Low Battery',
                         img: 'assets/images/svg/ic_low_batt.svg'),
                     alertData(
                         isOn: controller.OtherAlerts,

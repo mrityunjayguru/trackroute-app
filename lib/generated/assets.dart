@@ -127,6 +127,7 @@ class Assets {
   static const String svgTempIcon = 'assets/images/svg/temp_icon.svg';
   static const String svgUnselectedMarker = 'assets/images/svg/unselected_marker.svg';
   static const String svgUserIcon = 'assets/images/svg/user_icon.svg';
+  static const String svgVibrationAlertIcon = 'assets/images/svg/vibration_alert_icon.svg';
   static const String svgWarningIcon = 'assets/images/svg/warning_icon.svg';
 
 }

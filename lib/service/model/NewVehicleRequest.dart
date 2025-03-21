@@ -41,7 +41,7 @@ class NewVehicleRequest {
     this.imei,
     this.vehicleNo,
     this.dealerCode,
-    // this.deviceSimNumber,
+    this.deviceSimNumber,
     // this.operator,
     this.vehicleType,
     // this.deviceStatus,
@@ -70,7 +70,7 @@ class NewVehicleRequest {
     imei = json['imei'];
     vehicleNo = json['vehicleNo'];
     dealerCode = json['dealerCode'];
-    // deviceSimNumber = json['deviceSimNumber'];
+    deviceSimNumber = json['deviceSimNumber'];
     // operator = json['operator'];
     vehicleType = json['vehicleType'];
     // deviceStatus = json['deviceStatus'];
@@ -100,7 +100,7 @@ class NewVehicleRequest {
   String? imei;
   String? vehicleNo;
   String? dealerCode;
-  // String? deviceSimNumber;
+  String? deviceSimNumber;
   // String? operator;
   String? vehicleType;
   // String? deviceStatus;
@@ -134,7 +134,7 @@ class NewVehicleRequest {
     map['imei'] = imei;
     map['vehicleNo'] = vehicleNo;
     map['dealerCode'] = dealerCode;
-    // map['deviceSimNumber'] = deviceSimNumber;
+    map['deviceSimNumber'] = deviceSimNumber;
     // map['operator'] = operator;
     map['vehicleType'] = vehicleType;
     // map['deviceStatus'] = deviceStatus;
@@ -173,7 +173,7 @@ class NewVehicleRequest {
       // Add fields from requestForm to the request
       requestForm.toJson().forEach((key, value) {
         request.fields[key] = value.toString();
-        // debugPrint("Field: $key = $value");
+        debugPrint("Field: $key = $value");
       });
 
       if (img != null) {
@@ -200,6 +200,7 @@ class NewVehicleRequest {
       if (streamedResponse.statusCode == 200) {
         // Decode the response body
         final responseBody = await streamedResponse.stream.bytesToString();
+        debugPrint('Response Body (200): $responseBody');
         final jsonResponse = jsonDecode(responseBody);
 
         // Parse the response into BaseDataResponse
@@ -208,20 +209,20 @@ class NewVehicleRequest {
         if (streamedResponse.statusCode == 400 || streamedResponse.statusCode == 409) {
           // Decode the response body
           final responseBody = await streamedResponse.stream.bytesToString();
+          debugPrint('Response Body (Error ${streamedResponse.statusCode}): $responseBody');
           final jsonResponse = jsonDecode(responseBody);
 
           // Parse the response into BaseDataResponse
           return CommonResponseModel.fromJson(jsonResponse);
-        }
-        else{
+        } else {
           throw Exception(
-              'Failed to submit form : ${streamedResponse
-                  .statusCode} ${streamedResponse.reasonPhrase}');
+              'Failed to submit form: ${streamedResponse.statusCode} ${streamedResponse.reasonPhrase}'
+          );
         }
-
       }
+
     } catch (e, s) {
-      // debugPrint("$e");
+      debugPrint("$e");
       throw Exception('Failed to submit form');
     }
   }
@@ -243,6 +244,15 @@ extension FormRequestValidator on NewVehicleRequest {
     if (phone?.length !=10) {
       throw ValidationException(errorMsg: "Please enter a 10 digit phone number");
     }
+    if (gender == null || gender!.isEmpty) {
+      throw ValidationException(errorMsg: "Please enter gender");
+    }
+    if (dob == null || dob!.isEmpty) {
+      throw ValidationException(errorMsg: "Please enter date of birth");
+    }
+    if (dob == null || dob!.isEmpty) {
+      throw ValidationException(errorMsg: "Please enter date of birth");
+    }
     if (password == null || password!.isEmpty) {
       throw ValidationException(errorMsg: "Please enter password");
     }
@@ -252,37 +262,40 @@ extension FormRequestValidator on NewVehicleRequest {
     if (password != confirmPassword) {
       throw ValidationException(errorMsg: "Passwords do not match");
     }
-    if (dob == null || dob!.isEmpty) {
-      throw ValidationException(errorMsg: "Please enter date of birth");
-    }
+
     if (address == null || address!.isEmpty) {
       throw ValidationException(errorMsg: "Please enter address");
-    }
-    if (country == null || country!.isEmpty) {
-      throw ValidationException(errorMsg: "Please enter country");
-    }
-    if (state == null || state!.isEmpty) {
-      throw ValidationException(errorMsg: "Please enter state");
     }
     if (city == null || city!.isEmpty) {
       throw ValidationException(errorMsg: "Please enter city");
     }
+    if (state == null || state!.isEmpty) {
+      throw ValidationException(errorMsg: "Please enter state");
+    }
+    if (country == null || country!.isEmpty) {
+      throw ValidationException(errorMsg: "Please enter country");
+    }
+
+
     if (pinCode == null || pinCode!.isEmpty) {
       throw ValidationException(errorMsg: "Please enter pin code");
     }
-
+    if (pinCode?.length!=6) {
+      throw ValidationException(errorMsg: "Please enter a 6 digit pin code");
+    }
     if (idno == null || idno!.isEmpty) {
       throw ValidationException(errorMsg: "Please enter ID number");
     }
     if (idDocument == null || idDocument!.isEmpty) {
       throw ValidationException(errorMsg: "Please select ID Type");
     }
-    if (vehicleNo == null || vehicleNo!.isEmpty) {
-      throw ValidationException(errorMsg: "Please enter vehicle number");
-    }
     if (imei == null || imei!.isEmpty) {
       throw ValidationException(errorMsg: "Please enter IMEI number");
     }
+    if (vehicleNo == null || vehicleNo!.isEmpty) {
+      throw ValidationException(errorMsg: "Please enter vehicle number");
+    }
+
   /*  if (deviceSimNumber == null || deviceSimNumber!.isEmpty) {
       throw ValidationException(errorMsg: "Please enter device SIM number");
     }*/

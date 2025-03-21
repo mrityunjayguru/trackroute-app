@@ -728,7 +728,7 @@ class VehicleSelected extends StatelessWidget {
       },
       child: Container(
           decoration: BoxDecoration(
-              color: AppColors.color_f6f8fc,
+              color: active?  AppColors.color_f6f8fc : AppColors.color_EBE7E4,
               borderRadius: BorderRadius.circular(AppSizes.radius_10),
               boxShadow: [
                 BoxShadow(
@@ -765,7 +765,7 @@ class VehicleSelected extends StatelessWidget {
                               children: [
                                 Text(
                                   'Geofencing',
-                                  style: AppTextStyles(context).display24W400,
+                                  style: AppTextStyles(context).display24W400.copyWith(color: active? AppColors.black : AppColors.color_9F9EA2),
                                 ),
                                 if(active)FutureBuilder(
                                   future: controller.getCurrAddress(
@@ -797,9 +797,9 @@ class VehicleSelected extends StatelessWidget {
                         trackOutlineWidth: WidgetStatePropertyAll(0),
                         trackOutlineColor:
                             WidgetStatePropertyAll(Colors.transparent),
-                        activeColor: active?  AppColors.selextedindexcolor : AppColors.color_f6f8fc,
+                        activeColor: active?  AppColors.selextedindexcolor : AppColors.color_EBE7E4,
                         value: controller.geofence.value,
-                        inactiveThumbColor: active?  AppColors.selextedindexcolor : AppColors.color_f6f8fc,
+                        inactiveThumbColor: active?  AppColors.selextedindexcolor : AppColors.color_EBE7E4,
                         inactiveTrackColor: active? AppColors.grayLight : AppColors.white,
                         activeTrackColor: active? AppColors.black : AppColors.white,
                         onChanged: (value) {
@@ -956,7 +956,7 @@ class VehicleSelected extends StatelessWidget {
       },
       child: Container(
           decoration: BoxDecoration(
-              color: AppColors.color_f6f8fc,
+              color: active?  AppColors.color_f6f8fc : AppColors.color_EBE7E4,
               borderRadius: BorderRadius.circular(AppSizes.radius_10),
               boxShadow: [
                 BoxShadow(
@@ -985,9 +985,9 @@ class VehicleSelected extends StatelessWidget {
                       trackOutlineWidth: WidgetStatePropertyAll(0),
                       trackOutlineColor:
                           WidgetStatePropertyAll(Colors.transparent),
-                      activeColor: active?  AppColors.selextedindexcolor : AppColors.color_f6f8fc,
+                      activeColor: active?  AppColors.selextedindexcolor : AppColors.color_EBE7E4,
                       value: controller.parkingUpdate.value,
-                      inactiveThumbColor: active?  AppColors.selextedindexcolor : AppColors.color_f6f8fc,
+                      inactiveThumbColor: active?  AppColors.selextedindexcolor : AppColors.color_EBE7E4,
                       inactiveTrackColor: active? AppColors.grayLight : AppColors.white,
                       activeTrackColor: active? AppColors.black : AppColors.white,
                       onChanged: (value) {
@@ -1003,13 +1003,13 @@ class VehicleSelected extends StatelessWidget {
               ).paddingSymmetric(horizontal: 2.w, vertical: 1.h),
               Text(
                 'Parking',
-                style: AppTextStyles(context).display24W400,
+                style: AppTextStyles(context).display24W400.copyWith(color: active? AppColors.black : AppColors.color_9F9EA2),
               ).paddingSymmetric(horizontal: 2.w),
               Text(
                 'Movement Alert',
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
-                style: AppTextStyles(context).display14W400,
+                style: AppTextStyles(context).display14W400.copyWith(color: active? AppColors.black : AppColors.color_9F9EA2),
               ).paddingSymmetric(horizontal: 2.w),
               SizedBox(
                 height: 1.h,
