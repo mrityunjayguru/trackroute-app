@@ -337,8 +337,8 @@ class TrackRouteController extends GetxController {
 
 
     try{
-      if(Platform.isIOS){
-        addCustomMarker(LatLng((lat ?? 0)+0.0006, long ?? 0), "Vehicle No.: $vehicleNo", "IMEI: $imei");
+      if(Platform.isAndroid){
+        addCustomMarker(LatLng((lat ?? 0)+0.0011, long ?? 0), "Vehicle No.: $vehicleNo", "IMEI: $imei");
       }
 
     }catch(e,s){
