@@ -133,7 +133,7 @@ class LoginView extends StatelessWidget {
                                   : SizedBox.shrink();
                             },
                           ),
-                          SizedBox(height: 5.h),
+                          Obx(()=> SizedBox(height: controller.isWrongUser.value ? 4.h :5.h)),
                           InkWell(
                             onTap: () {
                               controller.checkCredentials(localizations);
