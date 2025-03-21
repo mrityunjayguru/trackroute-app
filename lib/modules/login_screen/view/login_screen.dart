@@ -210,7 +210,7 @@ class LoginView extends StatelessWidget {
                                 color: AppColors.selextedindexcolor,
                               ),
                             ),
-                          ).paddingOnly(bottom: 1.h, left: 30, right: 30),
+                          ).paddingOnly(bottom: 0.5.h, left: 30, right: 30),
                           Spacer(),
                           RichText(
                             textAlign: TextAlign.center,
