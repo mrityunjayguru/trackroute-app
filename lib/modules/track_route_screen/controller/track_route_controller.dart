@@ -936,11 +936,11 @@ class TrackRouteController extends GetxController {
       required bool isOffline,
       String? vehicleNo}) async {
     BitmapDescriptor markerIcon = BitmapDescriptor.defaultMarker;
-    if (isOffline) {
-      markerIcon = await svgToBitmapDescriptorOfflineIcon();
-    }
-    else if (isInactive) {
+    if (isInactive) {
       markerIcon = await svgToBitmapDescriptorInactiveIcon();
+    }
+    else if (isOffline) {
+      markerIcon = await svgToBitmapDescriptorOfflineIcon();
     } else {
       markerIcon = await svgToBitmapDescriptor('${ProjectUrls.imgBaseUrl}$img');
     }
@@ -1000,6 +1000,8 @@ class TrackRouteController extends GetxController {
       vehiclesToDisplay = ignitionOffList;
     } else if (isFilterSelectedindex.value == 3) {
       vehiclesToDisplay = inActiveVehiclesList;
+    } else if (isFilterSelectedindex.value == 4) {
+      vehiclesToDisplay = offlineVehiclesList;
     } else {
       vehiclesToDisplay = allVehicles;
     }
