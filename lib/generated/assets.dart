@@ -113,6 +113,8 @@ class Assets {
   static const String svgMaxSpeedMarker = 'assets/images/svg/max_speed_marker.svg';
   static const String svgNavigation1 = 'assets/images/svg/navigation1.svg';
   static const String svgNotifIconSetting = 'assets/images/svg/notif_icon_setting.svg';
+  static const String svgOffline = 'assets/images/svg/offline.svg';
+  static const String svgOfflineIcon = 'assets/images/svg/offline_icon.svg';
   static const String svgParking = 'assets/images/svg/Parking.svg';
   static const String svgParkingIcon = 'assets/images/svg/parking_icon.svg';
   static const String svgPasteIcon = 'assets/images/svg/paste_icon.svg';

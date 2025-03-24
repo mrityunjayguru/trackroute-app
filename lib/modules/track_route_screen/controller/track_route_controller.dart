@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
+import 'dart:ui' as ui;
 import 'dart:ui';
+
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
@@ -22,16 +24,11 @@ import 'package:track_route_pro/utils/enums.dart';
 import 'package:track_route_pro/utils/map_item.dart';
 import 'package:track_route_pro/utils/utils.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'dart:ui' as ui;
+
 import '../../../constants/project_urls.dart';
 import '../../../service/model/presentation/vehicle_type/Data.dart';
 import '../../../utils/info_window.dart';
 import '../view/widgets/vehicle_dialog.dart';
-import 'dart:typed_data';
-import 'dart:ui' as ui;
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
 
 class TrackRouteController extends GetxController {
   Rx<TrackRouteVehicleList> vehicleList = Rx(TrackRouteVehicleList());
@@ -43,7 +40,9 @@ class TrackRouteController extends GetxController {
   RxList<Data> ignitionOffList = <Data>[].obs;
   RxList<Data> activeVehiclesList = <Data>[].obs;
   RxList<Data> inActiveVehiclesList = <Data>[].obs;
+  RxList<Data> offlineVehiclesList = <Data>[].obs;
   final GlobalKey markerKey = GlobalKey();
+
   // RxList<Data> inActiveVehiclesList = <Data>[].obs;
   RxList<Data> allVehicles = <Data>[].obs;
   RxList<DataVehicleType> vehicleTypeList = <DataVehicleType>[].obs;
@@ -87,22 +86,21 @@ class TrackRouteController extends GetxController {
     );
 
     // Set up a timer to call `devicesByOwnerID` every 30 seconds if `isEdit` is false
-    _refreshTimer = Timer.periodic(Duration(seconds: 20), (timer) {
+    _refreshTimer = Timer.periodic(Duration(seconds: 5), (timer) {
       if (!isedit.value) {
         devicesByOwnerID(false);
       }
     });
   }
 
-  Future<String> getAddressFromLatLong(double latitude, double longitude) async {
+  Future<String> getAddressFromLatLong(
+      double latitude, double longitude) async {
     try {
       List<Placemark> placemarks =
           await placemarkFromCoordinates(latitude, longitude);
       Placemark place = placemarks[0];
 
-      return
-          "${place.street}, ${place.locality}, ${place.postalCode}, ${place.country}";
-
+      return "${place.street}, ${place.locality}, ${place.postalCode}, ${place.country}";
     } catch (e) {
       return "Address not available";
     }
@@ -176,7 +174,23 @@ class TrackRouteController extends GetxController {
     }
   }
 
-  Future<BitmapDescriptor> createMarkerIcon(String indexedImage,
+  Future<BitmapDescriptor> svgToBitmapDescriptorOfflineIcon(
+      {Size size = const Size(120, 120)}) async {
+    try {
+      BitmapDescriptor selectedIcon = await SvgPicture.asset(
+        "assets/images/svg/offline.svg",
+        height: 40,
+        width: 40,
+        // fit: BoxFit.scaleDown,
+      ).toBitmapDescriptor();
+      return selectedIcon;
+    } catch (e) {
+      // debugPrint("Error loading SVG: $e");
+      return BitmapDescriptor.defaultMarker;
+    }
+  }
+
+  /* Future<BitmapDescriptor> createMarkerIcon(String indexedImage,
       {int width = 120, int height = 120}) async {
     try {
       // Load image from network
@@ -203,27 +217,7 @@ class TrackRouteController extends GetxController {
     }
   }
 
-  Future<BitmapDescriptor> createMarkerIconInactive(
-      {int width = 120, int height = 120}) async {
-    // Load image from network
-    ByteData data = await rootBundle.load("assets/images/png/deactivated.png");
-    final Uint8List bytes = data.buffer.asUint8List();
-
-    // Decode the image to get its original size
-    final ui.Codec codec = await ui.instantiateImageCodec(
-      bytes,
-      targetWidth: width,
-      targetHeight: height,
-    );
-    final ui.FrameInfo frameInfo = await codec.getNextFrame();
-
-    // Convert the resized image to bytes
-    final ByteData? resizedData =
-        await frameInfo.image.toByteData(format: ui.ImageByteFormat.png);
-    final Uint8List resizedBytes = resizedData!.buffer.asUint8List();
-
-    return BitmapDescriptor.fromBytes(resizedBytes);
-  }
+*/
 
   // Function to Filter for Vehicles with Ignition On
   List<Data> filterIgnitionOn(List<Data> vehicleList) {
@@ -265,6 +259,12 @@ class TrackRouteController extends GetxController {
                           .inDays +
                       1 <=
                   0)); // Status is Active
+    }).toList();
+  }
+
+  List<Data> filterOffline(List<Data> vehicleList) {
+    return vehicleList.where((vehicle) {
+      return vehicle.trackingData?.status?.toLowerCase() != "online"; // Status is Active
     }).toList();
   }
 
@@ -335,13 +335,12 @@ class TrackRouteController extends GetxController {
     isExpanded.value = false;
     await devicesByDetails(imei, updateCamera: false, showDialog: true);
 
-
-    try{
-      if(Platform.isIOS){
-        addCustomMarker(LatLng((lat ?? 0)+0.0011, long ?? 0), "Vehicle No.: $vehicleNo", "IMEI: $imei");
+    try {
+      if (Platform.isIOS) {
+        addCustomMarker(LatLng((lat ?? 0) + 0.0011, long ?? 0),
+            "Vehicle No.: $vehicleNo", "IMEI: $imei");
       }
-
-    }catch(e,s){
+    } catch (e, s) {
       log("EXCEPTION $e ====> $s");
     }
 
@@ -379,7 +378,8 @@ class TrackRouteController extends GetxController {
     );
   }
 
-  Future<void> addCustomMarker(LatLng position, String text1, String text2) async {
+  Future<void> addCustomMarker(
+      LatLng position, String text1, String text2) async {
     Uint8List? markerIcon = await _captureMarkerWidget();
 
     if (markerIcon != null) {
@@ -392,12 +392,14 @@ class TrackRouteController extends GetxController {
       markers.add(marker);
     }
   }
+
   Future<Uint8List?> _captureMarkerWidget() async {
     RenderRepaintBoundary? boundary =
-    markerKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
+        markerKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
     if (boundary != null) {
       ui.Image image = await boundary.toImage(pixelRatio: 2.0);
-      ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+      ByteData? byteData =
+          await image.toByteData(format: ui.ImageByteFormat.png);
       return byteData?.buffer.asUint8List();
     }
     return null;
@@ -525,6 +527,7 @@ class TrackRouteController extends GetxController {
           activeVehiclesList.value = filterActiveVehicles(allVehiclesRes).obs;
           // inActiveVehiclesList.value = filterInActiveVehicles(allVehiclesRes).obs;
           inActiveVehiclesList.value = filterInactive(allVehiclesRes).obs;
+          offlineVehiclesList.value = filterOffline(allVehiclesRes).obs;
           // log("activeVehiclesList===>${jsonEncode(activeVehiclesList)}");
           // log("ignitionOnList===>${jsonEncode(ignitionOnList)}");
           // log("ignitionOffList===>$ignitionOffList");
@@ -548,6 +551,10 @@ class TrackRouteController extends GetxController {
                 count: inActiveVehiclesList.length,
                 title: 'Inactive'),
             FilterData(
+                image: "assets/images/svg/offline_icon.svg",
+                count: offlineVehiclesList.length,
+                title: 'Offline'),
+            FilterData(
                 image: "assets/images/svg/all_icon.svg",
                 count: allVehicles.length,
                 title: 'All'),
@@ -561,14 +568,22 @@ class TrackRouteController extends GetxController {
               if (vehicle.trackingData?.location?.latitude != null &&
                   vehicle.trackingData?.location?.longitude != null) {
                 bool isInactive = checkIfInactive(vehicle: vehicle);
+                bool isOffline = checkIfOffline(vehicle: vehicle);
+                double? lat = vehicle.trackingData?.location?.latitude;
+                double? long = vehicle.trackingData?.location?.longitude;
+                if (isInactive) {
+                  lat = vehicle.lastLocation?.latitude;
+                  long = vehicle.lastLocation?.longitude;
+                }
                 Marker m = await createMarker(
                     imei: vehicle.imei ?? "",
-                    lat: vehicle.trackingData?.location?.latitude,
-                    long: vehicle.trackingData?.location?.longitude,
+                    lat: lat,
+                    long: long,
                     img: vehicle.vehicletype?.icons,
                     id: vehicle.deviceId,
                     vehicleNo: vehicle.vehicleNo,
                     course: Utils.parseDouble(data: vehicle.course),
+                    isOffline:isOffline,
                     isInactive: isInactive);
                 markers.add(m);
               }
@@ -690,14 +705,22 @@ class TrackRouteController extends GetxController {
           if (data?.trackingData?.location?.latitude != null &&
               data?.trackingData?.location?.longitude != null) {
             bool isInactive = checkIfInactive(vehicle: data);
+            bool isOffline = checkIfOffline(vehicle: data);
+            double? lat = data?.trackingData?.location?.latitude;
+            double? long = data?.trackingData?.location?.longitude;
+            if (isInactive) {
+              lat = data?.lastLocation?.latitude;
+              long = data?.lastLocation?.longitude;
+            }
             Marker m = await createMarker(
                 course: Utils.parseDouble(data: data?.course),
                 imei: data?.imei ?? "",
-                lat: data?.trackingData?.location?.latitude,
-                long: data?.trackingData?.location?.longitude,
+                lat: lat,
+                long: long,
                 img: data?.vehicletype?.icons,
                 id: data?.deviceId,
                 vehicleNo: data?.vehicleNo,
+                isOffline: isOffline,
                 isInactive: isInactive);
             markers.value = [];
             markers.add(m);
@@ -910,9 +933,13 @@ class TrackRouteController extends GetxController {
       required double course,
       required String imei,
       required bool isInactive,
+      required bool isOffline,
       String? vehicleNo}) async {
     BitmapDescriptor markerIcon = BitmapDescriptor.defaultMarker;
-    if (isInactive) {
+    if (isOffline) {
+      markerIcon = await svgToBitmapDescriptorOfflineIcon();
+    }
+    else if (isInactive) {
       markerIcon = await svgToBitmapDescriptorInactiveIcon();
     } else {
       markerIcon = await svgToBitmapDescriptor('${ProjectUrls.imgBaseUrl}$img');
@@ -958,11 +985,9 @@ class TrackRouteController extends GetxController {
       } else {
         updateCameraPositionToCurrentLocation();
       }
-    }
-    else {
+    } else {
       updateCameraPositionToCurrentLocation();
     }
-
   }
 
   void checkFilterIndex(bool updateCamera) async {
@@ -995,14 +1020,22 @@ class TrackRouteController extends GetxController {
       if (vehicle.trackingData?.location?.latitude != null &&
           vehicle.trackingData?.location?.longitude != null) {
         bool isInactive = checkIfInactive(vehicle: vehicle);
+        bool isOffline = checkIfOffline(vehicle: vehicle);
+        double? lat = vehicle.trackingData?.location?.latitude;
+        double? long = vehicle.trackingData?.location?.longitude;
+        if (isInactive) {
+          lat = vehicle.lastLocation?.latitude;
+          long = vehicle.lastLocation?.longitude;
+        }
         Marker marker = await createMarker(
             id: vehicle.deviceId,
             img: vehicle.vehicletype?.icons,
-            long: vehicle.trackingData?.location?.longitude,
-            lat: vehicle.trackingData?.location?.latitude,
+            long: long,
+            lat: lat,
             vehicleNo: vehicle.vehicleNo,
             imei: vehicle.imei ?? "",
             course: Utils.parseDouble(data: vehicle.course),
+            isOffline: isOffline,
             isInactive: isInactive);
         markers.add(marker);
       }
@@ -1146,6 +1179,13 @@ class TrackRouteController extends GetxController {
                           .inDays +
                       1 <=
                   0));
+    }
+    return true;
+  }
+
+  bool checkIfOffline({Data? vehicle}) {
+    if (vehicle != null) {
+      return vehicle.trackingData?.status?.toLowerCase() != "online";
     }
     return true;
   }

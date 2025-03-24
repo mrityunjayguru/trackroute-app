@@ -56,6 +56,7 @@ class Data {
   String? updatedAt;
   int? iV;
   TrackingData? trackingData;
+  Location? lastLocation;
   Vehicletype? vehicletype;
   String? driverName; // Driver's name
   String? immobiliser;
@@ -119,6 +120,7 @@ class Data {
     this.immobiliser,
     this.displayParameters,
     this.isApplied,
+    this.lastLocation,
     this.fuelLevel
   });
 
@@ -145,6 +147,9 @@ class Data {
     iV = json['__v'];
     trackingData = json['trackingData'] != null
         ? TrackingData.fromJson(json['trackingData'])
+        : null;
+    lastLocation = json['lastLocation'] != null
+        ? Location.fromJson(json['lastLocation'])
         : null;
     vehicletype = json['vehicletype'] != null
         ? Vehicletype.fromJson(json['vehicletype'])
@@ -209,6 +214,9 @@ class Data {
     data['parking'] = this.parking;
     if (this.location != null) {
       data['location'] = this.location!.toJson();
+    }
+    if (this.lastLocation != null) {
+      data['lastLocation'] = this.lastLocation!.toJson();
     }
     return data;
   }

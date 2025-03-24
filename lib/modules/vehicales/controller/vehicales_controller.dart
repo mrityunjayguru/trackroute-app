@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:geocoding/geocoding.dart';
 import 'package:intl/intl.dart';
 import 'package:track_route_pro/constants/constant.dart';
@@ -26,21 +24,24 @@ class VehicalesController extends GetxController {
   RxList<Data> ignitionOffList = <Data>[].obs;
   RxList<Data> activeVehiclesList = <Data>[].obs;
   RxList<Data> inactiveVehiclesList = <Data>[].obs;
+  RxList<Data> offlineVehiclesList = <Data>[].obs;
   RxInt SelectedFilterIndex = RxInt(0);
   RxBool isFilterSelected = RxBool(false);
   TextEditingController searchController = TextEditingController();
   RxList<Data> filteredVehicleList = <Data>[].obs; // List for search results
 
-
   RxString address = ''.obs;
 
-  Future<String> getAddressFromLatLong(double latitude, double longitude) async {
+  Future<String> getAddressFromLatLong(
+      double latitude, double longitude) async {
     try {
-      List<Placemark> placemarks = await placemarkFromCoordinates(latitude, longitude);
+      List<Placemark> placemarks =
+          await placemarkFromCoordinates(latitude, longitude);
 
       Placemark place = placemarks[0];
 
-      String address= "${place.street}, ${place.locality}, ${place.postalCode}, ${place.country}";
+      String address =
+          "${place.street}, ${place.locality}, ${place.postalCode}, ${place.country}";
 
       // log("ADDRESS =====> $address");
       return address;
@@ -50,6 +51,7 @@ class VehicalesController extends GetxController {
       return address.value;
     }
   }
+
   @override
   void onInit() {
     super.onInit();
@@ -57,7 +59,7 @@ class VehicalesController extends GetxController {
       devicesByOwnerID();
     });
     searchController.addListener(() {
-      updateFilteredList() ; // Listen for search changes
+      updateFilteredList(); // Listen for search changes
     });
   }
 
@@ -104,30 +106,44 @@ class VehicalesController extends GetxController {
 
     // Apply search filtering
     List<Data> filteredBySearch = allVehicles.where((vehicle) {
-      return vehicle.vehicleNo?.toLowerCase()
-          .contains(searchController.text.toLowerCase()) ?? true;
+      return vehicle.vehicleNo
+              ?.toLowerCase()
+              .contains(searchController.text.toLowerCase()) ??
+          true;
     }).toList();
-      List<Data> finalFilteredList = filteredBySearch.where((vehicle) {
-        switch (SelectedFilterIndex.value) {
-          case 2: // Active
-            return vehicle.status == 'Active'  && (vehicle.subscriptionExp== null ? vehicle.status == 'Active' : (DateFormat('yyyy-MM-dd')
-                .parse(vehicle.subscriptionExp!)
-                .difference(DateTime.now())
-                .inDays+1 >0));
-          case 0: // Ignition On
-            return vehicle.trackingData?.ignition?.status == true;
-          case 1: // Ignition Off
-            return vehicle.trackingData?.ignition?.status == false;
-          case 3: // Ignition Off
-            return vehicle.status != "Active" || (vehicle.subscriptionExp== null ? vehicle.status != 'Active' : (DateFormat('yyyy-MM-dd')
-            .parse(vehicle.subscriptionExp!)
-            .difference(DateTime.now())
-            .inDays+1 <=0));
-          default:
-            return true; // No specific filter applied
-        }
-      }).toList();
-      filteredVehicleList.value = finalFilteredList;
+    List<Data> finalFilteredList = filteredBySearch.where((vehicle) {
+      switch (SelectedFilterIndex.value) {
+        case 2: // Active
+          return vehicle.status == 'Active' &&
+              (vehicle.subscriptionExp == null
+                  ? vehicle.status == 'Active'
+                  : (DateFormat('yyyy-MM-dd')
+                              .parse(vehicle.subscriptionExp!)
+                              .difference(DateTime.now())
+                              .inDays +
+                          1 >
+                      0));
+        case 0: // Ignition On
+          return vehicle.trackingData?.ignition?.status == true;
+        case 1: // Ignition Off
+          return vehicle.trackingData?.ignition?.status == false;
+        case 3: // inactive
+          return vehicle.status != "Active" ||
+              (vehicle.subscriptionExp == null
+                  ? vehicle.status != 'Active'
+                  : (DateFormat('yyyy-MM-dd')
+                              .parse(vehicle.subscriptionExp!)
+                              .difference(DateTime.now())
+                              .inDays +
+                          1 <=
+                      0));
+        case 4: // offline
+          return vehicle.trackingData?.status?.toLowerCase() != "online";
+        default:
+          return true; // No specific filter applied
+      }
+    }).toList();
+    filteredVehicleList.value = finalFilteredList;
   }
 
   // Function to filter vehicles with Ignition On
@@ -144,23 +160,39 @@ class VehicalesController extends GetxController {
     }).toList();
   }
 
+  List<Data> filterOffline(List<Data> vehicleList) {
+    return vehicleList.where((vehicle) {
+      return vehicle.trackingData?.status?.toLowerCase() !=
+          "online"; // Ignition is off
+    }).toList();
+  }
+
   // Function to filter Active Vehicles
   List<Data> filterActiveVehicles(List<Data> vehicleList) {
     return vehicleList.where((vehicle) {
-      return vehicle.status == 'Active'  && (vehicle.subscriptionExp== null ? vehicle.status == 'Active' : (DateFormat('yyyy-MM-dd')
-          .parse(vehicle.subscriptionExp!)
-          .difference(DateTime.now())
-          .inDays+1 >0)); // Status is Active
+      return vehicle.status == 'Active' &&
+          (vehicle.subscriptionExp == null
+              ? vehicle.status == 'Active'
+              : (DateFormat('yyyy-MM-dd')
+                          .parse(vehicle.subscriptionExp!)
+                          .difference(DateTime.now())
+                          .inDays +
+                      1 >
+                  0)); // Status is Active
     }).toList();
   }
 
   List<Data> filterInactiveVehicle(List<Data> vehicleList) {
     return vehicleList.where((vehicle) {
-
-      return vehicle.status != "Active" || (vehicle.subscriptionExp== null ? vehicle.status != 'Active' : (DateFormat('yyyy-MM-dd')
-          .parse(vehicle.subscriptionExp!)
-          .difference(DateTime.now())
-          .inDays+1 <=0));
+      return vehicle.status != "Active" ||
+          (vehicle.subscriptionExp == null
+              ? vehicle.status != 'Active'
+              : (DateFormat('yyyy-MM-dd')
+                          .parse(vehicle.subscriptionExp!)
+                          .difference(DateTime.now())
+                          .inDays +
+                      1 <=
+                  0));
     }).toList();
   }
 
@@ -172,7 +204,6 @@ class VehicalesController extends GetxController {
   // API service to get devices by owner ID
   Future<void> devicesByOwnerID() async {
     try {
-
       final body = {"ownerId": "${devicesOwnerID.value}"};
       networkStatus.value = NetworkStatus.LOADING;
 
@@ -191,6 +222,7 @@ class VehicalesController extends GetxController {
 
         activeVehiclesList.value = filterActiveVehicles(allVehiclesRes).obs;
         inactiveVehiclesList.value = filterInactiveVehicle(allVehiclesRes).obs;
+        offlineVehiclesList.value = filterOffline(allVehiclesRes).obs;
 
         // Initialize filter data after API call and filtering
         filterData.value = [
@@ -214,6 +246,10 @@ class VehicalesController extends GetxController {
               count: inactiveVehiclesList.length,
               title: 'Inactive'),
           FilterData(
+              image: "assets/images/svg/offline_icon.svg",
+              count: offlineVehiclesList.length,
+              title: 'Offline'),
+          FilterData(
               image: "assets/images/svg/all_icon.svg",
               count: allVehicles.length,
               title: 'All'),
@@ -221,9 +257,6 @@ class VehicalesController extends GetxController {
         searchController.clear();
         SelectedFilterIndex.value = -1;
         updateFilteredList();
-
-
-
       } else if (response.status == 400) {
         networkStatus.value = NetworkStatus.ERROR;
       }

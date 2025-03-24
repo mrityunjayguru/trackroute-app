@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:sizer/sizer.dart';
 import 'package:track_route_pro/config/app_sizer.dart';
 import 'package:track_route_pro/config/theme/app_colors.dart';
@@ -118,6 +118,7 @@ class VehiclesList extends StatelessWidget {
                                                     MainAxisAlignment
                                                         .spaceBetween,
                                                 children: [
+
                                                   Flexible(
                                                     child: Text(
                                                       '${controller.vehicleList.value.data?[index].vehicleNo ?? "-"}',

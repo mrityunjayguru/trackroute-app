@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sizer/sizer.dart';
 import 'package:track_route_pro/config/app_sizer.dart';
@@ -7,11 +9,11 @@ import 'package:track_route_pro/gen/assets.gen.dart';
 import 'package:track_route_pro/modules/about_us/view/about_us.dart';
 import 'package:track_route_pro/modules/faqs/view/faqs_view.dart';
 import 'package:track_route_pro/modules/settig_screen/controller/setting_controller.dart';
-import 'package:track_route_pro/modules/settig_screen/view/update_dialog.dart';
 import 'package:track_route_pro/modules/support/view/support_view.dart';
 import 'package:track_route_pro/routes/app_pages.dart';
 import 'package:track_route_pro/utils/app_prefrance.dart';
 import 'package:track_route_pro/utils/common_import.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../constants/project_urls.dart';
 import '../../../utils/utils.dart';
@@ -201,7 +203,19 @@ class SettingView extends StatelessWidget {
                   Expanded(
                     child: InkWell(
                       onTap: () {
-                        // Utils.openDialog(context: context, child: UpdateDialog());
+
+                        if (Platform.isAndroid || Platform.isIOS) {
+                          final appId = Platform.isAndroid ? 'com.trp.track_route_pro' : 'com.trp.trackRoutePro';
+                          final url = Uri.parse(
+                            Platform.isAndroid
+                                ? "market://details?id=$appId"
+                                : "https://apps.apple.com/app/id$appId",
+                          );
+                          launchUrl(
+                            url,
+                            mode: LaunchMode.externalApplication,
+                          );
+                        }
                       },
                       child: Container(
                           padding:
