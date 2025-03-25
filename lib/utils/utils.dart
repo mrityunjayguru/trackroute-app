@@ -173,6 +173,7 @@ class Utils{
   }
 
   static double parseDouble({String? data}){
+
     return data==null ? 0 : (double.tryParse(data) ?? 0);
   }
 

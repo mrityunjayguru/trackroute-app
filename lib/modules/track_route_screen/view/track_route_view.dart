@@ -134,22 +134,7 @@ class TrackRouteView extends StatelessWidget {
                                             '${DateFormat("HH:mm").format(DateTime.parse(trackingData?.lastUpdateTime ?? "").toLocal()) ?? ''}';
                                       }
                                       return FutureBuilder<String>(
-                                        future: (trackingData
-                                                        ?.location?.latitude !=
-                                                    null &&
-                                                trackingData
-                                                        ?.location?.longitude !=
-                                                    null)
-                                            ? controller.getAddressFromLatLong(
-                                                trackingData
-                                                        ?.location?.latitude ??
-                                                    0.0,
-                                                trackingData
-                                                        ?.location?.longitude ??
-                                                    0.0,
-                                              )
-                                            : Future.value(
-                                                "Address Unavailable"),
+                                        future: getAddress(),
                                         builder: (context, snapshot) {
                                           String address =
                                               "Fetching Address...";
@@ -482,5 +467,32 @@ class TrackRouteView extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<String> getAddress() async {
+    var trackingData = controller.deviceDetail.value.data?[0].trackingData;
+    if(controller.checkIfInactive(vehicle: controller.deviceDetail.value.data?[0])){
+      if (controller.deviceDetail.value.data?[0].lastLocation?.latitude != null &&
+          controller.deviceDetail.value.data?[0].lastLocation?.longitude != null) {
+        return await controller.getAddressFromLatLong(
+          controller.deviceDetail.value.data?[0].lastLocation?.latitude ?? 0.0,
+          controller.deviceDetail.value.data?[0].lastLocation?.longitude ?? 0.0,
+        );
+      } else {
+        return Future.value("Address Unavailable");
+      }
+    }
+    else{
+      if (trackingData?.location?.latitude != null &&
+          trackingData?.location?.longitude != null) {
+        return await controller.getAddressFromLatLong(
+          trackingData?.location?.latitude ?? 0.0,
+          trackingData?.location?.longitude ?? 0.0,
+        );
+      } else {
+        return Future.value("Address Unavailable");
+      }
+    }
+
   }
 }

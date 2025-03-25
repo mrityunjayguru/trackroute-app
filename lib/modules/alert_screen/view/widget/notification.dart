@@ -106,7 +106,18 @@ class AlertNotificationTab extends StatelessWidget {
     return FutureBuilder<String>(
       future: getAddress(), // Fetch the address asynchronously
       builder: (context, snapshot) {
-        String address = snapshot.data ?? 'Loading...';
+        String address =
+            "Fetching Address...";
+        if (snapshot.connectionState ==
+            ConnectionState.done) {
+          if (snapshot.hasError) {
+            address =
+            "Error Fetching Address";
+          } else {
+            address = snapshot.data ??
+                "Address Unavailable";
+          }
+        }
         return Container(
           decoration: BoxDecoration(
             color: AppColors.white,

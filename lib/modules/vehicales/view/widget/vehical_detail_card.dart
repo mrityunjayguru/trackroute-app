@@ -5,6 +5,9 @@ import 'package:track_route_pro/config/app_sizer.dart';
 import 'package:track_route_pro/config/theme/app_colors.dart';
 import 'package:track_route_pro/config/theme/app_textstyle.dart';
 import 'package:track_route_pro/gen/assets.gen.dart';
+import 'package:track_route_pro/modules/track_route_screen/controller/track_route_controller.dart';
+import 'package:track_route_pro/modules/track_route_screen/controller/track_route_controller.dart';
+import 'package:track_route_pro/modules/track_route_screen/controller/track_route_controller.dart';
 import 'package:track_route_pro/modules/vehicales/controller/vehicales_controller.dart';
 import 'package:track_route_pro/service/model/presentation/track_route/track_route_vehicle_list.dart';
 import 'package:track_route_pro/utils/common_import.dart';
@@ -23,6 +26,10 @@ class VehicalDetailCard extends StatelessWidget {
   final controller = Get.isRegistered<VehicalesController>()
       ? Get.find<VehicalesController>() // Find if already registered
       : Get.put(VehicalesController());
+
+  final trackController = Get.isRegistered<TrackRouteController>()
+      ? Get.find<TrackRouteController>() // Find if already registered
+      : Get.put(TrackRouteController());
 
   @override
   Widget build(BuildContext context) {
@@ -238,5 +245,33 @@ class VehicalDetailCard extends StatelessWidget {
         )
       ],
     );
+  }
+
+
+  Future<String> getAddress() async {
+    var trackingData = vehicleInfo.trackingData;
+    if(trackController.checkIfInactive(vehicle: vehicleInfo)){
+      if (vehicleInfo.lastLocation?.latitude != null &&
+          vehicleInfo.lastLocation?.longitude != null) {
+        return await controller.getAddressFromLatLong(
+          vehicleInfo.lastLocation?.latitude ?? 0.0,
+          vehicleInfo.lastLocation?.longitude ?? 0.0,
+        );
+      } else {
+        return Future.value("Address Unavailable");
+      }
+    }
+    else{
+      if (trackingData?.location?.latitude != null &&
+          trackingData?.location?.longitude != null) {
+        return await controller.getAddressFromLatLong(
+          trackingData?.location?.latitude ?? 0.0,
+          trackingData?.location?.longitude ?? 0.0,
+        );
+      } else {
+        return Future.value("Address Unavailable");
+      }
+    }
+
   }
 }

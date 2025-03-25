@@ -86,7 +86,7 @@ class TrackRouteController extends GetxController {
     );
 
     // Set up a timer to call `devicesByOwnerID` every 30 seconds if `isEdit` is false
-    _refreshTimer = Timer.periodic(Duration(seconds: 5), (timer) {
+    _refreshTimer = Timer.periodic(Duration(seconds: 10), (timer) {
       if (!isedit.value) {
         devicesByOwnerID(false);
       }
@@ -264,7 +264,8 @@ class TrackRouteController extends GetxController {
 
   List<Data> filterOffline(List<Data> vehicleList) {
     return vehicleList.where((vehicle) {
-      return vehicle.trackingData?.status?.toLowerCase() != "online"; // Status is Active
+      return vehicle.trackingData?.status?.toLowerCase() !=
+          "online"; // Status is Active
     }).toList();
   }
 
@@ -283,7 +284,6 @@ class TrackRouteController extends GetxController {
       {required double latitude, required double longitude}) {
     if (Get.put(BottomBarController()).selectedIndex == 2) {
       if (mapController != null) {
-        log("UPDATE CAMERA =====> ");
         mapController.animateCamera(
           CameraUpdate.newCameraPosition(
             CameraPosition(target: LatLng(latitude, longitude), zoom: 7),
@@ -334,7 +334,7 @@ class TrackRouteController extends GetxController {
     isShowVehicleDetails(index, imei);
     isExpanded.value = false;
     await devicesByDetails(imei, updateCamera: false, showDialog: true);
-
+/*
     try {
       if (Platform.isIOS) {
         addCustomMarker(LatLng((lat ?? 0) + 0.0011, long ?? 0),
@@ -342,7 +342,7 @@ class TrackRouteController extends GetxController {
       }
     } catch (e, s) {
       log("EXCEPTION $e ====> $s");
-    }
+    }*/
 
     /* if(Platform.isIOS){
         customInfoWindowController.addInfoWindow!(
@@ -528,11 +528,6 @@ class TrackRouteController extends GetxController {
           // inActiveVehiclesList.value = filterInActiveVehicles(allVehiclesRes).obs;
           inActiveVehiclesList.value = filterInactive(allVehiclesRes).obs;
           offlineVehiclesList.value = filterOffline(allVehiclesRes).obs;
-          // log("activeVehiclesList===>${jsonEncode(activeVehiclesList)}");
-          // log("ignitionOnList===>${jsonEncode(ignitionOnList)}");
-          // log("ignitionOffList===>$ignitionOffList");
-          // log("idleList===>$idleList");
-          // Initialize filter data after API call and filtering
           filterData.value = [
             FilterData(
                 image: Assets.images.svg.icFlashGreen,
@@ -575,6 +570,7 @@ class TrackRouteController extends GetxController {
                   lat = vehicle.lastLocation?.latitude;
                   long = vehicle.lastLocation?.longitude;
                 }
+
                 Marker m = await createMarker(
                     imei: vehicle.imei ?? "",
                     lat: lat,
@@ -582,8 +578,9 @@ class TrackRouteController extends GetxController {
                     img: vehicle.vehicletype?.icons,
                     id: vehicle.deviceId,
                     vehicleNo: vehicle.vehicleNo,
-                    course: Utils.parseDouble(data: vehicle.course),
-                    isOffline:isOffline,
+                    course:
+                        Utils.parseDouble(data: vehicle.trackingData?.course),
+                    isOffline: isOffline,
                     isInactive: isInactive);
                 markers.add(m);
               }
@@ -602,8 +599,9 @@ class TrackRouteController extends GetxController {
             checkFilterIndex(false);
           } else if (isShowvehicleDetail.value &&
               selectedVehicleIMEI.value.isNotEmpty) {
-            devicesByDetails(selectedVehicleIMEI.value ?? '',
-                updateCamera: false);
+            devicesByDetails(
+              selectedVehicleIMEI.value ?? '',
+            );
           }
         } else if (response.status == 400) {
           networkStatus.value = NetworkStatus.ERROR;
@@ -664,9 +662,20 @@ class TrackRouteController extends GetxController {
                   latitude: data?.trackingData?.location?.latitude ?? 0,
                   longitude: data?.trackingData?.location?.longitude ?? 0);
             } else {
-              updateCameraPosition(
-                  latitude: data?.trackingData?.location?.latitude ?? 0,
-                  longitude: data?.trackingData?.location?.longitude ?? 0);
+              mapController.getZoomLevel().then((currentZoom) {
+
+                mapController.animateCamera(
+                  CameraUpdate.newCameraPosition(
+                    CameraPosition(
+                        target: LatLng(
+                          (data?.trackingData?.location?.latitude ?? 0) - 0.0020,
+                          data?.trackingData?.location?.longitude ?? 0,
+                        ),
+                        zoom: currentZoom),
+                  ),
+                );
+                log("ANIMATE CAMERA DONE");
+              });
             }
           }
 
@@ -713,7 +722,7 @@ class TrackRouteController extends GetxController {
               long = data?.lastLocation?.longitude;
             }
             Marker m = await createMarker(
-                course: Utils.parseDouble(data: data?.course),
+                course: Utils.parseDouble(data: data?.trackingData?.course),
                 imei: data?.imei ?? "",
                 lat: lat,
                 long: long,
@@ -938,13 +947,11 @@ class TrackRouteController extends GetxController {
     BitmapDescriptor markerIcon = BitmapDescriptor.defaultMarker;
     if (isInactive) {
       markerIcon = await svgToBitmapDescriptorInactiveIcon();
-    }
-    else if (isOffline) {
+    } else if (isOffline) {
       markerIcon = await svgToBitmapDescriptorOfflineIcon();
     } else {
       markerIcon = await svgToBitmapDescriptor('${ProjectUrls.imgBaseUrl}$img');
     }
-
     final markerId = "${ProjectUrls.imgBaseUrl}$img$imei";
     final marker = Marker(
         rotation: course,
@@ -953,12 +960,12 @@ class TrackRouteController extends GetxController {
           lat ?? 0,
           long ?? 0,
         ),
-        infoWindow: Platform.isAndroid
+       /* infoWindow: Platform.isAndroid
             ? InfoWindow(
                 title: 'Vehicle No: ${vehicleNo}',
                 snippet: 'IMEI: ${imei}',
               )
-            : InfoWindow.noText,
+            : InfoWindow.noText,*/
         icon: markerIcon,
         onTap: () =>
             _onMarkerTapped(-1, imei, vehicleNo ?? "-", lat: lat, long: long));
@@ -1005,6 +1012,11 @@ class TrackRouteController extends GetxController {
     } else {
       vehiclesToDisplay = allVehicles;
     }
+    if (isShowvehicleDetail.value && selectedVehicleIMEI.value.isNotEmpty) {
+      devicesByDetails(
+        selectedVehicleIMEI.value ?? '',
+      );
+    }
     if (vehiclesToDisplay.isNotEmpty &&
         updateCamera &&
         vehiclesToDisplay[0].trackingData?.location?.latitude != null &&
@@ -1036,7 +1048,7 @@ class TrackRouteController extends GetxController {
             lat: lat,
             vehicleNo: vehicle.vehicleNo,
             imei: vehicle.imei ?? "",
-            course: Utils.parseDouble(data: vehicle.course),
+            course: Utils.parseDouble(data: vehicle.trackingData?.course),
             isOffline: isOffline,
             isInactive: isInactive);
         markers.add(marker);

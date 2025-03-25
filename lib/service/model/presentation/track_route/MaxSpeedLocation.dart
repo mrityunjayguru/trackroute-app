@@ -1,3 +1,5 @@
+import '../../../../utils/utils.dart';
+
 /// longitude : 76.619057
 /// latitude : 28.183415
 
@@ -7,8 +9,8 @@ class MaxSpeedLocation {
       this.latitude,});
 
   MaxSpeedLocation.fromJson(dynamic json) {
-    longitude = json['longitude'];
-    latitude = json['latitude'];
+    longitude = Utils.parseDouble(data:json['longitude'].toString());
+    latitude = Utils.parseDouble(data: json['latitude'].toString());
   }
   double? longitude;
   double? latitude;

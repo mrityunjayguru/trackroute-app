@@ -419,7 +419,7 @@ class VehicleDataWidget extends StatelessWidget {
                         ),
                         Flexible(
                           child: AutoSizeText(
-                            '${summary?.avgSpeed == null ? "- " : Utils.toStringAsFixed(data: summary?.avgSpeed)} ',
+                            '${summary?.avgSpeed == null ? "NA " : Utils.toStringAsFixed(data: summary?.avgSpeed)} ',
                             maxLines: 2,
                             minFontSize: 18,
                             overflow: TextOverflow.ellipsis,
@@ -552,7 +552,7 @@ class VehicleDataWidget extends StatelessWidget {
                                           ),
                                           TextSpan(
                                             text:
-                                                '${summary?.total_travel_km == null ? "-" : Utils.toStringAsFixed(data: summary?.total_travel_km.toString())}',
+                                                '${summary?.total_travel_km == null ? "NA" : Utils.toStringAsFixed(data: summary?.total_travel_km.toString())}',
                                             style: AppTextStyles(context)
                                                 .display21W600,
                                           ),
@@ -600,7 +600,7 @@ class VehicleDataWidget extends StatelessWidget {
                                     ),
                                     TextSpan(
                                       text:
-                                          '${summary?.latestTripKm == null ? "-" : Utils.toStringAsFixed(data: summary?.latestTripKm.toString())}',
+                                          '${summary?.latestTripKm == null ? "NA" : Utils.toStringAsFixed(data: summary?.latestTripKm.toString())}',
                                       style:
                                           AppTextStyles(context).display21W600,
                                     ),
@@ -664,7 +664,7 @@ class VehicleDataWidget extends StatelessWidget {
                                             ),
                                             TextSpan(
                                               text:
-                                                  '@ ${summary?.maxSpeedTime != null ? DateFormat("HH:mm").format(DateTime.parse(summary?.maxSpeedTime ?? "")) : "-"}  ',
+                                                  '@ ${summary?.maxSpeedTime != null ? DateFormat("HH:mm").format(DateTime.parse(summary?.maxSpeedTime ?? "")) : "NA"}  ',
                                               style: AppTextStyles(context)
                                                   .display11W500,
                                             ),
@@ -707,7 +707,7 @@ class VehicleDataWidget extends StatelessWidget {
                                           children: [
                                             TextSpan(
                                               text:
-                                                  '${summary?.maxSpeed == null ? "-" : Utils.toStringAsFixed(data: summary?.maxSpeed.toString()) ?? "-"} ',
+                                                  '${summary?.maxSpeed == null ? "NA" : Utils.toStringAsFixed(data: summary?.maxSpeed.toString()) ?? "NA"} ',
                                               style: AppTextStyles(context)
                                                   .display21W600,
                                             ),
@@ -797,13 +797,13 @@ class VehicleDataWidget extends StatelessWidget {
                   if (displayParameters?.extBattery != null &&
                       (displayParameters?.extBattery ?? false))detailItem(
                       "Vehicle Battery",
-                      "${Utils.toStringAsFixed(data: extBattery)}",
+                      "${Utils.toStringAsFixed(data: extBattery)} V",
                       "assets/images/svg/batt_icon.svg",
                       16),
                   if (displayParameters?.internalBattery != null &&
                       (displayParameters?.internalBattery ?? false))detailItem(
                       "Device Battery",
-                      "${Utils.toStringAsFixed(data: intBattery)}",
+                      "${Utils.formatInt(data: intBattery)} %",
                       "assets/images/svg/charging_icon.svg",
                       12),
                   if (displayParameters?.vehicleMotion != null &&
