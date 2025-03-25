@@ -205,7 +205,7 @@ class SettingView extends StatelessWidget {
                       onTap: () {
 
                         if (Platform.isAndroid || Platform.isIOS) {
-                          final appId = Platform.isAndroid ? 'com.trp.track_route_pro' : 'com.trp.trackRoutePro';
+                          final appId = Platform.isAndroid ? 'com.trp.track_route_pro' : '6742405498';
                           final url = Uri.parse(
                             Platform.isAndroid
                                 ? "market://details?id=$appId"
