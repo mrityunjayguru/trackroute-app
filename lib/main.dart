@@ -8,6 +8,7 @@ import 'package:sizer/sizer.dart';
 import 'package:track_route_pro/firebase_controller.dart';
 import 'package:track_route_pro/routes/app_pages.dart';
 import 'firebase_options.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,6 +40,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    WakelockPlus.enable();
     return Sizer(builder: (context, orientation, deviceType) {
       return Material(
         child: GetMaterialApp(

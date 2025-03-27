@@ -42,7 +42,7 @@ import GoogleMaps  // Import Google Maps SDK
         application.registerForRemoteNotifications()
 
         GeneratedPluginRegistrant.register(with: self)
-
+        UIApplication.shared.isIdleTimerDisabled = true
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
       }
 

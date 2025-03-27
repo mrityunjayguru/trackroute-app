@@ -20,6 +20,7 @@ class MapViewTrackRoute extends StatelessWidget {
             zoomControlsEnabled: false,
             mapType: MapType.normal,
             onMapCreated: (mapCon) {
+              controller.height = MediaQuery.of(context).size.height;
               controller.mapController = mapCon;
               controller.showLoader.value = false;
             },

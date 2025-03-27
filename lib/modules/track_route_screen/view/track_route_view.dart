@@ -15,7 +15,7 @@ import 'package:track_route_pro/modules/track_route_screen/view/widgets/vehicle_
 import 'package:track_route_pro/modules/track_route_screen/view/widgets/vehicles_detail_bottom_sheet.dart';
 import 'package:track_route_pro/modules/track_route_screen/view/widgets/vehicles_filter.dart';
 import 'package:track_route_pro/utils/common_import.dart';
-
+import 'package:wakelock_plus/wakelock_plus.dart';
 import '../../../utils/utils.dart';
 import '../../route_history/view/route_history_filter.dart';
 
@@ -28,6 +28,7 @@ class TrackRouteView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    WakelockPlus.enable();
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, val) {
@@ -396,6 +397,7 @@ class TrackRouteView extends StatelessWidget {
                                             .getCurrentLocation();
                                         if (position != null) {
                                           controller.updateCameraPosition(
+                                              course: 0,
                                               latitude: position.latitude - 1,
                                               longitude: position.longitude);
                                         } else {
@@ -452,7 +454,8 @@ class TrackRouteView extends StatelessWidget {
                             await controller.getCurrentLocation();
                         if (position != null) {
                           controller.updateCameraPosition(
-                              latitude: position.latitude - 1,
+                              course: 0,
+                              latitude: position.latitude,
                               longitude: position.longitude);
                         } else {
                           Utils.getSnackbar(
@@ -471,9 +474,12 @@ class TrackRouteView extends StatelessWidget {
 
   Future<String> getAddress() async {
     var trackingData = controller.deviceDetail.value.data?[0].trackingData;
-    if(controller.checkIfInactive(vehicle: controller.deviceDetail.value.data?[0])){
-      if (controller.deviceDetail.value.data?[0].lastLocation?.latitude != null &&
-          controller.deviceDetail.value.data?[0].lastLocation?.longitude != null) {
+    if (controller.checkIfInactive(
+        vehicle: controller.deviceDetail.value.data?[0])) {
+      if (controller.deviceDetail.value.data?[0].lastLocation?.latitude !=
+              null &&
+          controller.deviceDetail.value.data?[0].lastLocation?.longitude !=
+              null) {
         return await controller.getAddressFromLatLong(
           controller.deviceDetail.value.data?[0].lastLocation?.latitude ?? 0.0,
           controller.deviceDetail.value.data?[0].lastLocation?.longitude ?? 0.0,
@@ -481,8 +487,7 @@ class TrackRouteView extends StatelessWidget {
       } else {
         return Future.value("Address Unavailable");
       }
-    }
-    else{
+    } else {
       if (trackingData?.location?.latitude != null &&
           trackingData?.location?.longitude != null) {
         return await controller.getAddressFromLatLong(
@@ -493,6 +498,5 @@ class TrackRouteView extends StatelessWidget {
         return Future.value("Address Unavailable");
       }
     }
-
   }
 }

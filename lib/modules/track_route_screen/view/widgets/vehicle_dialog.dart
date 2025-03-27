@@ -18,131 +18,136 @@ class VehicleDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: AppColors.color_f0f4fd,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Row(
-              children: [
-                Container(
+    return PopScope(
+      onPopInvokedWithResult: (val, val1){
+        controller.dialogOpen = false; // Change dialogOpen when closed
+      },
+      child: SingleChildScrollView(
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: AppColors.color_f0f4fd,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                        color: AppColors.black,
+                        borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(
+                              10,
+                            ),
+                            bottomRight: Radius.circular(
+                              10,
+                            ))),
+                    child: Column(
+                      children: [
+                        Text(
+                          'Enter Vehicle Details',
+                          style: AppTextStyles(context)
+                              .display20W500
+                              .copyWith(color: AppColors.white),
+                        ).paddingSymmetric(horizontal: 12),
+                        Text(
+                          'for Accurate Notifications',
+                          style: AppTextStyles(context)
+                              .display16W500
+                              .copyWith(color: AppColors.selextedindexcolor),
+                        ).paddingSymmetric(horizontal: 12),
+                      ],
+                    ).paddingSymmetric(vertical: 10, horizontal: 6),
+                  ).paddingOnly(right: 15),
+                  Spacer(),
+                  InkWell(
+                      onTap: () {
+                        Get.back();
+                      },
+                      child: SvgPicture.asset(
+                        'assets/images/svg/close_icon_dialog.svg',
+                      )),
+                ],
+              ).paddingOnly(left: 15, right: 15, bottom: 15),
+              if (controller.deviceDetail.value.data?[0].vehicleNo?.isEmpty ??
+                  true)
+                EditTextField(
+                  controller: controller.vehicleName,
+                  hintText: "Vehicle Number",
+                  inputFormatters: [],
+                  height: 42,
+                  borderRadius: AppSizes.radius_10,
+                  color: Colors.white,
+                  hintStyle: AppTextStyles(context)
+                      .display16W400
+                      .copyWith(color: AppColors.color_969696),
+                  textStyle: AppTextStyles(context).display16W500,
+                ).paddingOnly(left: 15, right: 15, bottom: 15),
+            /*  if (controller.deviceDetail.value.data?[0].vehicleRegistrationNo
+                      ?.isEmpty ??
+                  true)
+                EditTextField(
+                  controller: controller.vehicleRegistrationNumber,
+                  hintText: "Vehicle Plate No",
+                  inputFormatters: [],
+                  height: 42,
+                  borderRadius: AppSizes.radius_10,
+                  color: Colors.white,
+                  hintStyle: AppTextStyles(context)
+                      .display16W400
+                      .copyWith(color: AppColors.color_969696),
+                  textStyle: AppTextStyles(context).display16W500,
+                ).paddingOnly(left: 15, right: 15, bottom: 15),*/
+              if (controller.deviceDetail.value.data?[0].driverName?.isEmpty ??
+                  true)
+                EditTextField(
+                  controller: controller.driverName,
+                  hintText: "Driving Person",
+                  height: 42,
+                  borderRadius: AppSizes.radius_10,
+                  color: Colors.white,
+                  hintStyle: AppTextStyles(context)
+                      .display16W400
+                      .copyWith(color: AppColors.color_969696),
+                  textStyle: AppTextStyles(context).display16W500,
+                  inputFormatters: [],
+                ).paddingOnly(left: 15, right: 15, bottom: 15),
+              InkWell(
+                onTap: () {
+                  controller.editDeviceData(context);
+                  Navigator.pop(context);
+                },
+                child: Container(
                   decoration: BoxDecoration(
-                      color: AppColors.black,
-                      borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(
-                            10,
-                          ),
-                          bottomRight: Radius.circular(
-                            10,
-                          ))),
-                  child: Column(
-                    children: [
-                      Text(
-                        'Enter Vehicle Details',
-                        style: AppTextStyles(context)
-                            .display20W500
-                            .copyWith(color: AppColors.white),
-                      ).paddingSymmetric(horizontal: 12),
-                      Text(
-                        'for Accurate Notifications',
-                        style: AppTextStyles(context)
-                            .display16W500
-                            .copyWith(color: AppColors.selextedindexcolor),
-                      ).paddingSymmetric(horizontal: 12),
-                    ],
-                  ).paddingSymmetric(vertical: 10, horizontal: 6),
-                ).paddingOnly(right: 15),
-                Spacer(),
-                InkWell(
-                    onTap: () {
-                      Get.back();
-                    },
-                    child: SvgPicture.asset(
-                      'assets/images/svg/close_icon_dialog.svg',
-                    )),
-              ],
-            ).paddingOnly(left: 15, right: 15, bottom: 15),
-            if (controller.deviceDetail.value.data?[0].vehicleNo?.isEmpty ??
-                true)
-              EditTextField(
-                controller: controller.vehicleName,
-                hintText: "Vehicle Number",
-                inputFormatters: [],
-                height: 42,
-                borderRadius: AppSizes.radius_10,
-                color: Colors.white,
-                hintStyle: AppTextStyles(context)
-                    .display16W400
-                    .copyWith(color: AppColors.color_969696),
-                textStyle: AppTextStyles(context).display16W500,
-              ).paddingOnly(left: 15, right: 15, bottom: 15),
-          /*  if (controller.deviceDetail.value.data?[0].vehicleRegistrationNo
-                    ?.isEmpty ??
-                true)
-              EditTextField(
-                controller: controller.vehicleRegistrationNumber,
-                hintText: "Vehicle Plate No",
-                inputFormatters: [],
-                height: 42,
-                borderRadius: AppSizes.radius_10,
-                color: Colors.white,
-                hintStyle: AppTextStyles(context)
-                    .display16W400
-                    .copyWith(color: AppColors.color_969696),
-                textStyle: AppTextStyles(context).display16W500,
-              ).paddingOnly(left: 15, right: 15, bottom: 15),*/
-            if (controller.deviceDetail.value.data?[0].driverName?.isEmpty ??
-                true)
-              EditTextField(
-                controller: controller.driverName,
-                hintText: "Driving Person",
-                height: 42,
-                borderRadius: AppSizes.radius_10,
-                color: Colors.white,
-                hintStyle: AppTextStyles(context)
-                    .display16W400
-                    .copyWith(color: AppColors.color_969696),
-                textStyle: AppTextStyles(context).display16W500,
-                inputFormatters: [],
-              ).paddingOnly(left: 15, right: 15, bottom: 15),
-            InkWell(
-              onTap: () {
-                controller.editDeviceData(context);
-                Navigator.pop(context);
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(AppSizes.radius_50),
-                  color: AppColors.black,
-                ),
-                child: Center(
-                  child: Text(
-                    'Save',
-                    style: AppTextStyles(context)
-                        .display18W500
-                        .copyWith(color: AppColors.selextedindexcolor),
-                  ).paddingSymmetric(horizontal: 1.w, vertical: 1.4.h),
-                ),
-              ).paddingSymmetric(vertical: 1.4.h, horizontal: 60),
-            ),
-            Text(
-              "Don’t worry, you can change the details later by",
-              style: AppTextStyles(context).display12W400,
-              textAlign: TextAlign.center,
-            ).paddingSymmetric(horizontal: 15),
-            Text(
-              "selecting the vehicle and clicking on 'Manage Vehicle'",
-              style: AppTextStyles(context)
-                  .display12W400
-                  .copyWith(decoration: TextDecoration.underline),
-              textAlign: TextAlign.center,
-            ).paddingOnly(left: 15, right: 15, bottom: 15)
-          ],
+                    borderRadius: BorderRadius.circular(AppSizes.radius_50),
+                    color: AppColors.black,
+                  ),
+                  child: Center(
+                    child: Text(
+                      'Save',
+                      style: AppTextStyles(context)
+                          .display18W500
+                          .copyWith(color: AppColors.selextedindexcolor),
+                    ).paddingSymmetric(horizontal: 1.w, vertical: 1.4.h),
+                  ),
+                ).paddingSymmetric(vertical: 1.4.h, horizontal: 60),
+              ),
+              Text(
+                "Don’t worry, you can change the details later by",
+                style: AppTextStyles(context).display12W400,
+                textAlign: TextAlign.center,
+              ).paddingSymmetric(horizontal: 15),
+              Text(
+                "selecting the vehicle and clicking on 'Manage Vehicle'",
+                style: AppTextStyles(context)
+                    .display12W400
+                    .copyWith(decoration: TextDecoration.underline),
+                textAlign: TextAlign.center,
+              ).paddingOnly(left: 15, right: 15, bottom: 15)
+            ],
+          ),
         ),
       ),
     );

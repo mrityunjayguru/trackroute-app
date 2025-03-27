@@ -1,7 +1,8 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io';
+import 'dart:math';
 import 'dart:ui' as ui;
+import 'dart:developer' as developer;
 import 'dart:ui';
 
 import 'package:flutter/rendering.dart';
@@ -62,6 +63,8 @@ class TrackRouteController extends GetxController {
   RxInt selectedVehicleIndex = RxInt(0);
   RxBool isListShow = false.obs;
   RxBool isedit = false.obs;
+  double height = 848;
+  bool dialogOpen = false;
   StreamSubscription<Position>? positionStream;
   var currentLocation =
       LatLng(20.5937, 78.9629).obs; // Current vehicle location
@@ -281,12 +284,15 @@ class TrackRouteController extends GetxController {
   }
 
   void updateCameraPosition(
-      {required double latitude, required double longitude}) {
+      {required double latitude,
+      required double longitude,
+      required double course}) {
     if (Get.put(BottomBarController()).selectedIndex == 2) {
       if (mapController != null) {
         mapController.animateCamera(
           CameraUpdate.newCameraPosition(
-            CameraPosition(target: LatLng(latitude, longitude), zoom: 7),
+            CameraPosition(
+                bearing: course, target: LatLng(latitude, longitude), zoom: 7),
           ),
         );
       }
@@ -309,14 +315,20 @@ class TrackRouteController extends GetxController {
   }
 
   void updateCameraPositionWithZoom(
-      {required double latitude, required double longitude}) {
+      {required double latitude,
+      required double longitude,
+      required double course}) async {
     if (Get.put(BottomBarController()).selectedIndex == 2) {
       if (mapController != null) {
+        double offset = 0.0009;
+        LatLng newLatLng =
+            await calcLatLong(offset, course, latitude, longitude);
         mapController.animateCamera(
           CameraUpdate.newCameraPosition(
             CameraPosition(
-              target: LatLng(latitude - 0.0020, longitude),
-              zoom: 16,
+              bearing: course,
+              target: newLatLng, //todo
+              zoom: 18,
             ),
           ),
         );
@@ -324,12 +336,39 @@ class TrackRouteController extends GetxController {
     }
   }
 
+  Future<LatLng> calcLatLong(
+      double offset, double course, double lat, double long) async {
+    // double course = Utils.parseDouble(data: data?.trackingData?.course);
+
+    // Convert course to radians for proper offset calculation
+    double courseRad = course * (pi / 180);
+    double offsetLat = offset * cos(courseRad);
+    double offsetLong = offset * sin(courseRad);
+
+    LatLng vehiclePosition = LatLng(
+      lat + offsetLat,
+      long + offsetLong,
+    );
+
+    // Convert LatLng to screen coordinates
+    ScreenCoordinate screenPosition =
+        await mapController.getScreenCoordinate(vehiclePosition);
+
+    // Move the point upwards by 30% of the screen height
+    int adjustedY = (screenPosition.y + (height * 0.9)).toInt();
+
+    // Convert back to LatLng
+    LatLng adjustedLatLng = await mapController
+        .getLatLng(ScreenCoordinate(x: screenPosition.x, y: adjustedY));
+    return adjustedLatLng;
+  }
+
   // On Map Created
   void onMapCreated(GoogleMapController controller) {
     mapController = controller;
   }
 
-  void _onMarkerTapped(int index, String imei, String vehicleNo,
+  void _onMarkerTapped(int index, String imei, String vehicleNo, double course,
       {double? lat, double? long}) async {
     isShowVehicleDetails(index, imei);
     isExpanded.value = false;
@@ -351,7 +390,8 @@ class TrackRouteController extends GetxController {
         );
     }*/
     if (lat != null && long != null) {
-      updateCameraPositionWithZoom(latitude: lat, longitude: long);
+      updateCameraPositionWithZoom(
+          latitude: lat, longitude: long, course: course);
     }
   }
 
@@ -509,6 +549,7 @@ class TrackRouteController extends GetxController {
         await AppPreference.getBoolFromSF(Constants.isLogIn) ?? false;
     if (isLogIn) {
       try {
+        // developer.log("dailog open $dialogOpen");
         final body = {"ownerId": "${devicesOwnerID.value}"};
         networkStatus.value = NetworkStatus.LOADING;
 
@@ -598,7 +639,7 @@ class TrackRouteController extends GetxController {
           } else if (isFilterSelected.value) {
             checkFilterIndex(false);
           } else if (isShowvehicleDetail.value &&
-              selectedVehicleIMEI.value.isNotEmpty) {
+              selectedVehicleIMEI.value.isNotEmpty && !dialogOpen) {
             devicesByDetails(
               selectedVehicleIMEI.value ?? '',
             );
@@ -607,7 +648,7 @@ class TrackRouteController extends GetxController {
           networkStatus.value = NetworkStatus.ERROR;
         }
       } catch (e, s) {
-        log("erroe in vehicle $e $s");
+        // log("erroe in vehicle $e $s");
         networkStatus.value = NetworkStatus.ERROR;
       }
     }
@@ -634,6 +675,30 @@ class TrackRouteController extends GetxController {
   }
 
   Rx<TrackRouteVehicleList> deviceDetail = Rx(TrackRouteVehicleList());
+  Map<int, double> zoomOffsetMap = {
+    3: 14,
+    4: 8,
+    5: 5,
+    6: 1.8,
+    7: 1.5,
+    8: 0.5,
+    9: 0.3,
+    10: 0.14,
+    11: 0.07,
+    12: 0.05,
+    13: 0.03,
+    14: 0.01,
+    15: 0.0038,
+    16: 0.0017,
+    17: 0.00115,
+    18: 0.0009,
+    19: 0.0004,
+  };
+
+  double getOffset(double zoom) {
+    int zoomLevel = zoom.round(); // Convert to integer (rounding down)
+    return zoomOffsetMap[zoomLevel] ?? 0.0; // Default to 0 if not found
+  }
 
   // ///API SEVICE FOR DEVICE DETAILS
   Future<void> devicesByDetails(String imei,
@@ -659,22 +724,64 @@ class TrackRouteController extends GetxController {
               data?.trackingData?.location?.longitude != null) {
             if (zoom) {
               updateCameraPositionWithZoom(
+                  course: Utils.parseDouble(data: data?.trackingData?.course),
                   latitude: data?.trackingData?.location?.latitude ?? 0,
                   longitude: data?.trackingData?.location?.longitude ?? 0);
             } else {
-              mapController.getZoomLevel().then((currentZoom) {
+              /* double offsetLat = 0;
+              double offsetLong = 0;*/
 
+              /* mapController.getZoomLevel().then((currentZoom) {
+
+                offsetLat = getOffset(currentZoom);
+                if(Utils.parseDouble(data: data?.trackingData?.course)  == 0){
+                  offsetLat*=-1;
+                }
+                else if(Utils.parseDouble(data: data?.trackingData?.course)==90){
+                  offsetLong = -1 * offsetLat;
+                  offsetLat =0;
+                }
+                else if(Utils.parseDouble(data: data?.trackingData?.course)==270){
+                  offsetLong = offsetLat;
+                  offsetLat =0;
+                }
+                developer.log("CURRENT ZOOM => $currentZoom $offsetLat ${data?.trackingData?.course}");
                 mapController.animateCamera(
                   CameraUpdate.newCameraPosition(
                     CameraPosition(
+                        bearing:
+                            Utils.parseDouble(data: data?.trackingData?.course),
                         target: LatLng(
-                          (data?.trackingData?.location?.latitude ?? 0) - 0.0020,
-                          data?.trackingData?.location?.longitude ?? 0,
+                          (data?.trackingData?.location?.latitude ?? 0) +
+                              offsetLat,
+                          (data?.trackingData?.location?.longitude ?? 0) + offsetLong,
                         ),
                         zoom: currentZoom),
                   ),
                 );
-                log("ANIMATE CAMERA DONE");
+              });*/
+
+              mapController.getZoomLevel().then((currentZoom) async {
+                double offset =
+                    getOffset(currentZoom); // Get offset based on zoom
+                double course =
+                    Utils.parseDouble(data: data?.trackingData?.course);
+                LatLng newLatLng = await calcLatLong(
+                    offset,
+                    course,
+                    (data?.trackingData?.location?.latitude ?? 0),
+                    (data?.trackingData?.location?.longitude ?? 0));
+
+                // Animate camera to the adjusted position
+                mapController.animateCamera(
+                  CameraUpdate.newCameraPosition(
+                    CameraPosition(
+                      bearing: course, // Keep map aligned with vehicle movement
+                      target: newLatLng,
+                      zoom: currentZoom,
+                    ),
+                  ),
+                );
               });
             }
           }
@@ -684,6 +791,7 @@ class TrackRouteController extends GetxController {
           vehicleName.text = data?.vehicleNo ?? '';
           dateAdded.text = formatDate(data?.dateAdded);
           driverName.text = data?.driverName ?? '';
+          developer.log("DRIVER NaME ${driverName.text}");
           driverMobileNo.text = data?.mobileNo ?? '';
           // vehicleBrand.text = data?.vehicleBrand ?? '';
           // vehicleModel.text = data?.vehicleModel ?? '';
@@ -705,6 +813,7 @@ class TrackRouteController extends GetxController {
           if (showDialog && (deviceDetail.value.data?.isNotEmpty ?? false)) {
             if ((deviceDetail.value.data?[0].vehicleNo?.isEmpty ?? true) ||
                 (deviceDetail.value.data?[0].driverName?.isEmpty ?? true)) {
+              dialogOpen = true;
               Utils.openDialog(
                 context: Get.context!,
                 child: VehicleDialog(),
@@ -745,7 +854,7 @@ class TrackRouteController extends GetxController {
     } catch (e, s) {
       networkStatus.value = NetworkStatus.ERROR;
 
-      log("Error : $e   $s");
+      // log("Error : $e   $s");
     }
   }
 
@@ -960,15 +1069,17 @@ class TrackRouteController extends GetxController {
           lat ?? 0,
           long ?? 0,
         ),
-       /* infoWindow: Platform.isAndroid
+        /* infoWindow: Platform.isAndroid
             ? InfoWindow(
                 title: 'Vehicle No: ${vehicleNo}',
                 snippet: 'IMEI: ${imei}',
               )
             : InfoWindow.noText,*/
         icon: markerIcon,
-        onTap: () =>
-            _onMarkerTapped(-1, imei, vehicleNo ?? "-", lat: lat, long: long));
+        flat: true,
+        anchor: Offset(0.5, 0.5),
+        onTap: () => _onMarkerTapped(-1, imei, vehicleNo ?? "-", course,
+            lat: lat, long: long));
     return marker;
   }
 
@@ -987,6 +1098,7 @@ class TrackRouteController extends GetxController {
       if (validIndex != null && validIndex != -1) {
         var vehicle = vehicleList.value.data?[validIndex];
         updateCameraPosition(
+            course: Utils.parseDouble(data: vehicle?.trackingData?.course),
             latitude: vehicle?.trackingData?.location?.latitude ?? 0,
             longitude: vehicle?.trackingData?.location?.longitude ?? 0);
       } else {
@@ -1012,7 +1124,7 @@ class TrackRouteController extends GetxController {
     } else {
       vehiclesToDisplay = allVehicles;
     }
-    if (isShowvehicleDetail.value && selectedVehicleIMEI.value.isNotEmpty) {
+    if (isShowvehicleDetail.value && selectedVehicleIMEI.value.isNotEmpty && !dialogOpen) {
       devicesByDetails(
         selectedVehicleIMEI.value ?? '',
       );
@@ -1022,6 +1134,8 @@ class TrackRouteController extends GetxController {
         vehiclesToDisplay[0].trackingData?.location?.latitude != null &&
         vehiclesToDisplay[0].trackingData?.location?.longitude != null) {
       updateCameraPosition(
+          course: Utils.parseDouble(
+              data: vehiclesToDisplay[0]?.trackingData?.course),
           latitude: vehiclesToDisplay[0].trackingData?.location?.latitude ?? 0,
           longitude:
               vehiclesToDisplay[0].trackingData?.location?.longitude ?? 0);
