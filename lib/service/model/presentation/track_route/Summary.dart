@@ -57,16 +57,6 @@ class Summary {
     map['total_travel_time'] = totalTravelTime;
     return map;
   }
-  bool get isNotEmpty {
-    return latestTripKm != null ||
-        (latestTripTime != null && latestTripTime!.isNotEmpty) ||
-        maxSpeed != null ||
-        (maxSpeedTime != null && maxSpeedTime!.isNotEmpty) ||
-        maxSpeedLocation != null ||
-        (avgSpeed != null && avgSpeed!.isNotEmpty) ||
-        (total_travel_km != null) ||
-        (totalTravelTime != null && totalTravelTime!.isNotEmpty);;
-  }
 
-  bool get isEmpty => !isNotEmpty;
+
 }

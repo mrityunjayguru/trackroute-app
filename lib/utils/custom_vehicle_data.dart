@@ -449,9 +449,7 @@ class VehicleDataWidget extends StatelessWidget {
               ),
             ),
           if (displayParameters != null) SizedBox(height: 0.4.h),
-          if (isBottomSheet &&
-              summary != null &&
-              (summary?.isNotEmpty ?? false))
+          if (isBottomSheet && summary != null)
             Container(
               width: context.width,
               padding: EdgeInsets.symmetric(horizontal: 8, vertical: 10),
@@ -593,7 +591,7 @@ class VehicleDataWidget extends StatelessWidget {
                                     ),
                                     TextSpan(
                                       text:
-                                          '(${summary?.latestTripTime ?? "-"})\n',
+                                          '(${summary?.latestTripTime ?? "NA"})\n',
                                       style: AppTextStyles(context)
                                           .display11W500
                                           .copyWith(color: AppColors.grayLight),
