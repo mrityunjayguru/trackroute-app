@@ -320,8 +320,7 @@ class VehicleDataWidget extends StatelessWidget {
               },
               child: Container(
                 // height: 5.h,
-                padding: EdgeInsets.symmetric(
-                    vertical: 9, horizontal: 8),
+                padding: EdgeInsets.symmetric(vertical: 9, horizontal: 8),
                 width: 30.w,
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(AppSizes.radius_50),
@@ -341,105 +340,107 @@ class VehicleDataWidget extends StatelessWidget {
         ),
         SizedBox(height: 1.5.h),
         if (isNotExpired) ...[
-          if(isBottomSheet)Container(
-            decoration: BoxDecoration(
-                color: AppColors.whiteOff,
-                boxShadow: [
-                  BoxShadow(
-                    blurRadius: 4,
-                    spreadRadius: 0,
-                    offset: Offset(0, 1),
-                    color: Color(0xff000000).withOpacity(0.2),
-                  )
-                ],
-                borderRadius: BorderRadius.circular(AppSizes.radius_50)),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Row(
-                    children: [
-                      CircleAvatar(
-                        backgroundColor: AppColors.grayBright,
-                        child: SvgPicture.asset(
-                          Assets.images.svg.icSpeedometer,
-                          width: 24,
-                          height: 24,
-                        ),
-                      ).paddingOnly(left: 3, right: 3),
-                      Flexible(
-                        child: AutoSizeText(
-                          "${Utils.formatInt(data: speed)}",
-                          style: AppTextStyles(context).display21W600,
-                          maxLines: 4,
-                          minFontSize: 9,
-                        ).paddingOnly(left: 4, right: 6),
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Current',
-                            style: AppTextStyles(context)
-                                .display9W400
-                                .copyWith(color: AppColors.grayLight),
-                          ),
-                          Column(
-                            children: [
-                              Text(
-                                'Speed (Kmph)',
-                                style: AppTextStyles(context)
-                                    .display9W400
-                                    .copyWith(color: AppColors.grayLight),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    padding: EdgeInsets.all(3),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(AppSizes.radius_50),
-                        border:
-                            Border.all(color: AppColors.selextedindexcolor)),
+          if (isBottomSheet)
+            Container(
+              decoration: BoxDecoration(
+                  color: AppColors.whiteOff,
+                  boxShadow: [
+                    BoxShadow(
+                      blurRadius: 4,
+                      spreadRadius: 0,
+                      offset: Offset(0, 1),
+                      color: Color(0xff000000).withOpacity(0.2),
+                    )
+                  ],
+                  borderRadius: BorderRadius.circular(AppSizes.radius_50)),
+              child: Row(
+                children: [
+                  Expanded(
                     child: Row(
                       children: [
                         CircleAvatar(
                           backgroundColor: AppColors.grayBright,
                           child: SvgPicture.asset(
-                            'assets/images/svg/car_icon.svg',
-                            width: 20,
-                            height: 20,
-                            colorFilter: ColorFilter.mode(
-                                AppColors.black, BlendMode.srcIn),
+                            Assets.images.svg.icSpeedometer,
+                            width: 24,
+                            height: 24,
                           ),
-                        ),
+                        ).paddingOnly(left: 3, right: 3),
                         Flexible(
                           child: AutoSizeText(
-                            '${summary?.avgSpeed == null ? "NA " : Utils.toStringAsFixed(data: summary?.avgSpeed)} ',
-                            maxLines: 2,
-                            minFontSize: 18,
-                            overflow: TextOverflow.ellipsis,
+                            "${Utils.formatInt(data: speed)}",
                             style: AppTextStyles(context).display21W600,
+                            maxLines: 4,
+                            minFontSize: 9,
                           ).paddingOnly(left: 4, right: 6),
                         ),
-                        Text(
-                          'Average\nSpeed (KMPH)',
-                          style: AppTextStyles(context)
-                              .display9W400
-                              .copyWith(color: AppColors.grayLight),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Current',
+                              style: AppTextStyles(context)
+                                  .display9W400
+                                  .copyWith(color: AppColors.grayLight),
+                            ),
+                            Column(
+                              children: [
+                                Text(
+                                  'Speed (Kmph)',
+                                  style: AppTextStyles(context)
+                                      .display9W400
+                                      .copyWith(color: AppColors.grayLight),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ),
-                )
-              ],
+                  Expanded(
+                    child: Container(
+                      padding: EdgeInsets.all(3),
+                      decoration: BoxDecoration(
+                          borderRadius:
+                              BorderRadius.circular(AppSizes.radius_50),
+                          border:
+                              Border.all(color: AppColors.selextedindexcolor)),
+                      child: Row(
+                        children: [
+                          CircleAvatar(
+                            backgroundColor: AppColors.grayBright,
+                            child: SvgPicture.asset(
+                              'assets/images/svg/car_icon.svg',
+                              width: 20,
+                              height: 20,
+                              colorFilter: ColorFilter.mode(
+                                  AppColors.black, BlendMode.srcIn),
+                            ),
+                          ),
+                          Flexible(
+                            child: AutoSizeText(
+                              '${summary?.avgSpeed == null ? "NA " : Utils.toStringAsFixed(data: summary?.avgSpeed)} ',
+                              maxLines: 2,
+                              minFontSize: 18,
+                              overflow: TextOverflow.ellipsis,
+                              style: AppTextStyles(context).display21W600,
+                            ).paddingOnly(left: 4, right: 6),
+                          ),
+                          Text(
+                            'Average\nSpeed (KMPH)',
+                            style: AppTextStyles(context)
+                                .display9W400
+                                .copyWith(color: AppColors.grayLight),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                ],
+              ),
             ),
-          ),
-          if(isBottomSheet)SizedBox(height: 1.5.h),
+          if (isBottomSheet) SizedBox(height: 1.5.h),
           if (displayParameters != null)
             SizedBox(
               height: 9.h,
@@ -475,7 +476,10 @@ class VehicleDataWidget extends StatelessWidget {
                         child: InkWell(
                           onTap: () {
                             Get.put(ReportsController()).setData();
-                            Get.to(() => ReportsView(imei: imei,),
+                            Get.to(
+                                () => ReportsView(
+                                      imei: imei,
+                                    ),
                                 transition: Transition.upToDown,
                                 duration: const Duration(milliseconds: 300));
                           },
@@ -589,25 +593,38 @@ class VehicleDataWidget extends StatelessWidget {
                                       style:
                                           AppTextStyles(context).display11W500,
                                     ),
-                                    TextSpan(
+                                    if (summary?.latestTripTime != null)
+                                      TextSpan(
+                                        text:
+                                            '(${summary?.latestTripTime ?? "NA"})\n',
+                                        style: AppTextStyles(context)
+                                            .display11W500
+                                            .copyWith(
+                                                color: AppColors.grayLight),
+                                      ) else TextSpan(
                                       text:
-                                          '(${summary?.latestTripTime ?? "NA"})\n',
-                                      style: AppTextStyles(context)
-                                          .display11W500
-                                          .copyWith(color: AppColors.grayLight),
+                                      '\n',
                                     ),
                                     TextSpan(
                                       text:
                                           '${summary?.latestTripKm == null ? "NA" : Utils.toStringAsFixed(data: summary?.latestTripKm.toString())}',
-                                      style:
-                                          AppTextStyles(context).display21W600,
-                                    ),
-                                    TextSpan(
-                                      text: ' KM ',
                                       style: AppTextStyles(context)
-                                          .display14W600
-                                          .copyWith(color: AppColors.grayLight),
+                                          .display21W600
+                                          .copyWith(
+                                              color:
+                                                  summary?.latestTripKm == null
+                                                      ? AppColors.grayLight
+                                                      : null),
                                     ),
+                                    if (summary?.latestTripKm != null &&
+                                        (summary?.latestTripKm != "NA"))
+                                      TextSpan(
+                                        text: ' KM ',
+                                        style: AppTextStyles(context)
+                                            .display14W600
+                                            .copyWith(
+                                                color: AppColors.grayLight),
+                                      ),
                                   ],
                                 ),
                               )).paddingSymmetric(horizontal: 3, vertical: 4),
@@ -788,55 +805,57 @@ class VehicleDataWidget extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: StaggeredGrid.count(
-                crossAxisCount: 3,
-                mainAxisSpacing: 5,
-                crossAxisSpacing: 4,
-                children:[
-                  if (displayParameters?.extBattery != null &&
-                      (displayParameters?.extBattery ?? false))detailItem(
-                      "Vehicle Battery",
-                      "${Utils.toStringAsFixed(data: extBattery)} V",
-                      "assets/images/svg/batt_icon.svg",
-                      16),
-                  if (displayParameters?.internalBattery != null &&
-                      (displayParameters?.internalBattery ?? false))detailItem(
-                      "Device Battery",
-                      "${Utils.formatInt(data: intBattery)} %",
-                      "assets/images/svg/charging_icon.svg",
-                      12),
-                  if (displayParameters?.vehicleMotion != null &&
-                      (displayParameters?.vehicleMotion ?? false))detailItem(
-                      "Vehicle Motion",
-                      motion.toLowerCase() == "true" ? "True" : "False",
-                      "assets/images/svg/car_icon.svg",
-                      16),
-                  if (displayParameters?.temperature != null &&
-                      (displayParameters?.temperature ?? false))
-                    detailItem(
-                        "Temp. \nin °C",
-                        "${Utils.toStringAsFixed(data: temp)}",
-                        "assets/images/svg/temp_icon.svg",
-                        16),
-                  if (displayParameters?.humidity != null &&
-                      (displayParameters?.humidity ?? false))
-                    detailItem(
-                        "Humidity \nin %",
-                        "${Utils.toStringAsFixed(data: humid)}",
-                        "assets/images/svg/humid_icon.svg",
-                        16),
-                  if (displayParameters?.bluetooth != null &&
-                      (displayParameters?.bluetooth ?? false))
-                    detailItem(
-                        "Bluetooth Strength",
-                        double.tryParse(bluetooth) != null
-                            ? ((double.tryParse(bluetooth) ?? 0) > 10
-                            ? "Strong"
-                            : "Weak")
-                            : "N/A",
-                        "assets/images/svg/bluetooth_icon.svg",
-                        16),
-                ]
-              ),
+                  crossAxisCount: 3,
+                  mainAxisSpacing: 5,
+                  crossAxisSpacing: 4,
+                  children: [
+                    if (displayParameters?.extBattery != null &&
+                        (displayParameters?.extBattery ?? false))
+                      detailItem(
+                          "Vehicle Battery",
+                          "${Utils.toStringAsFixed(data: extBattery)} V",
+                          "assets/images/svg/batt_icon.svg",
+                          16),
+                    if (displayParameters?.internalBattery != null &&
+                        (displayParameters?.internalBattery ?? false))
+                      detailItem(
+                          "Device Battery",
+                          "${Utils.formatInt(data: intBattery)} %",
+                          "assets/images/svg/charging_icon.svg",
+                          12),
+                    if (displayParameters?.vehicleMotion != null &&
+                        (displayParameters?.vehicleMotion ?? false))
+                      detailItem(
+                          "Vehicle Motion",
+                          motion.toLowerCase() == "true" ? "True" : "False",
+                          "assets/images/svg/car_icon.svg",
+                          16),
+                    if (displayParameters?.temperature != null &&
+                        (displayParameters?.temperature ?? false))
+                      detailItem(
+                          "Temp. \nin °C",
+                          "${Utils.toStringAsFixed(data: temp)}",
+                          "assets/images/svg/temp_icon.svg",
+                          16),
+                    if (displayParameters?.humidity != null &&
+                        (displayParameters?.humidity ?? false))
+                      detailItem(
+                          "Humidity \nin %",
+                          "${Utils.toStringAsFixed(data: humid)}",
+                          "assets/images/svg/humid_icon.svg",
+                          16),
+                    if (displayParameters?.bluetooth != null &&
+                        (displayParameters?.bluetooth ?? false))
+                      detailItem(
+                          "Bluetooth Strength",
+                          double.tryParse(bluetooth) != null
+                              ? ((double.tryParse(bluetooth) ?? 0) > 10
+                                  ? "Strong"
+                                  : "Weak")
+                              : "N/A",
+                          "assets/images/svg/bluetooth_icon.svg",
+                          16),
+                  ]),
               /*child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -937,9 +956,9 @@ class VehicleDataWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
-                    child: Text(title,
-                            style: AppTextStyles(context).display11W400)
-                        .paddingOnly(right: 2),
+                    child:
+                        Text(title, style: AppTextStyles(context).display11W400)
+                            .paddingOnly(right: 2),
                   ),
                   CircleAvatar(
                     maxRadius: 16,
@@ -966,33 +985,33 @@ class VehicleDataWidget extends StatelessWidget {
 
   List<Widget> _buildVehicleItems(BuildContext context) {
     return [
-      if (displayParameters?.door != null)
+      if (displayParameters?.door == true)
         _buildVehicleItem(context, 'Door', doorIsActive, doorSubTitle,
             'assets/images/svg/ic_door.svg'),
-      if (displayParameters?.engine != null)
+      if (displayParameters?.engine == true)
         _buildVehicleItem(context, 'Engine', engineIsActive, engineSubTitle,
             'assets/images/svg/ic_engine_icon.svg'),
-      if (displayParameters?.parking != null)
+      if (displayParameters?.parking == true)
         _buildVehicleItem(context, 'Parking', parkingIsActive, parkingSubTitle,
             'assets/images/svg/ic_parking_icon.svg'),
-      if (displayParameters?.relay != null)
+      if (displayParameters?.relay == true)
         _buildVehicleItem(context, 'Relay', immobilizerIsActive,
             immobilizerSubTitle, 'assets/images/svg/ic_relay_icon.svg'),
-      if (displayParameters?.geoFencing != null)
+      if (displayParameters?.geoFencing == true)
         _buildVehicleItem(context, 'Geofence', geofenceIsActive,
             geofenceSubTitle, 'assets/images/svg/ic_geofence_icon.svg'),
-      if (displayParameters?.gps != null)
+      if (displayParameters?.gps == true)
         _buildVehicleItem(context, 'GPS', gpsIsActive, gpsSubTitle,
             'assets/images/svg/gps.svg'),
-      if (displayParameters?.network != null)
+      if (displayParameters?.network == true)
         _buildVehicleItem(context, 'Network', networkIsActive, networkSubTitle,
             'assets/images/svg/ic_signal_tower.svg'),
-      if (displayParameters?.ac != null)
+      if (displayParameters?.ac == true)
         _buildVehicleItem(context, 'AC', acIsActive, acSubTitle,
             'assets/images/svg/ic_ac.svg'),
-      if (displayParameters?.charging != null)
+      if (displayParameters?.charging == true)
         _buildVehicleItem(context, 'Charging', chargingIsActive,
-            chargingSubTitle, 'assets/images/svg/ic_charging_icon.svg'),
+            chargingSubTitle, 'assets/images/svg/ic_charging_icon.svg')
     ];
   }
 

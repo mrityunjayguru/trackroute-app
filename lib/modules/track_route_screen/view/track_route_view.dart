@@ -68,7 +68,7 @@ class TrackRouteView extends StatelessWidget {
                     (controller.deviceDetail.value.data?.isNotEmpty ??
                         false)) ...[
                   DraggableScrollableSheet(
-                    initialChildSize: 0.55, // Initial size of the sheet
+                    initialChildSize: 0.32, // Initial size of the sheet
                     minChildSize: 0.1, // Minimum size before closing
                     maxChildSize: 0.55, // Maximum size of the sheet
                     builder: (BuildContext context,
@@ -83,10 +83,18 @@ class TrackRouteView extends StatelessWidget {
                           DraggableScrollableNotification>(
                         onNotification: (notification) {
                           // When dragged down enough, close the bottom sheet
-                          if (notification.extent <= 0.2) {
+                          if (notification.extent <= 0.1) {
                             controller.showAllVehicles();
                           }
-
+                          if (notification.extent >= 0.55) { // maxChildSize
+                            if (!controller.isSheetExpanded.value) {
+                               controller.isSheetExpanded.value = true;
+                            }
+                          } else {
+                            if (controller.isSheetExpanded.value) {
+                               controller.isSheetExpanded.value = false;
+                            }
+                          }
                           return true;
                         },
                         child: DeferredPointerHandler(
@@ -408,6 +416,14 @@ class TrackRouteView extends StatelessWidget {
                                     ),
                                   ),
                                 ),
+                              ),
+
+                              Obx(()=>
+                                Positioned(
+                                  top: -24,
+                                  right: 35.w,
+                                  child: SvgPicture.asset(controller.isSheetExpanded.value ? "assets/images/svg/notched_down.svg": "assets/images/svg/notched_up.svg", width: 24, height: 24,),
+                                ),
                               )
                             ],
                           ),
@@ -499,4 +515,53 @@ class TrackRouteView extends StatelessWidget {
       }
     }
   }
+}
+class CurvedBottomContainer2 extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      painter: CurvedBottomPainter(),
+      child: Container(
+        width: 300,
+        height: 200,
+        child: Center(
+          child: Text(
+            'Custom Painted Curve',
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class CurvedBottomPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.blue
+      ..style = PaintingStyle.fill;
+
+    final path = Path();
+    path.moveTo(0, 0);
+    path.lineTo(0, size.height - 40);
+
+    path.quadraticBezierTo(
+      size.width * 0.25, size.height,
+      size.width * 0.5, size.height - 40,
+    );
+
+    path.quadraticBezierTo(
+      size.width * 0.75, size.height - 80,
+      size.width, size.height - 40,
+    );
+
+    path.lineTo(size.width, 0);
+    path.close();
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }

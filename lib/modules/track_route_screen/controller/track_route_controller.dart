@@ -35,7 +35,7 @@ class TrackRouteController extends GetxController {
   Rx<TrackRouteVehicleList> vehicleList = Rx(TrackRouteVehicleList());
   RxList<FilterData> filterData = RxList([]);
   var markers = <Marker>[].obs;
-
+  RxBool isSheetExpanded = false.obs;
   // New Rx lists for filtered results
   RxList<Data> ignitionOnList = <Data>[].obs;
   RxList<Data> ignitionOffList = <Data>[].obs;
@@ -292,7 +292,8 @@ class TrackRouteController extends GetxController {
         mapController.animateCamera(
           CameraUpdate.newCameraPosition(
             CameraPosition(
-                bearing: course, target: LatLng(latitude, longitude), zoom: 7),
+                // bearing: course,
+                target: LatLng(latitude, longitude), zoom: 7),
           ),
         );
       }
@@ -320,15 +321,15 @@ class TrackRouteController extends GetxController {
       required double course}) async {
     if (Get.put(BottomBarController()).selectedIndex == 2) {
       if (mapController != null) {
-        double offset = 0.0009;
-        LatLng newLatLng =
-            await calcLatLong(offset, course, latitude, longitude);
+        // double offset = 0.0009;
+        /*LatLng newLatLng =
+            await calcLatLong(offset, course, latitude, longitude);*/
         mapController.animateCamera(
           CameraUpdate.newCameraPosition(
             CameraPosition(
               bearing: course,
-              target: newLatLng, //todo
-              zoom: 18,
+              target: LatLng(latitude, longitude), //todo
+              zoom: 17,
             ),
           ),
         );
@@ -675,7 +676,7 @@ class TrackRouteController extends GetxController {
   }
 
   Rx<TrackRouteVehicleList> deviceDetail = Rx(TrackRouteVehicleList());
-  Map<int, double> zoomOffsetMap = {
+ /* Map<int, double> zoomOffsetMap = {
     3: 14,
     4: 8,
     5: 5,
@@ -699,7 +700,7 @@ class TrackRouteController extends GetxController {
     int zoomLevel = zoom.round(); // Convert to integer (rounding down)
     return zoomOffsetMap[zoomLevel] ?? 0.0; // Default to 0 if not found
   }
-
+*/
   // ///API SEVICE FOR DEVICE DETAILS
   Future<void> devicesByDetails(String imei,
       {bool updateCamera = true,
@@ -762,7 +763,7 @@ class TrackRouteController extends GetxController {
               });*/
 
               mapController.getZoomLevel().then((currentZoom) async {
-                double offset =
+               /* double offset =
                     getOffset(currentZoom); // Get offset based on zoom
                 double course =
                     Utils.parseDouble(data: data?.trackingData?.course);
@@ -770,14 +771,12 @@ class TrackRouteController extends GetxController {
                     offset,
                     course,
                     (data?.trackingData?.location?.latitude ?? 0),
-                    (data?.trackingData?.location?.longitude ?? 0));
-
-                // Animate camera to the adjusted position
+                    (data?.trackingData?.location?.longitude ?? 0));*/
                 mapController.animateCamera(
                   CameraUpdate.newCameraPosition(
                     CameraPosition(
-                      bearing: course, // Keep map aligned with vehicle movement
-                      target: newLatLng,
+                      bearing: Utils.parseDouble(data: data?.trackingData?.course), // Keep map aligned with vehicle movement
+                      target: LatLng((data?.trackingData?.location?.latitude ?? 0), (data?.trackingData?.location?.longitude ?? 0)),
                       zoom: currentZoom,
                     ),
                   ),
@@ -1054,6 +1053,7 @@ class TrackRouteController extends GetxController {
       required bool isOffline,
       String? vehicleNo}) async {
     BitmapDescriptor markerIcon = BitmapDescriptor.defaultMarker;
+    developer.log("IMEI MARkER $imei");
     if (isInactive) {
       markerIcon = await svgToBitmapDescriptorInactiveIcon();
     } else if (isOffline) {
@@ -1085,6 +1085,7 @@ class TrackRouteController extends GetxController {
 
   void showAllVehicles() async {
     isShowvehicleDetail.value = false;
+    isSheetExpanded.value = false;
     markers.value = [];
     selectedVehicleIndex.value = -1;
     selectedVehicleIMEI.value = "";
@@ -1124,11 +1125,7 @@ class TrackRouteController extends GetxController {
     } else {
       vehiclesToDisplay = allVehicles;
     }
-    if (isShowvehicleDetail.value && selectedVehicleIMEI.value.isNotEmpty && !dialogOpen) {
-      devicesByDetails(
-        selectedVehicleIMEI.value ?? '',
-      );
-    }
+
     if (vehiclesToDisplay.isNotEmpty &&
         updateCamera &&
         vehiclesToDisplay[0].trackingData?.location?.latitude != null &&
@@ -1144,28 +1141,37 @@ class TrackRouteController extends GetxController {
     //   updateCameraPositionToCurrentLocation();
     // }
 
-    for (var vehicle in vehiclesToDisplay) {
-      if (vehicle.trackingData?.location?.latitude != null &&
-          vehicle.trackingData?.location?.longitude != null) {
-        bool isInactive = checkIfInactive(vehicle: vehicle);
-        bool isOffline = checkIfOffline(vehicle: vehicle);
-        double? lat = vehicle.trackingData?.location?.latitude;
-        double? long = vehicle.trackingData?.location?.longitude;
-        if (isInactive) {
-          lat = vehicle.lastLocation?.latitude;
-          long = vehicle.lastLocation?.longitude;
+
+
+    if (isShowvehicleDetail.value && selectedVehicleIMEI.value.isNotEmpty && !dialogOpen) {
+      devicesByDetails(
+        selectedVehicleIMEI.value ?? '',
+      );
+    }
+    else if(!isShowvehicleDetail.value && selectedVehicleIMEI.value.isEmpty){
+      for (var vehicle in vehiclesToDisplay) {
+        if (vehicle.trackingData?.location?.latitude != null &&
+            vehicle.trackingData?.location?.longitude != null) {
+          bool isInactive = checkIfInactive(vehicle: vehicle);
+          bool isOffline = checkIfOffline(vehicle: vehicle);
+          double? lat = vehicle.trackingData?.location?.latitude;
+          double? long = vehicle.trackingData?.location?.longitude;
+          if (isInactive) {
+            lat = vehicle.lastLocation?.latitude;
+            long = vehicle.lastLocation?.longitude;
+          }
+          Marker marker = await createMarker(
+              id: vehicle.deviceId,
+              img: vehicle.vehicletype?.icons,
+              long: long,
+              lat: lat,
+              vehicleNo: vehicle.vehicleNo,
+              imei: vehicle.imei ?? "",
+              course: Utils.parseDouble(data: vehicle.trackingData?.course),
+              isOffline: isOffline,
+              isInactive: isInactive);
+          markers.add(marker);
         }
-        Marker marker = await createMarker(
-            id: vehicle.deviceId,
-            img: vehicle.vehicletype?.icons,
-            long: long,
-            lat: lat,
-            vehicleNo: vehicle.vehicleNo,
-            imei: vehicle.imei ?? "",
-            course: Utils.parseDouble(data: vehicle.trackingData?.course),
-            isOffline: isOffline,
-            isInactive: isInactive);
-        markers.add(marker);
       }
     }
   }

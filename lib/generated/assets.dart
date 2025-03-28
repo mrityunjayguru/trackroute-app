@@ -112,6 +112,8 @@ class Assets {
   static const String svgMaxSpeedIcon = 'assets/images/svg/max_speed_icon.svg';
   static const String svgMaxSpeedMarker = 'assets/images/svg/max_speed_marker.svg';
   static const String svgNavigation1 = 'assets/images/svg/navigation1.svg';
+  static const String svgNotchedDown = 'assets/images/svg/notched_down.svg';
+  static const String svgNotchedUp = 'assets/images/svg/notched_up.svg';
   static const String svgNotifIconSetting = 'assets/images/svg/notif_icon_setting.svg';
   static const String svgOffline = 'assets/images/svg/offline.svg';
   static const String svgOfflineIcon = 'assets/images/svg/offline_icon.svg';

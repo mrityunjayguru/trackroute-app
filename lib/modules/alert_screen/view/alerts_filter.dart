@@ -30,96 +30,98 @@ class AlertsFilterPage extends StatelessWidget {
           resizeToAvoidBottomInset: false,
           backgroundColor: AppColors.white,
           body: Obx(()=>
-             Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Utils().topBar(
-                    context: context,
-                    rightIcon: 'assets/images/svg/ic_arrow_left.svg',
-                    onTap: () {
-                      Get.back();
-                    },
-                    name: "Filter"),
-                SizedBox(
-                  height: 1.5.h,
-                ),
-                Text(
-                  'Select Alerts',
-                  style: AppTextStyles(context).display20W500,
-                ),
-                SizedBox(height: 2.h),
-                StaggeredGrid.count(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 10,
-                  crossAxisSpacing: 10,
-                  children: controller.alertsList
-                      .map((item) => StaggeredGridTile.fit(
-                            crossAxisCellCount: 1,
-                            child: alertItem(
-                              controller.checkIfAlertSelected(item),
-                              item,
-                              context,
-                              () => controller.addAlert(item),
-                            ),
-                          ))
-                      .toList(),
-                ),
-                SizedBox(height: 2.h),
-                Text(
-                  'Select Vehicle',
-                  style: AppTextStyles(context).display20W500,
-                ),
-                SizedBox(height: 2.h),
-                StaggeredGrid.count(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 10,
-                  crossAxisSpacing: 10,
-                  children: (trackController.vehicleList.value.data ?? [])
-                      .map((item) => StaggeredGridTile.fit(
-                            crossAxisCellCount: 1,
-                            child: alertItem(
-                                controller
-                                    .checkIfVehicleSelected(item.imei ?? ""),
-                                item.vehicleNo ?? "",
+             SingleChildScrollView(
+               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Utils().topBar(
+                      context: context,
+                      rightIcon: 'assets/images/svg/ic_arrow_left.svg',
+                      onTap: () {
+                        Get.back();
+                      },
+                      name: "Filter"),
+                  SizedBox(
+                    height: 1.5.h,
+                  ),
+                  Text(
+                    'Select Alerts',
+                    style: AppTextStyles(context).display20W500,
+                  ),
+                  SizedBox(height: 2.h),
+                  StaggeredGrid.count(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 10,
+                    crossAxisSpacing: 10,
+                    children: controller.alertsList
+                        .map((item) => StaggeredGridTile.fit(
+                              crossAxisCellCount: 1,
+                              child: alertItem(
+                                controller.checkIfAlertSelected(item),
+                                item,
                                 context,
-                                () => controller.addVehicle(item.imei ?? ""),),
-                          ))
-                      .toList(),
-                ),
-                SizedBox(height: 2.h),
-                Row(
-                  children: [
-                    Expanded(
-                      child: InkWell(
-                        onTap: () {
-                          Get.back();
-                          if(controller.selectedAlertName.isNotEmpty || controller.selectedVehicleIMEI.isNotEmpty){
-                            controller.selectedAlerts.value = true;
-                          }
-                          controller.getAlerts(isLoadMore: false, jump: true);
-                        },
-                        child: Container(
-                          height: 6.h,
-                          decoration: BoxDecoration(
-                            borderRadius:
-                                BorderRadius.circular(AppSizes.radius_50),
-                            color: AppColors.black,
-                          ),
-                          child: Center(
-                            child: Text(
-                              'Apply Filter',
-                              style: AppTextStyles(context)
-                                  .display18W400
-                                  .copyWith(color: AppColors.selextedindexcolor),
+                                () => controller.addAlert(item),
+                              ),
+                            ))
+                        .toList(),
+                  ),
+                  SizedBox(height: 2.h),
+                  Text(
+                    'Select Vehicle',
+                    style: AppTextStyles(context).display20W500,
+                  ),
+                  SizedBox(height: 2.h),
+                  StaggeredGrid.count(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 10,
+                    crossAxisSpacing: 10,
+                    children: (trackController.vehicleList.value.data ?? [])
+                        .map((item) => StaggeredGridTile.fit(
+                              crossAxisCellCount: 1,
+                              child: alertItem(
+                                  controller
+                                      .checkIfVehicleSelected(item.imei ?? ""),
+                                  item.vehicleNo ?? "",
+                                  context,
+                                  () => controller.addVehicle(item.imei ?? ""),),
+                            ))
+                        .toList(),
+                  ),
+                  SizedBox(height: 2.h),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: InkWell(
+                          onTap: () {
+                            Get.back();
+                            if(controller.selectedAlertName.isNotEmpty || controller.selectedVehicleIMEI.isNotEmpty){
+                              controller.selectedAlerts.value = true;
+                            }
+                            controller.getAlerts(isLoadMore: false, jump: true);
+                          },
+                          child: Container(
+                            height: 6.h,
+                            decoration: BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.circular(AppSizes.radius_50),
+                              color: AppColors.black,
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Apply Filter',
+                                style: AppTextStyles(context)
+                                    .display18W400
+                                    .copyWith(color: AppColors.selextedindexcolor),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    )
-                  ],
-                )
-              ],
-            ).paddingOnly(top: 12).paddingSymmetric(horizontal: 4.w * 0.9),
+                      )
+                    ],
+                  )
+                ],
+                           ).paddingOnly(top: 12).paddingSymmetric(horizontal: 4.w * 0.9),
+             ),
           ),
         ),
       ),
