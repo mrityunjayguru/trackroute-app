@@ -18,7 +18,7 @@ class MapViewTrackRoute extends StatelessWidget {
         children: [
           GoogleMap(
             zoomControlsEnabled: false,
-            mapType: MapType.normal,
+            mapType: controller.isSatellite.value ? MapType.satellite : MapType.normal,
             onMapCreated: (mapCon) {
               controller.height = MediaQuery.of(context).size.height;
               controller.mapController = mapCon;
@@ -35,7 +35,7 @@ class MapViewTrackRoute extends StatelessWidget {
             mapToolbarEnabled: false,
             minMaxZoomPreference: MinMaxZoomPreference(0, 19),
           ),
-          Positioned(
+        /*  Positioned(
             left: -9999,
             child: RepaintBoundary(
               key: controller.markerKey,
@@ -65,7 +65,7 @@ class MapViewTrackRoute extends StatelessWidget {
                 ) : SizedBox.shrink(),
               ),
             ),
-          ),
+          ),*/
         ],
       ),
     );

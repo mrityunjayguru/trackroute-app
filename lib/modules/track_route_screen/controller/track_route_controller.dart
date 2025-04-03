@@ -34,37 +34,37 @@ import '../view/widgets/vehicle_dialog.dart';
 class TrackRouteController extends GetxController {
   Rx<TrackRouteVehicleList> vehicleList = Rx(TrackRouteVehicleList());
   RxList<FilterData> filterData = RxList([]);
-  var markers = <Marker>[].obs;
-  RxBool isSheetExpanded = false.obs;
-  // New Rx lists for filtered results
-  RxList<Data> ignitionOnList = <Data>[].obs;
-  RxList<Data> ignitionOffList = <Data>[].obs;
-  RxList<Data> activeVehiclesList = <Data>[].obs;
-  RxList<Data> inActiveVehiclesList = <Data>[].obs;
-  RxList<Data> offlineVehiclesList = <Data>[].obs;
-  final GlobalKey markerKey = GlobalKey();
-
-  // RxList<Data> inActiveVehiclesList = <Data>[].obs;
-  RxList<Data> allVehicles = <Data>[].obs;
-  RxList<DataVehicleType> vehicleTypeList = <DataVehicleType>[].obs;
-  RxString devicesOwnerID = RxString('');
-  RxString devicesId = RxString('');
-  RxString selectedVehicleIMEI = RxString('');
-  late GoogleMapController mapController;
-  bool gpsEnabled = false;
-  bool permissionGranted = false;
-  RxBool isExpanded = false.obs;
-  RxBool isFilterSelected = false.obs;
-  RxInt isFilterSelectedindex = RxInt(-1);
-  RxBool isvehicleSelected = false.obs;
-  RxBool showLoader = false.obs;
-  RxBool isShowvehicleDetail = false.obs;
-  RxInt stackIndex = RxInt(0);
-  RxInt selectedVehicleIndex = RxInt(0);
-  RxBool isListShow = false.obs;
-  RxBool isedit = false.obs;
-  double height = 848;
-  bool dialogOpen = false;
+    var markers = <Marker>[].obs;
+    RxBool isSheetExpanded = false.obs;
+    // New Rx lists for filtered results
+    RxList<Data> ignitionOnList = <Data>[].obs;
+    RxList<Data> ignitionOffList = <Data>[].obs;
+    RxList<Data> activeVehiclesList = <Data>[].obs;
+    RxList<Data> inActiveVehiclesList = <Data>[].obs;
+    RxList<Data> offlineVehiclesList = <Data>[].obs;
+  
+    // RxList<Data> inActiveVehiclesList = <Data>[].obs;
+    RxList<Data> allVehicles = <Data>[].obs;
+    RxList<DataVehicleType> vehicleTypeList = <DataVehicleType>[].obs;
+    RxString devicesOwnerID = RxString('');
+    RxString devicesId = RxString('');
+    RxString selectedVehicleIMEI = RxString('');
+    late GoogleMapController mapController;
+    bool gpsEnabled = false;
+    bool permissionGranted = false;
+    RxBool isExpanded = false.obs;
+    RxBool isFilterSelected = false.obs;
+    RxInt isFilterSelectedindex = RxInt(-1);
+    RxBool isvehicleSelected = false.obs;
+    RxBool showLoader = false.obs;
+    RxBool isShowvehicleDetail = false.obs;
+    RxInt stackIndex = RxInt(0);
+    RxInt selectedVehicleIndex = RxInt(0);
+    RxBool isListShow = false.obs;
+    RxBool isedit = false.obs;
+    RxBool isSatellite = false.obs;
+    double height = 848;
+    bool dialogOpen = false;
   StreamSubscription<Position>? positionStream;
   var currentLocation =
       LatLng(20.5937, 78.9629).obs; // Current vehicle location
@@ -435,7 +435,7 @@ class TrackRouteController extends GetxController {
   }
 
   Future<Uint8List?> _captureMarkerWidget() async {
-    RenderRepaintBoundary? boundary =
+   /* RenderRepaintBoundary? boundary =
         markerKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
     if (boundary != null) {
       ui.Image image = await boundary.toImage(pixelRatio: 2.0);
@@ -443,7 +443,7 @@ class TrackRouteController extends GetxController {
           await image.toByteData(format: ui.ImageByteFormat.png);
       return byteData?.buffer.asUint8List();
     }
-    return null;
+    return null;*/
   }
 
   Future<Uint8List?> getWidgetMarker(String text1, String text2) async {

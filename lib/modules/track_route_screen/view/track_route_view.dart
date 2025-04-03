@@ -382,38 +382,61 @@ class TrackRouteView extends StatelessWidget {
                               ),
 
                               Positioned(
-                                top: -100,
+                                top: -150,
                                 right: 4.w,
                                 child: DeferPointer(
-                                  child: SizedBox(
-                                    width: 50,
-                                    height: 50,
-                                    child: FloatingActionButton(
-                                      child: SvgPicture.asset(
-                                        Assets.images.svg.navigation1,
-                                        fit: BoxFit.fill,
-                                      ),
-                                      backgroundColor:
+                                  child: Column(
+                                    children:[
+                                      SizedBox(
+                                        width: 50,
+                                        height: 50,
+                                        child: FloatingActionButton(
+                                          child: Image.asset(
+                                            !controller.isSatellite.value? "assets/images/png/satellite.png" : "assets/images/png/default.png",
+                                            fit: BoxFit.fill,
+                                          ),
+                                          backgroundColor:
+                                          AppColors.transparent,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                                AppSizes.radius_50),
+                                          ),
+                                          onPressed: () async {
+                                            controller.isSatellite.value = !controller.isSatellite.value;
+                                          },
+                                        ),
+                                      ).paddingOnly(bottom: 16),
+                                      SizedBox(
+                                        width: 50,
+                                        height: 50,
+                                        child: FloatingActionButton(
+                                          child: SvgPicture.asset(
+                                            Assets.images.svg.navigation1,
+                                            fit: BoxFit.fill,
+                                          ),
+                                          backgroundColor:
                                           AppColors.selextedindexcolor,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(
-                                            AppSizes.radius_50),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                                AppSizes.radius_50),
+                                          ),
+                                          onPressed: () async {
+                                            // Fetch the current location
+                                            Position? position = await controller
+                                                .getCurrentLocation();
+                                            if (position != null) {
+                                              controller.updateCameraPosition(
+                                                  course: 0,
+                                                  latitude: position.latitude - 1,
+                                                  longitude: position.longitude);
+                                            } else {
+                                              Utils.getSnackbar("Error",
+                                                  "Current location not available");
+                                            }
+                                          },
+                                        ),
                                       ),
-                                      onPressed: () async {
-                                        // Fetch the current location
-                                        Position? position = await controller
-                                            .getCurrentLocation();
-                                        if (position != null) {
-                                          controller.updateCameraPosition(
-                                              course: 0,
-                                              latitude: position.latitude - 1,
-                                              longitude: position.longitude);
-                                        } else {
-                                          Utils.getSnackbar("Error",
-                                              "Current location not available");
-                                        }
-                                      },
-                                    ),
+                                    ]
                                   ),
                                 ),
                               ),
@@ -452,34 +475,58 @@ class TrackRouteView extends StatelessWidget {
                   !controller.isShowvehicleDetail.value
               ? Padding(
                   padding: EdgeInsets.zero,
-                  child: SizedBox(
-                    width: 50,
-                    height: 50,
-                    child: FloatingActionButton(
-                      child: SvgPicture.asset(
-                        Assets.images.svg.navigation1,
-                        fit: BoxFit.fill,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(
+                        width: 50,
+                        height: 50,
+                        child: FloatingActionButton(
+                          child: Image.asset(
+                            !controller.isSatellite.value? "assets/images/png/satellite.png" : "assets/images/png/default.png",
+                            fit: BoxFit.fill,
+                          ),
+                          backgroundColor:
+                          AppColors.transparent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                AppSizes.radius_50),
+                          ),
+                          onPressed: () async {
+                            controller.isSatellite.value = !controller.isSatellite.value;
+                          },
+                        ),
+                      ).paddingOnly(bottom: 16),
+                      SizedBox(
+                        width: 50,
+                        height: 50,
+                        child: FloatingActionButton(
+                          child: SvgPicture.asset(
+                            Assets.images.svg.navigation1,
+                            fit: BoxFit.fill,
+                          ),
+                          backgroundColor: AppColors.selextedindexcolor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(AppSizes.radius_50),
+                          ),
+                          onPressed: () async {
+                            // Fetch the current location
+                            Position? position =
+                                await controller.getCurrentLocation();
+                            if (position != null) {
+                              controller.updateCameraPosition(
+                                  course: 0,
+                                  latitude: position.latitude,
+                                  longitude: position.longitude);
+                            } else {
+                              Utils.getSnackbar(
+                                  "Error", "Current location not available");
+                              return;
+                            }
+                          },
+                        ),
                       ),
-                      backgroundColor: AppColors.selextedindexcolor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(AppSizes.radius_50),
-                      ),
-                      onPressed: () async {
-                        // Fetch the current location
-                        Position? position =
-                            await controller.getCurrentLocation();
-                        if (position != null) {
-                          controller.updateCameraPosition(
-                              course: 0,
-                              latitude: position.latitude,
-                              longitude: position.longitude);
-                        } else {
-                          Utils.getSnackbar(
-                              "Error", "Current location not available");
-                          return;
-                        }
-                      },
-                    ),
+                    ],
                   ),
                 )
               : SizedBox.shrink(),
@@ -515,53 +562,4 @@ class TrackRouteView extends StatelessWidget {
       }
     }
   }
-}
-class CurvedBottomContainer2 extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return CustomPaint(
-      painter: CurvedBottomPainter(),
-      child: Container(
-        width: 300,
-        height: 200,
-        child: Center(
-          child: Text(
-            'Custom Painted Curve',
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class CurvedBottomPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.blue
-      ..style = PaintingStyle.fill;
-
-    final path = Path();
-    path.moveTo(0, 0);
-    path.lineTo(0, size.height - 40);
-
-    path.quadraticBezierTo(
-      size.width * 0.25, size.height,
-      size.width * 0.5, size.height - 40,
-    );
-
-    path.quadraticBezierTo(
-      size.width * 0.75, size.height - 80,
-      size.width, size.height - 40,
-    );
-
-    path.lineTo(size.width, 0);
-    path.close();
-
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }

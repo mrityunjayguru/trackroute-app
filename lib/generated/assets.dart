@@ -29,10 +29,12 @@ class Assets {
   static const String imagesSvgCarIcon = 'assets/images/svg/car_icon.svg';
   static const String pngBlackMarkerIcon = 'assets/images/png/black_marker_icon.png';
   static const String pngDeactivated = 'assets/images/png/deactivated.png';
+  static const String pngDefault = 'assets/images/png/default.png';
   static const String pngIcLauncher = 'assets/images/png/ic_launcher.png';
   static const String pngIsolationmode = 'assets/images/png/isolationmode.png';
   static const String pngLogo = 'assets/images/png/logo.png';
   static const String pngRouteMarker = 'assets/images/png/route_marker.png';
+  static const String pngSatellite = 'assets/images/png/satellite.png';
   static const String pngSelectedMarker = 'assets/images/png/selected_marker.png';
   static const String pngUnselectedMarker = 'assets/images/png/unselected_marker.png';
   static const String svgAlertsFilter = 'assets/images/svg/alerts_filter.svg';
