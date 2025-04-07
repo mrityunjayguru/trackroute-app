@@ -19,6 +19,7 @@ class MapViewTrackRoute extends StatelessWidget {
           GoogleMap(
             zoomControlsEnabled: false,
             mapType: controller.isSatellite.value ? MapType.satellite : MapType.normal,
+            circles: controller.circles.value.toSet(),
             onMapCreated: (mapCon) {
               controller.height = MediaQuery.of(context).size.height;
               controller.mapController = mapCon;

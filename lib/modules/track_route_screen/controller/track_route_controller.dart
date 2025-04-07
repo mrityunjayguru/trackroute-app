@@ -1,11 +1,9 @@
 import 'dart:async';
+import 'dart:developer' as developer;
 import 'dart:io';
 import 'dart:math';
-import 'dart:ui' as ui;
-import 'dart:developer' as developer;
 import 'dart:ui';
 
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:geocoding/geocoding.dart';
@@ -26,6 +24,7 @@ import 'package:track_route_pro/utils/map_item.dart';
 import 'package:track_route_pro/utils/utils.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../config/theme/app_colors.dart';
 import '../../../constants/project_urls.dart';
 import '../../../service/model/presentation/vehicle_type/Data.dart';
 import '../../../utils/info_window.dart';
@@ -34,37 +33,39 @@ import '../view/widgets/vehicle_dialog.dart';
 class TrackRouteController extends GetxController {
   Rx<TrackRouteVehicleList> vehicleList = Rx(TrackRouteVehicleList());
   RxList<FilterData> filterData = RxList([]);
-    var markers = <Marker>[].obs;
-    RxBool isSheetExpanded = false.obs;
-    // New Rx lists for filtered results
-    RxList<Data> ignitionOnList = <Data>[].obs;
-    RxList<Data> ignitionOffList = <Data>[].obs;
-    RxList<Data> activeVehiclesList = <Data>[].obs;
-    RxList<Data> inActiveVehiclesList = <Data>[].obs;
-    RxList<Data> offlineVehiclesList = <Data>[].obs;
-  
-    // RxList<Data> inActiveVehiclesList = <Data>[].obs;
-    RxList<Data> allVehicles = <Data>[].obs;
-    RxList<DataVehicleType> vehicleTypeList = <DataVehicleType>[].obs;
-    RxString devicesOwnerID = RxString('');
-    RxString devicesId = RxString('');
-    RxString selectedVehicleIMEI = RxString('');
-    late GoogleMapController mapController;
-    bool gpsEnabled = false;
-    bool permissionGranted = false;
-    RxBool isExpanded = false.obs;
-    RxBool isFilterSelected = false.obs;
-    RxInt isFilterSelectedindex = RxInt(-1);
-    RxBool isvehicleSelected = false.obs;
-    RxBool showLoader = false.obs;
-    RxBool isShowvehicleDetail = false.obs;
-    RxInt stackIndex = RxInt(0);
-    RxInt selectedVehicleIndex = RxInt(0);
-    RxBool isListShow = false.obs;
-    RxBool isedit = false.obs;
-    RxBool isSatellite = false.obs;
-    double height = 848;
-    bool dialogOpen = false;
+  var markers = <Marker>[].obs;
+  var circles = <Circle>[].obs;
+  RxBool isSheetExpanded = false.obs;
+
+  // New Rx lists for filtered results
+  RxList<Data> ignitionOnList = <Data>[].obs;
+  RxList<Data> ignitionOffList = <Data>[].obs;
+  RxList<Data> activeVehiclesList = <Data>[].obs;
+  RxList<Data> inActiveVehiclesList = <Data>[].obs;
+  RxList<Data> offlineVehiclesList = <Data>[].obs;
+
+  // RxList<Data> inActiveVehiclesList = <Data>[].obs;
+  RxList<Data> allVehicles = <Data>[].obs;
+  RxList<DataVehicleType> vehicleTypeList = <DataVehicleType>[].obs;
+  RxString devicesOwnerID = RxString('');
+  RxString devicesId = RxString('');
+  RxString selectedVehicleIMEI = RxString('');
+  late GoogleMapController mapController;
+  bool gpsEnabled = false;
+  bool permissionGranted = false;
+  RxBool isExpanded = false.obs;
+  RxBool isFilterSelected = false.obs;
+  RxInt isFilterSelectedindex = RxInt(-1);
+  RxBool isvehicleSelected = false.obs;
+  RxBool showLoader = false.obs;
+  RxBool isShowvehicleDetail = false.obs;
+  RxInt stackIndex = RxInt(0);
+  RxInt selectedVehicleIndex = RxInt(0);
+  RxBool isListShow = false.obs;
+  RxBool isedit = false.obs;
+  RxBool isSatellite = false.obs;
+  double height = 848;
+  bool dialogOpen = false;
   StreamSubscription<Position>? positionStream;
   var currentLocation =
       LatLng(20.5937, 78.9629).obs; // Current vehicle location
@@ -293,7 +294,8 @@ class TrackRouteController extends GetxController {
           CameraUpdate.newCameraPosition(
             CameraPosition(
                 // bearing: course,
-                target: LatLng(latitude, longitude), zoom: 7),
+                target: LatLng(latitude, longitude),
+                zoom: 7),
           ),
         );
       }
@@ -435,7 +437,7 @@ class TrackRouteController extends GetxController {
   }
 
   Future<Uint8List?> _captureMarkerWidget() async {
-   /* RenderRepaintBoundary? boundary =
+    /* RenderRepaintBoundary? boundary =
         markerKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
     if (boundary != null) {
       ui.Image image = await boundary.toImage(pixelRatio: 2.0);
@@ -640,7 +642,8 @@ class TrackRouteController extends GetxController {
           } else if (isFilterSelected.value) {
             checkFilterIndex(false);
           } else if (isShowvehicleDetail.value &&
-              selectedVehicleIMEI.value.isNotEmpty && !dialogOpen) {
+              selectedVehicleIMEI.value.isNotEmpty &&
+              !dialogOpen) {
             devicesByDetails(
               selectedVehicleIMEI.value ?? '',
             );
@@ -676,7 +679,8 @@ class TrackRouteController extends GetxController {
   }
 
   Rx<TrackRouteVehicleList> deviceDetail = Rx(TrackRouteVehicleList());
- /* Map<int, double> zoomOffsetMap = {
+
+  /* Map<int, double> zoomOffsetMap = {
     3: 14,
     4: 8,
     5: 5,
@@ -763,7 +767,7 @@ class TrackRouteController extends GetxController {
               });*/
 
               mapController.getZoomLevel().then((currentZoom) async {
-               /* double offset =
+                /* double offset =
                     getOffset(currentZoom); // Get offset based on zoom
                 double course =
                     Utils.parseDouble(data: data?.trackingData?.course);
@@ -775,8 +779,12 @@ class TrackRouteController extends GetxController {
                 mapController.animateCamera(
                   CameraUpdate.newCameraPosition(
                     CameraPosition(
-                      bearing: Utils.parseDouble(data: data?.trackingData?.course), // Keep map aligned with vehicle movement
-                      target: LatLng((data?.trackingData?.location?.latitude ?? 0), (data?.trackingData?.location?.longitude ?? 0)),
+                      bearing:
+                          Utils.parseDouble(data: data?.trackingData?.course),
+                      // Keep map aligned with vehicle movement
+                      target: LatLng(
+                          (data?.trackingData?.location?.latitude ?? 0),
+                          (data?.trackingData?.location?.longitude ?? 0)),
                       zoom: currentZoom,
                     ),
                   ),
@@ -841,6 +849,21 @@ class TrackRouteController extends GetxController {
                 isInactive: isInactive);
             markers.value = [];
             markers.add(m);
+          }
+          circles.value = [];
+          if ((data?.locationStatus ?? false) &&
+              (data?.location?.latitude != null &&
+                  data?.location?.longitude != null)) {
+            circles.value.add(Circle(
+              circleId: CircleId("GEOFENCE${data?.imei}"),
+              fillColor: AppColors.selextedindexcolor.withOpacity(0.4),
+              strokeWidth: 2,
+              strokeColor: AppColors.selextedindexcolor.withOpacity(0.4),
+              center: LatLng(data?.location?.latitude ?? 0,
+                  data?.location?.longitude ?? 0),
+              radius: Utils.parseDouble(data: data?.area),
+            ));
+            circles.value = List.from(circles);
           }
         } else {
           isShowvehicleDetail.value = false;
@@ -1056,8 +1079,6 @@ class TrackRouteController extends GetxController {
     developer.log("IMEI MARkER $imei");
     if (isInactive) {
       markerIcon = await svgToBitmapDescriptorInactiveIcon();
-    } else if (isOffline) {
-      markerIcon = await svgToBitmapDescriptorOfflineIcon();
     } else {
       markerIcon = await svgToBitmapDescriptor('${ProjectUrls.imgBaseUrl}$img');
     }
@@ -1084,6 +1105,7 @@ class TrackRouteController extends GetxController {
   }
 
   void showAllVehicles() async {
+    circles.value = [];
     isShowvehicleDetail.value = false;
     isSheetExpanded.value = false;
     markers.value = [];
@@ -1141,14 +1163,14 @@ class TrackRouteController extends GetxController {
     //   updateCameraPositionToCurrentLocation();
     // }
 
-
-
-    if (isShowvehicleDetail.value && selectedVehicleIMEI.value.isNotEmpty && !dialogOpen) {
+    if (isShowvehicleDetail.value &&
+        selectedVehicleIMEI.value.isNotEmpty &&
+        !dialogOpen) {
       devicesByDetails(
         selectedVehicleIMEI.value ?? '',
       );
-    }
-    else if(!isShowvehicleDetail.value && selectedVehicleIMEI.value.isEmpty){
+    } else if (!isShowvehicleDetail.value &&
+        selectedVehicleIMEI.value.isEmpty) {
       for (var vehicle in vehiclesToDisplay) {
         if (vehicle.trackingData?.location?.latitude != null &&
             vehicle.trackingData?.location?.longitude != null) {
