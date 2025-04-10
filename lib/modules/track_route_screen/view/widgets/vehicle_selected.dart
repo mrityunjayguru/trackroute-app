@@ -538,6 +538,9 @@ class VehicleSelected extends StatelessWidget {
             null) ||
         (controller.deviceDetail.value.data?[0].displayParameters?.relay ==
             false) ||
+        (controller
+                .deviceDetail.value.data?[0].trackingData?.ignition?.status ==
+            true) ||
         (controller.deviceDetail.value.data?[0].trackingData?.motion ??
             false) ||
         Utils.parseDouble(

@@ -858,7 +858,7 @@ class TrackRouteController extends GetxController {
               circleId: CircleId("GEOFENCE${data?.imei}"),
               fillColor: AppColors.selextedindexcolor.withOpacity(0.4),
               strokeWidth: 2,
-              strokeColor: AppColors.selextedindexcolor.withOpacity(0.4),
+              strokeColor: AppColors.selextedindexcolor.withOpacity(0.41),
               center: LatLng(data?.location?.latitude ?? 0,
                   data?.location?.longitude ?? 0),
               radius: Utils.parseDouble(data: data?.area),

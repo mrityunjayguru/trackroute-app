@@ -70,7 +70,7 @@ class HistoryController extends GetxController {
     DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime.now().subtract(Duration(days: 7)),
+      firstDate: DateTime.now().subtract(Duration(days: 90)),
       lastDate: DateTime.now(),
     );
 
@@ -257,13 +257,21 @@ class HistoryController extends GetxController {
           processedData.add(data[i]);
         }
       }
-    } else {
+    } else if(data.length<=500){
       // If list length is greater than 125, show 1 in every 3 data
 
       for (int i = 0; i < data.length; i++) {
         print("DATA ${data[i].dateFiled.toString()}");
-        if (i < 25 || i % 3 == 0 || i > data.length - 11) {
+        if (i < 25 || i % 3 == 0 || i > (data.length - 11)) {
           // Keep first 25 as they are, then 1 in every 3
+          processedData.add(data[i]);
+        }
+      }
+    }else{
+      for (int i = 0; i < data.length; i++) {
+        print("DATA ${data[i].dateFiled.toString()}");
+        if (i < 25 || i % 4 == 0 || i > (data.length - 11)) {
+          // Keep first 25 as they are, then 1 in every 4
           processedData.add(data[i]);
         }
       }
