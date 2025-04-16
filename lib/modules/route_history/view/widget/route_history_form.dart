@@ -202,7 +202,7 @@ class RouteHistoryFilter extends StatelessWidget {
                     child: Text(
                       'Check History',
                       style: AppTextStyles(context)
-                          .display12W500
+                          .display18W400
                           .copyWith(color: AppColors.selextedindexcolor),
                     ),
                   ),

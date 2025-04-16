@@ -7,13 +7,7 @@ import 'package:retrofit/retrofit.dart';
 import 'package:track_route_pro/constants/project_urls.dart';
 import 'package:track_route_pro/service/model/CommonResponseModel.dart';
 import 'package:track_route_pro/service/model/ReportsRequest.dart';
-import 'package:track_route_pro/service/model/ReportsRequest.dart';
-import 'package:track_route_pro/service/model/ReportsRequest.dart';
-import 'package:track_route_pro/service/model/ReportsRequest.dart';
-import 'package:track_route_pro/service/model/ReportsRequest.dart';
-import 'package:track_route_pro/service/model/ReportsRequest.dart';
 import 'package:track_route_pro/service/model/alerts/config/get_config/GetAlertsConfig.dart';
-import 'package:track_route_pro/service/model/alerts/config/response/AlertsConfigResponse.dart';
 import 'package:track_route_pro/service/model/auth/FirebaseUpdateRequest.dart';
 import 'package:track_route_pro/service/model/auth/ManageSettingModel.dart';
 import 'package:track_route_pro/service/model/auth/forgot_password/generate_otp.dart';
@@ -32,7 +26,6 @@ import 'package:track_route_pro/service/model/presentation/splsh_add/splash_add.
 import 'package:track_route_pro/service/model/presentation/track_route/track_route_vehicle_list.dart';
 import 'package:track_route_pro/service/model/presentation/vehicle_type/VehicleTypeList.dart';
 import 'package:track_route_pro/service/model/privacy_policy/PrivacyPolicyResponse.dart';
-import 'package:track_route_pro/service/model/route_history/RouteHistoryResponse.dart';
 import 'package:track_route_pro/utils/app_prefrance.dart';
 import '../../modules/login_screen/controller/login_controller.dart';
 import '../../routes/app_pages.dart';
@@ -46,7 +39,7 @@ import '../model/notification/AnnouncementResponse.dart';
 import '../model/presentation/DownloadReportRequest.dart';
 import '../model/relay/RelayStatusResponse.dart';
 import '../model/relay/relay/RelayResponse.dart';
-import '../model/update/UpdateResponse.dart';
+import '../model/route/RouteHistoryList.dart';
 
 part 'api_service.g.dart';
 
@@ -186,7 +179,7 @@ abstract class ApiService {
   Future<RelayResponse> relayStopEngine(@Body() Map<String, dynamic> body);
 
   @POST(ProjectUrls.routeHistory)
-  Future<ListingBaseResponse<RouteHistoryResponse>> routeHistory(
+  Future<RouteHistoryList> routeHistory(
       @Body() Map<String, dynamic> body);
 
   @POST(ProjectUrls.privacyPolicy)

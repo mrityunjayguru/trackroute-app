@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'Location.dart';
 import 'Ignition.dart';
 
@@ -17,15 +19,19 @@ class TrackingData {
   TrackingData.fromJson(dynamic json) {
     location = json['location'] != null ? Location.fromJson(json['location']) : null;
     course = json['course'];
-    currentSpeed = double.tryParse(json['currentSpeed'].toString());
-    ignition = json['ignition'] != null ? Ignition.fromJson(json['ignition']) : null;
+    currentSpeed = json['currentSpeed'].toString();
+    // ignition = json['ignition'] != null ? Ignition.fromJson(json['ignition']) : null;
     createdAt = json['createdAt'];
+    log("distance from a ${json['distanceFromA']}");
+    distanceFromA = json['distanceFromA'].toString();
   }
   Location? location;
   String? course;
-  double? currentSpeed;
+  String? currentSpeed;
   Ignition? ignition;
   String? createdAt;
+  String? distanceFromA;
+
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};

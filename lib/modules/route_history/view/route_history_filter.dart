@@ -1,20 +1,17 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:sizer/sizer.dart';
 import 'package:track_route_pro/config/app_sizer.dart';
 import 'package:track_route_pro/config/theme/app_colors.dart';
 import 'package:track_route_pro/config/theme/app_textstyle.dart';
-import 'package:track_route_pro/gen/assets.gen.dart';
 import 'package:track_route_pro/modules/route_history/controller/history_controller.dart';
+import 'package:track_route_pro/modules/route_history/controller/replay_controller.dart';
+import 'package:track_route_pro/modules/route_history/view/route_replay.dart';
 import 'package:track_route_pro/modules/route_history/view/widget/history_map.dart';
 import 'package:track_route_pro/modules/route_history/view/widget/route_history_form.dart';
-import 'package:track_route_pro/modules/track_route_screen/controller/track_route_controller.dart';
 import 'package:track_route_pro/utils/common_import.dart';
 
-import '../../../../constants/project_urls.dart';
 import '../../../utils/utils.dart';
-import '../../splash_screen/controller/data_controller.dart';
 
 class RouteHistoryPage extends StatelessWidget {
   RouteHistoryPage({super.key});
@@ -22,7 +19,6 @@ class RouteHistoryPage extends StatelessWidget {
   final controller = Get.isRegistered<HistoryController>()
       ? Get.find<HistoryController>() // Find if already registered
       : Get.put(HistoryController());
-  var scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
@@ -137,9 +133,17 @@ class RouteHistoryPage extends StatelessWidget {
                                                   TextSpan(
                                                     text: controller
                                                         .selectedSpeed.value,
-                                                    style:
-                                                        AppTextStyles(context)
-                                                            .display20W600.copyWith(fontSize: MediaQuery.of(context).size.height < 670 ? 18 : 20),
+                                                    style: AppTextStyles(
+                                                            context)
+                                                        .display20W600
+                                                        .copyWith(
+                                                            fontSize: MediaQuery.of(
+                                                                            context)
+                                                                        .size
+                                                                        .height <
+                                                                    670
+                                                                ? 18
+                                                                : 20),
                                                   ),
                                                   TextSpan(
                                                     text: ' KMPH',
@@ -173,7 +177,15 @@ class RouteHistoryPage extends StatelessWidget {
                                             Text(
                                               controller.selectedTime.value,
                                               style: AppTextStyles(context)
-                                                  .display20W600.copyWith(fontSize: MediaQuery.of(context).size.height < 670 ? 18 : 20),
+                                                  .display20W600
+                                                  .copyWith(
+                                                      fontSize:
+                                                          MediaQuery.of(context)
+                                                                      .size
+                                                                      .height <
+                                                                  670
+                                                              ? 18
+                                                              : 20),
                                             ),
                                           ],
                                         ),
@@ -213,7 +225,44 @@ class RouteHistoryPage extends StatelessWidget {
                           name: controller.name.value,
                           date: controller.updateDate.value,
                           address: controller.address.value,
-                        )
+                        ),
+                  Spacer(),
+                  if (controller.showMap.value)
+                    InkWell(
+                      onTap: () {
+                        final replayCon = Get.isRegistered<ReplayController>()
+                            ? Get.find<
+                                ReplayController>() // Find if already registered
+                            : Get.put(ReplayController());
+                        replayCon.setInitData(controller.vehicleListReplay, controller.stopCount);
+                        Get.to(() => RouteReplayView(),
+                            transition: Transition.upToDown,
+                            duration: const Duration(milliseconds: 300));
+                      },
+                      child: Container(
+                        height: 6.h,
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              BorderRadius.circular(AppSizes.radius_50),
+                          color: AppColors.black,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SvgPicture.asset(
+                                    "assets/images/svg/play_button.svg")
+                                .paddingOnly(right: 6),
+                            Text(
+                              'Replay Route',
+                              style: AppTextStyles(context)
+                                  .display18W400
+                                  .copyWith(
+                                      color: AppColors.selextedindexcolor),
+                            )
+                          ],
+                        ),
+                      ),
+                    ).paddingOnly(bottom: 16)
                 ],
               ).paddingOnly(top: 12).paddingSymmetric(horizontal: 4.w * 0.9),
               if (controller.showLoader.value)

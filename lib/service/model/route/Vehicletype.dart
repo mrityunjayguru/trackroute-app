@@ -1,5 +1,5 @@
-/// vehicleTypeName : "car 4001"
-/// icons : "29173285728654546_bus.png"
+/// vehicleTypeName : "SUV"
+/// icons : "29174327452754227_SUV.svg"
 
 class Vehicletype {
   Vehicletype({

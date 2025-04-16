@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:math';
+import 'dart:developer' as dev;
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -10,7 +11,6 @@ import 'dart:ui' as ui;
 import 'dart:typed_data';
 import 'package:intl/intl.dart';
 import 'package:track_route_pro/service/api_service/api_service.dart';
-import 'package:track_route_pro/service/model/route_history/RouteHistoryResponse.dart';
 import 'package:track_route_pro/utils/common_import.dart';
 import 'package:track_route_pro/utils/enums.dart';
 import 'package:track_route_pro/utils/utils.dart';
@@ -18,8 +18,11 @@ import '../../../config/theme/app_colors.dart';
 import '../../../constants/project_urls.dart';
 import 'package:geocoding/geocoding.dart';
 
+import '../../../service/model/route/Data.dart';
+import '../../../service/model/route/StopCount.dart';
 import '../../../service/model/time_model.dart';
 import '../../track_route_screen/controller/track_route_controller.dart';
+import 'common.dart';
 
 class HistoryController extends GetxController {
   final GlobalKey markerKey = GlobalKey();
@@ -48,7 +51,8 @@ class HistoryController extends GetxController {
   var currentLocation = LatLng(0.0, 0.0).obs; // Current vehicle location
   var polylines = <Polyline>[].obs; // List of polylines to display on the map
   var isLoading = false.obs; // Loading state
-
+  List<RouteHistoryResponse> vehicleListReplay = [];
+  List<StopCount> stopCount = [];
   final ApiService apiService = ApiService.create();
   Rx<NetworkStatus> networkStatus = Rx(NetworkStatus.IDLE);
   BitmapDescriptor? selectedIcon;
@@ -115,14 +119,15 @@ class HistoryController extends GetxController {
         }
 
         final body = {
-          // "imei": "868003032593027",
           "imei": imei.value,
           "startdate": startDate,
-          "enddate": endDate
+          "enddate": endDate,
+          "isPlay": true
         };
         response = await apiService.routeHistory(body);
 
         if (response.message == "success") {
+          stopCount  = response.stopCount ?? [];
           overSpeedIndex = {};
           // data.value = [];
           List<RouteHistoryResponse> vehicleList = [];
@@ -151,6 +156,7 @@ class HistoryController extends GetxController {
             // showLoader.value = false;
 
             Set<String> uniqueLatLonSet = Set<String>();
+            vehicleListReplay = vehicleList;
 
             List<RouteHistoryResponse> processedData = [];
             for (var vehicle in vehicleList) {
@@ -173,6 +179,7 @@ class HistoryController extends GetxController {
                 }
               }
             }
+
             processedData = processList(processedData);
 
             await showMapData(processedData);
@@ -208,8 +215,8 @@ class HistoryController extends GetxController {
           // debugPrint("EXCEPTION ${data}");
         }
       } catch (e, s) {
-        // log("EXCEPTION $e $s");
-        // debugPrint("EXCEPTION $e $s");
+        dev.log("EXCEPTION $e $s");
+        debugPrint("EXCEPTION $e $s");
         networkStatus.value = NetworkStatus.ERROR;
         Utils.getSnackbar("Error", "Something went wrong");
       }
@@ -296,12 +303,12 @@ class HistoryController extends GetxController {
           DateTime.parse(data[i].trackingData?.createdAt ?? ""); // Assuming dateFiled is a valid timestamp string
           time = DateFormat('HH:mm:ss').format(timestamp);*/
 
-          time = data[i].dateFiled?.split(" ")[1] ?? "N?A";
+          time = data[i].dateFiled?.split(" ")[1] ?? "N/A";
         }
         bool isOverSpeed = (data[i].trackingData?.currentSpeed != null ||
                 (controller.deviceDetail.value.data?.isNotEmpty ?? false) ||
                 controller.deviceDetail.value.data?[0].maxSpeed != null)
-            ? ((data[i].trackingData?.currentSpeed ?? 0) >
+            ? ((Utils.parseDouble(data: data[i].trackingData?.currentSpeed) ?? 0) >
                 (controller.deviceDetail.value.data?[0].maxSpeed ?? 0))
             : false;
         if (isOverSpeed) {
@@ -313,7 +320,7 @@ class HistoryController extends GetxController {
             imei: data[i].imei ?? "",
             lat: data[i].trackingData?.location?.latitude,
             long: data[i].trackingData?.location?.longitude,
-            speed: data[i].trackingData?.currentSpeed,
+            speed: Utils.parseDouble(data: data[i].trackingData?.currentSpeed),
             time: time);
 
         markers.add(m);
@@ -472,59 +479,6 @@ class HistoryController extends GetxController {
     return BitmapDescriptor.fromBytes(resizedBytes);
   }
 
-  Future<BitmapDescriptor> createCustomIconWithNumber(int number,
-      {required int width,
-      required int height,
-      required bool isselected,
-      required bool maxSpeed}) async {
-    ByteData data = await rootBundle.load(maxSpeed
-        ? "assets/images/png/black_marker_icon.png"
-        : (isselected
-            ? "assets/images/png/selected_marker.png"
-            : "assets/images/png/unselected_marker.png"));
-
-    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
-        targetWidth: width, targetHeight: height);
-    ui.FrameInfo fi = await codec.getNextFrame();
-    final Uint8List imageData =
-        (await fi.image.toByteData(format: ui.ImageByteFormat.png))!
-            .buffer
-            .asUint8List();
-
-    // Prepare the canvas for drawing
-    final ui.PictureRecorder pictureRecorder = ui.PictureRecorder();
-    final Canvas canvas = Canvas(pictureRecorder);
-    final Size canvasSize = Size(width.toDouble(), height.toDouble());
-    final ui.Image image = await decodeImageFromList(imageData);
-    paintImage(
-        canvas: canvas,
-        image: image,
-        rect: Rect.fromLTWH(0, 0, canvasSize.width, canvasSize.height));
-
-    TextPainter textPainter = TextPainter(
-        textAlign: TextAlign.center, textDirection: ui.TextDirection.ltr);
-    textPainter.text = TextSpan(
-      text: '$number',
-      style: TextStyle(
-          fontSize: number.toString().length > 2
-              ? ((number.toString().length > 4) ? width * 0.2 : width * 0.3)
-              : width * 0.4,
-          color: isselected || maxSpeed ? Colors.white : Colors.red,
-          fontWeight: FontWeight.bold),
-    );
-    textPainter.layout();
-    textPainter.paint(
-        canvas,
-        Offset(width / 2 - textPainter.width / 2,
-            height / 2 - textPainter.height / 2 - 10));
-
-    // Convert that masterpiece into an image
-    final ui.Image markerAsImage =
-        await pictureRecorder.endRecording().toImage(width, height);
-    final ByteData? byteData =
-        await markerAsImage.toByteData(format: ui.ImageByteFormat.png);
-    return BitmapDescriptor.fromBytes(byteData!.buffer.asUint8List());
-  }
 
   void removeRoute() {
     polylines.clear(); // Clear the polylines

@@ -1,10 +1,10 @@
 import 'TrackingData.dart';
 import 'Vehicletype.dart';
 
-/// imei : "868003032593027"
-/// trackingData : {"location":{"longitude":84.245125,"latitude":25.824387},"course":"online","ignition":{"status":true,"alarm":"null"},"createdAt":"2024-12-26T10:29:20.819Z"}
-/// vehicletype : {"vehicleTypeName":"car 4001","icons":"29173285728654546_bus.png"}
-/// dateFiled : "2024-12-26 15:59:20"
+/// imei : "862408128000853"
+/// trackingData : {"location":{"longitude":77.425343,"latitude":28.614082},"course":"320","currentSpeed":0,"ignition":{"status":true,"alarm":"null"},"createdAt":"2025-04-01T16:04:16.522Z","distanceFromA":0}
+/// vehicletype : {"vehicleTypeName":"SUV","icons":"29174327452754227_SUV.svg"}
+/// dateFiled : "2025-04-01 16:04:16"
 
 class RouteHistoryResponse {
   RouteHistoryResponse({

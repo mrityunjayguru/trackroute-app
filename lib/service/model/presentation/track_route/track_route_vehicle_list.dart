@@ -329,7 +329,7 @@ class TrackingData {
         ? new Location.fromJson(json['location'])
         : null;
     course = json['course'];
-    // course = "90";  //todo
+    // course = "90";
     status = json['status'];
     lastUpdateTime = json['lastUpdateTime'];
     vehicleType = json['vehicleType'];

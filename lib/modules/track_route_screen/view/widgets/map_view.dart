@@ -17,6 +17,7 @@ class MapViewTrackRoute extends StatelessWidget {
   Widget build(BuildContext context) {
     return Obx(
       () => Stack(
+        alignment: Alignment.center,
         children: [
           GoogleMap(
             zoomControlsEnabled: false,
@@ -46,14 +47,17 @@ class MapViewTrackRoute extends StatelessWidget {
             Positioned(
               top: 10,
               child: Container(
+                width: 200,
                 decoration: BoxDecoration(
                     color: AppColors.selextedindexcolor,
                     borderRadius: BorderRadius.circular(AppSizes.radius_50)),
-                child: Text(
-                  "Device is offline",
-                  style: AppTextStyles(context).display13W500,
-                ).paddingOnly(left: 5).paddingOnly(left: 6, bottom: 7, top: 7),
-              ),
+                child: Center(
+                  child: Text(
+                    "Device is offline",
+                    style: AppTextStyles(context).display13W500,
+                  ).paddingOnly(left: 5).paddingOnly(left: 6, bottom: 7, top: 7),
+                ),
+              ).paddingSymmetric(horizontal: 16),
             )
           /*  Positioned(
             left: -9999,

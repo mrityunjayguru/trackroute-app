@@ -832,37 +832,32 @@ class _ApiService implements ApiService {
   }
 
   @override
-  Future<ListingBaseResponse<RouteHistoryResponse>> routeHistory(
-      Map<String, dynamic> body) async {
+  Future<RouteHistoryList> routeHistory(Map<String, dynamic> body) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     _data.addAll(body);
-    final _options =
-        _setStreamType<ListingBaseResponse<RouteHistoryResponse>>(Options(
+    final _options = _setStreamType<RouteHistoryList>(Options(
       method: 'POST',
       headers: _headers,
       extra: _extra,
     )
-            .compose(
-              _dio.options,
-              '/trackVehicle/rootHistory',
-              queryParameters: queryParameters,
-              data: _data,
-            )
-            .copyWith(
-                baseUrl: _combineBaseUrls(
-              _dio.options.baseUrl,
-              baseUrl,
-            )));
+        .compose(
+          _dio.options,
+          '/trackVehicle/rootHistory',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        )));
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late ListingBaseResponse<RouteHistoryResponse> _value;
+    late RouteHistoryList _value;
     try {
-      _value = ListingBaseResponse<RouteHistoryResponse>.fromJson(
-        _result.data!,
-        (json) => RouteHistoryResponse.fromJson(json as Map<String, dynamic>),
-      );
+      _value = RouteHistoryList.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;

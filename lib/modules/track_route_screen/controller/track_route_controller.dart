@@ -28,10 +28,12 @@ import '../../../config/theme/app_colors.dart';
 import '../../../constants/project_urls.dart';
 import '../../../service/model/presentation/vehicle_type/Data.dart';
 import '../../../utils/info_window.dart';
+import '../../route_history/controller/common.dart';
 import '../view/widgets/vehicle_dialog.dart';
 
 class TrackRouteController extends GetxController {
   Rx<TrackRouteVehicleList> vehicleList = Rx(TrackRouteVehicleList());
+  RxList<Data> filteredVehicleList = <Data>[].obs;
   RxList<FilterData> filterData = RxList([]);
   var markers = <Marker>[].obs;
   var circles = <Circle>[].obs;
@@ -60,7 +62,7 @@ class TrackRouteController extends GetxController {
   RxBool showLoader = false.obs;
   RxBool isShowvehicleDetail = false.obs;
   RxInt stackIndex = RxInt(0);
-  RxInt selectedVehicleIndex = RxInt(0);
+  // RxInt selectedVehicleIndex = RxInt(-1);
   RxBool isListShow = false.obs;
   RxBool isedit = false.obs;
   RxBool isSatellite = false.obs;
@@ -74,7 +76,7 @@ class TrackRouteController extends GetxController {
 
   final ApiService apiService = ApiService.create();
   Rx<NetworkStatus> networkStatus = Rx(NetworkStatus.IDLE);
-
+  TextEditingController searchController = TextEditingController();
   Timer? _refreshTimer;
 
   @override
@@ -146,21 +148,7 @@ class TrackRouteController extends GetxController {
     return expiringVehicles;
   }
 
-  Future<BitmapDescriptor> svgToBitmapDescriptor(String url,
-      {Size size = const Size(120, 120)}) async {
-    try {
-      BitmapDescriptor selectedIcon = await SvgPicture.network(
-        url,
-        height: 50,
-        width: 50,
-        // fit: BoxFit.scaleDown,
-      ).toBitmapDescriptor();
-      return selectedIcon;
-    } catch (e) {
-      // debugPrint("Error loading SVG: $e");
-      return BitmapDescriptor.defaultMarker;
-    }
-  }
+
 
   Future<BitmapDescriptor> svgToBitmapDescriptorInactiveIcon(
       {Size size = const Size(120, 120)}) async {
@@ -468,7 +456,7 @@ class TrackRouteController extends GetxController {
 
   Future<void> isShowVehicleDetails(int index, String imei) async {
     isShowvehicleDetail.value = true;
-    selectedVehicleIndex.value = index;
+    // selectedVehicleIndex.value = index;
     selectedVehicleIMEI.value = imei;
   }
 
@@ -560,7 +548,7 @@ class TrackRouteController extends GetxController {
         if (response.status == 200) {
           networkStatus.value = NetworkStatus.SUCCESS;
           vehicleList.value = response;
-
+          // filteredVehicleList.value =vehicleList.value.data ?? [];
           final allVehiclesRes =
               vehicleList.value.data ?? []; // Assuming data is a List<Data>
 
@@ -868,7 +856,7 @@ class TrackRouteController extends GetxController {
         } else {
           isShowvehicleDetail.value = false;
           selectedVehicleIMEI.value = "";
-          selectedVehicleIndex.value = -1;
+          // selectedVehicleIndex.value = -1;
         }
       } else if (response.status == 400) {
         networkStatus.value = NetworkStatus.ERROR;
@@ -1109,7 +1097,7 @@ class TrackRouteController extends GetxController {
     isShowvehicleDetail.value = false;
     isSheetExpanded.value = false;
     markers.value = [];
-    selectedVehicleIndex.value = -1;
+    // selectedVehicleIndex.value = -1;
     selectedVehicleIMEI.value = "";
     isvehicleSelected.value = false;
     checkFilterIndex(false);
@@ -1345,4 +1333,22 @@ class TrackRouteController extends GetxController {
     }
     return true;
   }
+
+
+  void updateFilteredList() {
+    List<Data> allVehicles = vehicleList.value.data ?? [];
+
+    // Apply search filtering
+    List<Data> filteredBySearch = allVehicles.where((vehicle) {
+      return vehicle.vehicleNo
+          ?.toLowerCase()
+          .contains(searchController.text.toLowerCase()) ??
+          true;
+    }).toList();
+    filteredVehicleList.value = filteredBySearch;
+    filteredVehicleList.refresh();
+    developer.log("filtered list ${filteredVehicleList.value.length}");
+  }
+
+
 }

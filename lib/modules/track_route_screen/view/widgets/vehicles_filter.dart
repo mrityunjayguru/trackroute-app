@@ -1,4 +1,3 @@
-import 'package:flutter_svg/svg.dart';
 import 'package:sizer/sizer.dart';
 import 'package:track_route_pro/config/app_sizer.dart';
 import 'package:track_route_pro/config/theme/app_colors.dart';
@@ -7,6 +6,7 @@ import 'package:track_route_pro/gen/assets.gen.dart';
 import 'package:track_route_pro/modules/track_route_screen/controller/track_route_controller.dart';
 import 'package:track_route_pro/utils/common_import.dart';
 
+import '../../../../common/textfield/search_textfield.dart';
 import '../../../../utils/utils.dart';
 
 class VehiclesList extends StatelessWidget {
@@ -51,6 +51,9 @@ class VehiclesList extends StatelessWidget {
                             !controller.isExpanded.value;
                         controller.isShowvehicleDetail.value = false;
                         controller.selectedVehicleIMEI.value = "";
+                        controller.filteredVehicleList.value =
+                            controller.vehicleList.value.data ?? [];
+                        controller.searchController.clear();
                       },
                       name: localizations.selectVehicle),
                   AnimatedSize(
@@ -65,154 +68,178 @@ class VehiclesList extends StatelessWidget {
                               child: SingleChildScrollView(
                                 controller: scrollController,
                                 child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: ListView.separated(
-                                    physics: const ClampingScrollPhysics(),
-                                    shrinkWrap: true,
-                                    itemCount: controller
-                                            .vehicleList.value.data?.length ??
-                                        0,
-                                    itemBuilder:
-                                        (BuildContext context, int index) {
-                                      bool isInactive =
-                                          controller.checkIfInactive(
-                                              vehicle: controller.vehicleList
-                                                  .value.data?[index]);
-                                      return GestureDetector(
-                                        behavior: HitTestBehavior.deferToChild,
-                                        onTap: () {
-                                          controller.isShowVehicleDetails(
-                                              index,
-                                              controller.vehicleList.value
-                                                      .data?[index].imei ??
-                                                  '');
-                                          controller.devicesByDetails(
-                                              controller.vehicleList.value
-                                                      .data?[index].imei ??
-                                                  '',
-                                              showDialog: true,
-                                              zoom: true);
-                                          controller.isExpanded.value = false;
-                                          controller.isFilterSelected.value =
-                                              false;
-                                          controller
-                                              .isFilterSelectedindex.value = -1;
-                                        },
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 8, vertical: 4),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                'Vehicle',
-                                                style: AppTextStyles(context)
-                                                    .display12W400
-                                                    .copyWith(
-                                                        color: AppColors
-                                                            .grayLight),
-                                              ),
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8.0),
+                                  child: Column(
+                                    children: [
+                                      searchApptextfield(
+                                        color: AppColors.selextedindexcolor,
 
-                                                  Flexible(
-                                                    child: Text(
-                                                      '${controller.vehicleList.value.data?[index].vehicleNo ?? "-"}',
-                                                      style: AppTextStyles(
-                                                              context)
-                                                          .display16W700
-                                                          .copyWith(
-                                                              color: isInactive
-                                                                  ? AppColors
-                                                                      .grayLight
-                                                                  : AppColors
-                                                                      .black),
-                                                    ),
+                                        prefixIcon:
+                                            'assets/images/svg/search.svg',
+                                        hintText: 'Search Vehicle',
+                                        controller: controller.searchController,
+                                        onChanged: (query) => controller
+                                            .updateFilteredList(), // Enable search filtering
+                                      ).paddingOnly(bottom: 8),
+                                      ListView.separated(
+                                        physics: const ClampingScrollPhysics(),
+                                        shrinkWrap: true,
+                                        itemCount: controller
+                                            .filteredVehicleList.value.length,
+                                        itemBuilder:
+                                            (BuildContext context, int index) {
+                                          final vehicle = controller
+                                              .filteredVehicleList.value[index];
+
+                                          // Hide items not in filteredVehicleList
+                                          bool isInactive =
+                                              controller.checkIfInactive(
+                                                  vehicle: vehicle);
+                                          return GestureDetector(
+                                            behavior:
+                                                HitTestBehavior.deferToChild,
+                                            onTap: () {
+                                              controller.isShowVehicleDetails(
+                                                  controller.vehicleList.value
+                                                          .data
+                                                          ?.indexWhere(
+                                                        (element) =>
+                                                            element.imei ==
+                                                            vehicle.imei,
+                                                      ) ??
+                                                      -1,
+                                                  vehicle.imei ?? '');
+                                              controller.devicesByDetails(
+                                                  vehicle.imei ?? '',
+                                                  showDialog: true,
+                                                  zoom: true);
+                                              controller.isExpanded.value =
+                                                  false;
+                                              controller.isFilterSelected
+                                                  .value = false;
+                                              controller.isFilterSelectedindex
+                                                  .value = -1;
+                                              controller.searchController.clear();
+                                            },
+                                            child: Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 8,
+                                                      vertical: 4),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    'Vehicle',
+                                                    style:
+                                                        AppTextStyles(context)
+                                                            .display12W400
+                                                            .copyWith(
+                                                                color: AppColors
+                                                                    .grayLight),
                                                   ),
-                                                  const SizedBox(width: 4),
-                                                  GestureDetector(
-                                                    behavior: HitTestBehavior
-                                                        .deferToChild,
-                                                    onTap: () {
-                                                      if (isInactive) {
-                                                        controller.isShowVehicleDetails(
-                                                            index,
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Flexible(
+                                                        child: Text(
+                                                          '${vehicle.vehicleNo ?? "-"}',
+                                                          style: AppTextStyles(
+                                                                  context)
+                                                              .display16W700
+                                                              .copyWith(
+                                                                  color: isInactive
+                                                                      ? AppColors
+                                                                          .grayLight
+                                                                      : AppColors
+                                                                          .black),
+                                                        ),
+                                                      ),
+                                                      const SizedBox(width: 4),
+                                                      GestureDetector(
+                                                        behavior:
+                                                            HitTestBehavior
+                                                                .deferToChild,
+                                                        onTap: () {
+                                                          if (isInactive) {
                                                             controller
-                                                                    .vehicleList
-                                                                    .value
-                                                                    .data?[
-                                                                        index]
-                                                                    .imei ??
-                                                                '');
-                                                        controller.devicesByDetails(
+                                                                .isShowVehicleDetails(
+                                                                    index,
+                                                                    vehicle.imei ??
+                                                                        '');
                                                             controller
-                                                                    .vehicleList
-                                                                    .value
-                                                                    .data?[
-                                                                        index]
-                                                                    .imei ??
-                                                                '',
-                                                            showDialog: true,
-                                                            zoom: true);
-                                                        controller.isExpanded
-                                                            .value = false;
-                                                        controller
-                                                            .isFilterSelected
-                                                            .value = false;
-                                                        controller
-                                                            .isFilterSelectedindex
-                                                            .value = -1;
-                                                      } else {
-                                                        controller
-                                                            .isvehicleSelected
-                                                            .value = true;
-                                                        controller.isedit
-                                                            .value = false;
-                                                        controller.stackIndex
-                                                            .value = 1;
-                                                        controller.editGeofence
-                                                            .value = false;
-                                                        controller.editSpeed
-                                                            .value = false;
-                                                        controller.isExpanded
-                                                            .value = false;
-                                                        controller.devicesByDetails(
+                                                                .devicesByDetails(
+                                                                    vehicle.imei ??
+                                                                        '',
+                                                                    showDialog:
+                                                                        true,
+                                                                    zoom: true);
                                                             controller
-                                                                    .vehicleList
-                                                                    .value
-                                                                    .data?[
-                                                                        index]
-                                                                    .imei ??
-                                                                '');
-                                                      }
-                                                    },
-                                                    child: Text(
-                                                      'Manage',
-                                                      style: AppTextStyles(
-                                                              context)
-                                                          .display12W500
-                                                          .copyWith(
-                                                              color: isInactive
-                                                                  ? AppColors
-                                                                      .grayLight
-                                                                  : AppColors
-                                                                      .blue),
-                                                    ),
-                                                  )
+                                                                .isExpanded
+                                                                .value = false;
+                                                            controller
+                                                                .isFilterSelected
+                                                                .value = false;
+                                                            controller
+                                                                .isFilterSelectedindex
+                                                                .value = -1;
+                                                          } else {
+                                                            controller
+                                                                .isvehicleSelected
+                                                                .value = true;
+                                                            controller.isedit
+                                                                .value = false;
+                                                            controller
+                                                                .stackIndex
+                                                                .value = 1;
+                                                            controller
+                                                                .editGeofence
+                                                                .value = false;
+                                                            controller.editSpeed
+                                                                .value = false;
+                                                            controller
+                                                                .isExpanded
+                                                                .value = false;
+                                                            controller
+                                                                .devicesByDetails(
+                                                                    vehicle.imei ??
+                                                                        '');
+                                                          }
+                                                          controller.searchController.clear();
+                                                        },
+                                                        child: Text(
+                                                          'Manage',
+                                                          style: AppTextStyles(
+                                                                  context)
+                                                              .display12W500
+                                                              .copyWith(
+                                                                  color: isInactive
+                                                                      ? AppColors
+                                                                          .grayLight
+                                                                      : AppColors
+                                                                          .blue),
+                                                        ),
+                                                      )
+                                                    ],
+                                                  ),
                                                 ],
                                               ),
-                                            ],
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                    separatorBuilder: (BuildContext context,
-                                            int index) =>
-                                        Divider(color: AppColors.grayLighter),
+                                            ),
+                                          );
+                                        },
+                                        separatorBuilder: (BuildContext context,
+                                                int index) =>
+                                            Divider(
+                                                color: AppColors.grayLighter),
+                                      ),
+                                      SizedBox(
+                                        height: 8,
+                                      )
+                                    ],
                                   ),
                                 ),
                               ),
@@ -256,8 +283,8 @@ class VehiclesList extends StatelessWidget {
                                       controller.markers.value = [];
                                       controller.isShowvehicleDetail.value =
                                           false;
-                                      controller.selectedVehicleIndex.value =
-                                          -1;
+                                     /* controller.selectedVehicleIndex.value =
+                                          -1;*/
                                       controller.selectedVehicleIMEI.value = "";
                                       controller.checkFilterIndex(true);
                                     },
