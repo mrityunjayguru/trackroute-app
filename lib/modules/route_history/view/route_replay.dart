@@ -91,11 +91,12 @@ class RouteReplayView extends StatelessWidget {
                                         AppSizes.radius_50)),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     SvgPicture.asset(
-                                      'assets/images/svg/blue_stop.svg',
-                                      width: 45,
-                                      height: 45,
+                                      'assets/images/svg/blue_marker.svg',
+                                      width: 50,
+                                      height: 50,
                                     ),
                                     SizedBox(
                                       width: 5,
@@ -133,6 +134,58 @@ class RouteReplayView extends StatelessWidget {
                                     Expanded(
                                       child: Column(
                                         crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                        children: [
+                                          Text("Total Trip",
+                                              style: AppTextStyles(context)
+                                                  .display11W500),
+                                          SizedBox(
+                                            height: 4,
+                                          ),
+                                          Text.rich(
+                                            overflow: TextOverflow.ellipsis,
+                                            TextSpan(
+                                              children: [
+                                                TextSpan(
+                                                  text: Utils.toStringAsFixed(data: locationController.locations[locationController.locations.length-1].trackingData?.distanceFromA),
+                                                  style: AppTextStyles(context)
+                                                      .display20W600
+                                                      .copyWith(
+                                                      fontSize: MediaQuery.of(
+                                                          context)
+                                                          .size
+                                                          .height <
+                                                          670
+                                                          ? 18
+                                                          : 20),
+                                                ),
+                                                if(locationController.locations[locationController.locations.length-1].trackingData?.distanceFromA!=null)TextSpan(
+                                                    text: ' KM ',
+                                                    style: AppTextStyles(
+                                                        context)
+                                                        .display14W600
+                                                        .copyWith(
+                                                        color: AppColors
+                                                            .grayLight,
+                                                        fontSize: MediaQuery.of(
+                                                            context)
+                                                            .size
+                                                            .height <
+                                                            670
+                                                            ? 12
+                                                            : 14)),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 5,
+                                    ),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text("Time",
@@ -157,58 +210,7 @@ class RouteReplayView extends StatelessWidget {
                                         ],
                                       ),
                                     ),
-                                    SizedBox(
-                                      width: 5,
-                                    ),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text("Total Trip",
-                                              style: AppTextStyles(context)
-                                                  .display11W500),
-                                          SizedBox(
-                                            height: 4,
-                                          ),
-                                          Text.rich(
-                                            overflow: TextOverflow.ellipsis,
-                                            TextSpan(
-                                              children: [
-                                                TextSpan(
-                                                  text: Utils.toStringAsFixed(data: locationController.locations[locationController.locations.length-1].trackingData?.distanceFromA),
-                                                  style: AppTextStyles(context)
-                                                      .display20W600
-                                                      .copyWith(
-                                                          fontSize: MediaQuery.of(
-                                                                          context)
-                                                                      .size
-                                                                      .height <
-                                                                  670
-                                                              ? 18
-                                                              : 20),
-                                                ),
-                                                if(locationController.locations[locationController.locations.length-1].trackingData?.distanceFromA!=null)TextSpan(
-                                                    text: ' KM ',
-                                                    style: AppTextStyles(
-                                                            context)
-                                                        .display14W600
-                                                        .copyWith(
-                                                            color: AppColors
-                                                                .grayLight,
-                                                            fontSize: MediaQuery.of(
-                                                                            context)
-                                                                        .size
-                                                                        .height <
-                                                                    670
-                                                                ? 12
-                                                                : 14)),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
+
                                   ],
                                 ).paddingOnly(
                                     left: 11, bottom: 11, top: 11, right: 11),

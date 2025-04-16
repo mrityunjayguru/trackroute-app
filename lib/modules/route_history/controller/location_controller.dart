@@ -59,20 +59,7 @@ class LocationController extends GetxController {
       if (currentIndex.value < locations.length - 1) {
         if (!timerOn.value) timerOn.value = true;
         currentIndex.value++;
-        time.value =
-            locations.value[currentIndex.value].dateFiled?.split(" ")[1] ??
-                "N/A";
-        speed.value = Utils.parseDouble(
-                data: locations
-                    .value[currentIndex.value].trackingData?.currentSpeed)
-            .toInt()
-            .toString();
-        currDist.value = Utils.parseDouble(
-                data: locations
-                    .value[currentIndex.value].trackingData?.distanceFromA)
-            .round()
-            .toInt()
-            .toString();
+        _setData();
 
         // _updateMap();
       } else {
@@ -135,15 +122,40 @@ class LocationController extends GetxController {
       _startPlayback();
     } else {
       _playbackTimer?.cancel();
-      address.value = await getAddressFromLatLong(locations
-          .value[currentIndex.value].trackingData?.location?.latitude ?? 0, locations
-          .value[currentIndex.value].trackingData?.location?.longitude ?? 0);
+    _setAddress();
     }
   }
 
   void onSliderChanged(double value) {
+    if(!timerOn.value)timerOn.value = true;
     currentIndex.value = value.toInt();
+    _setData();
     _updateMap();
+    _setAddress();
+  }
+
+  _setData(){
+    time.value =
+        locations.value[currentIndex.value].dateFiled?.split(" ")[1] ??
+            "N/A";
+    speed.value = Utils.parseDouble(
+        data: locations
+            .value[currentIndex.value].trackingData?.currentSpeed)
+        .toInt()
+        .toString();
+    currDist.value = Utils.parseDouble(
+        data: locations
+            .value[currentIndex.value].trackingData?.distanceFromA)
+        .round()
+        .toInt()
+        .toString();
+  }
+
+
+  _setAddress() async{
+    address.value = await getAddressFromLatLong(locations
+        .value[currentIndex.value].trackingData?.location?.latitude ?? 0, locations
+        .value[currentIndex.value].trackingData?.location?.longitude ?? 0);
   }
 
   Future<String> getAddressFromLatLong(
