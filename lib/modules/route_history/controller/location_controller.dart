@@ -129,7 +129,6 @@ class LocationController extends GetxController {
     animation = LatLngTween(begin: oldLatLng ?? newLatLng, end: newLatLng).animate(animationController)
       ..addListener(() {
         final position = animation!.value;
-
         final newMarker = Marker(
           markerId: const MarkerId("playback_marker"),
           position: position,
@@ -139,6 +138,7 @@ class LocationController extends GetxController {
         );
 
         markers.value = [newMarker];
+
         final timeDiff = DateTime.now().difference(timeStamp).inMilliseconds;
         if(timeDiff > 1000){
           replayCon.mapController.getZoomLevel().then((currentZoom) async {
@@ -161,7 +161,10 @@ class LocationController extends GetxController {
     oldLatLng = newLatLng;
   }
 
+  Future<void> updateMarkers() async {
+    // Get the map controller
 
+  }
   void updateSpeed() {
     final List<double> speeds = [1, 2, 3, 4];
     int currentIndex = speeds.indexOf(playbackSpeed.value);
