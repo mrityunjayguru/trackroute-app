@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:track_route_pro/config/app_sizer.dart';
 import 'package:track_route_pro/modules/route_history/controller/location_controller.dart';
 import 'package:track_route_pro/modules/track_route_screen/controller/track_route_controller.dart';
 
@@ -19,10 +20,14 @@ class ReplayController extends GetxController {
   List<RouteHistoryResponse> vehicleListReplay = [];
   List<StopCount> stops = [];
   var markers = <Marker>[].obs;
+  var arrowMarker = <Marker>[].obs;
   late GoogleMapController mapController;
   var polylines = <Polyline>[].obs;
   RxBool showLoader = false.obs;
-
+  final locController = Get.isRegistered<LocationController>()
+      ? Get.find<LocationController>() // Find if already registered
+      : Get.put(LocationController());
+  RxInt selectStopIndex = (-1).obs;
   void setInitData(
       List<RouteHistoryResponse> data, List<StopCount> stops) async {
     showLoader.value = true;
@@ -46,10 +51,9 @@ class ReplayController extends GetxController {
 
     vehicleListReplay = processedData;
     this.stops = stops;
-    final controller = Get.isRegistered<LocationController>()
-        ? Get.find<LocationController>() // Find if already registered
-        : Get.put(LocationController());
-    controller.loadData(vehicleListReplay);
+
+    locController.loadData(vehicleListReplay);
+    selectStopIndex.value=-1;
   }
 
   Future<void> showMapData() async {
@@ -64,17 +68,6 @@ class ReplayController extends GetxController {
         if (vehicleListReplay[i].dateFiled != null) {
           time = vehicleListReplay[i].dateFiled?.split(" ")[1] ?? "N?A";
         }
-
-        /*  Marker m = await createMarker(
-            maxSpeed: isOverSpeed,
-            index: i + 1,
-            imei: vehicleListReplay[i].imei ?? "",
-            lat: vehicleListReplay[i].trackingData?.location?.latitude,
-            long: vehicleListReplay[i].trackingData?.location?.longitude,
-            speed: vehicleListReplay[i].trackingData?.currentSpeed,
-            time: time);
-
-        markers.add(m);*/
         if (vehicleListReplay[i].trackingData?.location != null) {
           double lat =
               vehicleListReplay[i].trackingData?.location?.latitude ?? 0.0;
@@ -96,6 +89,7 @@ class ReplayController extends GetxController {
 
       polylines.add(polyline);
     }
+    arrowMarker.value = [];
     markers.value = [];
     List<Marker> arrowMarkers = [];
     int step = 10;
@@ -126,12 +120,12 @@ class ReplayController extends GetxController {
       }
 
 // Update all at once (triggers a single .obs update)
-      markers.addAll(arrowMarkers);
+      arrowMarker.addAll(arrowMarkers);
     } catch (e) {
       debugPrint("ARROW MARKER $e");
     }
 
-    await _addMarkerAtStart();
+    // await _addMarkerAtStart();
     _addNumberStops();
     _zoomToMarkers();
   }
@@ -139,23 +133,44 @@ class ReplayController extends GetxController {
   Future<void> _addNumberStops() async {
     for (int i = 0; i < stops.length; i++) {
       if (stops[i].location?.latitude != null &&
-          stops[i].location?.longitude != null) {
+          stops[i].location?.longitude != null ) {
         String time = "";
         if (stops[i].createdAt != null) {
-          DateTime timestamp =
-          DateTime.parse(stops[i].createdAt ?? ""); // Assuming dateFiled is a valid timestamp string
+          DateTime timestamp = DateTime.parse(stops[i].createdAt ??
+              ""); // Assuming dateFiled is a valid timestamp string
           time = DateFormat('HH:mm:ss').format(timestamp);
         }
 
+
+      if(i>0){
+        if (stops[i].location?.latitude != null && stops[i].location?.longitude != null) {
+          if (stops[i].location?.latitude != stops[i-1].location?.latitude || stops[i].location?.longitude != stops[i-1].location?.longitude) {
+            Marker m = await createMarker(
+                index: i + 1,
+                imei: stops[i].imei ?? "",
+                lat: stops[i].location?.latitude,
+                long: stops[i].location?.longitude,
+                speed: 0,
+                dist: "0",
+                //todo
+                time: time);
+            markers.add(m);
+          }
+        }
+      }
+      else{
         Marker m = await createMarker(
             index: i + 1,
             imei: stops[i].imei ?? "",
             lat: stops[i].location?.latitude,
             long: stops[i].location?.longitude,
             speed: 0,
+            dist: "0",
+            //todo
             time: time);
-
         markers.add(m);
+      }
+
       }
     }
   }
@@ -215,6 +230,7 @@ class ReplayController extends GetxController {
       double? long,
       double? speed,
       String? time,
+      String? dist,
       required String imei,
       required int index}) async {
     BitmapDescriptor markerIcon = await createCustomIconWithNumber(index,
@@ -237,48 +253,67 @@ class ReplayController extends GetxController {
         icon: markerIcon,
 
         // icon: await createCustomMarker('$index'),
-        onTap: () => _onMarkerTapped(index, time: time ?? "", speed: speed.toString() ?? "0",long: long, lat: lat ));
+        onTap: () => _onMarkerTapped(index,
+            time: time ?? "",
+            speed: speed.toString() ?? "0",
+            dist: dist ?? "",
+            long: long,
+            lat: lat));
     return marker;
   }
 
   void _onMarkerTapped(int index,
       {double? lat,
-        double? long,
-        required String time,
-        required String speed}) async {
-   /* showDetails.value = true;
-    selectedTime.value = time;
-    selectedSpeed.value = speed;
-    isMaxSpeed.value = maxSpeed;
-    markerNumber.value = index.toString();*/
-
-    /*if(Platform.isIOS){
-
-      markers.removeWhere(
-            (element) => element.markerId.value.contains("INFOWINDOWMARKER"),
-      );
-      addCustomMarker(LatLng(lat ?? 0, long ?? 0), time, speed);
-    }*/
-    BitmapDescriptor markerIcon = await createCustomIconWithNumber(index,
-        isselected: true, width: 100, height: 100, maxSpeed: false,
-        unselectedColor: AppColors.blue,
-        selectedIcon: "assets/images/png/blue_marker.png",
-        unselectedIcon: "assets/images/png/white_marker.png");
-    markers[index - 1] = markers[index - 1].copyWith(iconParam: markerIcon);
-    // markerAddress.value = await getAddressFromLatLong(lat ?? 0, long ?? 0);
-    for (int i = 0; i < markers.length; i++) {
-      if (i != index - 1) {
-        BitmapDescriptor markerIconFalse = await createCustomIconWithNumber(
-            i + 1,
-            isselected: false,
-            maxSpeed: false,
-            unselectedColor: AppColors.blue,
-            selectedIcon: "assets/images/png/blue_marker.png",
-            unselectedIcon: "assets/images/png/white_marker.png",
-            width: 100,
-            height: 100);
-        markers[i] = markers[i].copyWith(iconParam: markerIconFalse);
+      double? long,
+      required String time,
+      required String dist,
+      required String speed}) async {
+    if (!locController.isPlaying.value) {
+      selectStopIndex.value = index;
+      locController.setStopData(
+        pos: LatLng(lat ?? 0, long ?? 0),
+          speedStop: speed, timeStop: time, currDistStop: dist);
+      BitmapDescriptor markerIcon = await createCustomIconWithNumber(index,
+          isselected: true,
+          width: 100,
+          height: 100,
+          maxSpeed: false,
+          unselectedColor: AppColors.blue,
+          selectedIcon: "assets/images/png/blue_marker.png",
+          unselectedIcon: "assets/images/png/white_marker.png");
+      markers[index - 1] = markers[index - 1].copyWith(iconParam: markerIcon);
+      // markerAddress.value = await getAddressFromLatLong(lat ?? 0, long ?? 0);
+      for (int i = 0; i < markers.length; i++) {
+        if (i != index - 1) {
+          BitmapDescriptor markerIconFalse = await createCustomIconWithNumber(
+              i + 1,
+              isselected: false,
+              maxSpeed: false,
+              unselectedColor: AppColors.blue,
+              selectedIcon: "assets/images/png/blue_marker.png",
+              unselectedIcon: "assets/images/png/white_marker.png",
+              width: 100,
+              height: 100);
+          markers[i] = markers[i].copyWith(iconParam: markerIconFalse);
+        }
       }
     }
+  }
+
+
+  void unselectStops() async {
+    if(selectStopIndex.value!=-1){
+      BitmapDescriptor markerIconFalse = await createCustomIconWithNumber(
+          selectStopIndex.value,
+          isselected: false,
+          maxSpeed: false,
+          unselectedColor: AppColors.blue,
+          selectedIcon: "assets/images/png/blue_marker.png",
+          unselectedIcon: "assets/images/png/white_marker.png",
+          width: 100,
+          height: 100);
+      markers[selectStopIndex.value-1] = markers[selectStopIndex.value-1].copyWith(iconParam: markerIconFalse);
+    }
+
   }
 }

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:track_route_pro/modules/route_history/controller/replay_controller.dart';
 
 import '../../../constants/project_urls.dart';
 import '../../../service/model/route/Data.dart';
@@ -11,6 +12,14 @@ import '../../track_route_screen/controller/track_route_controller.dart';
 import 'common.dart';
 
 class LocationController extends GetxController {
+  final replayCon = Get.isRegistered<ReplayController>()
+      ? Get.find<
+      ReplayController>() // Find if already registered
+      : Get.put(ReplayController());
+  late AnimationController animationController;
+  Animation<LatLng>? animation;
+  LatLng? oldLatLng;
+  DateTime timeStamp = DateTime.now();
   final RxList<RouteHistoryResponse> locations = <RouteHistoryResponse>[].obs;
   final RxString speed = "".obs;
   final RxString time = "".obs;
@@ -25,12 +34,15 @@ class LocationController extends GetxController {
   // final Rx<Marker?> currentMarker = Rx<Marker?>(null);
 
   Timer? _playbackTimer;
-  GoogleMapController? _mapController;
   BitmapDescriptor? markerIcon;
 
-  void setMapController(GoogleMapController controller) {
-    _mapController = controller;
+  void initAnimation(TickerProvider vsync) {
+    animationController = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: vsync,
+    );
   }
+
 
   void loadData(List<RouteHistoryResponse> data) async {
     final trackCon = Get.isRegistered<TrackRouteController>()
@@ -61,7 +73,6 @@ class LocationController extends GetxController {
         currentIndex.value++;
         _setData();
 
-        // _updateMap();
       } else {
         timerOn.value = false;
         isPlaying.value = false;
@@ -84,7 +95,7 @@ class LocationController extends GetxController {
     super.onClose();
   }
 
-  void _updateMap() {
+  void _updateMapNoAni() {
     debugPrint("CURR INDEX ==> ${currentIndex.value}  ");
     final data = locations[currentIndex.value];
     final lat = data.trackingData?.location?.latitude ?? 0;
@@ -99,10 +110,50 @@ class LocationController extends GetxController {
         rotation: Utils.parseDouble(data: data.trackingData?.course) ?? 0);
 
     markers.value = [newMarker];
-    _mapController?.animateCamera(
-      CameraUpdate.newLatLng(position),
-    );
+
   }
+  void _updateMap() {
+    final data = locations[currentIndex.value];
+    final lat = data.trackingData?.location?.latitude ?? 0;
+    final lng = data.trackingData?.location?.longitude ?? 0;
+    final newLatLng = LatLng(lat, lng);
+    double rotation = currentIndex.value==0? Utils.parseDouble(data: data.trackingData?.course) :Utils.parseDouble(data: locations[currentIndex.value-1].trackingData?.course) ;
+    if (oldLatLng == null) {
+      oldLatLng = newLatLng;
+    }
+
+    animation = LatLngTween(begin: oldLatLng ?? newLatLng, end: newLatLng).animate(animationController)
+      ..addListener(() {
+        final position = animation!.value;
+
+        final newMarker = Marker(
+          markerId: const MarkerId("playback_marker"),
+          position: position,
+          icon: markerIcon ?? BitmapDescriptor.defaultMarker,
+          flat: true,
+          rotation: rotation,
+        );
+
+        markers.value = [newMarker];
+        final timeDiff = DateTime.now().difference(timeStamp).inMilliseconds;
+        if(timeDiff > 1000){
+          replayCon.mapController?.animateCamera(
+            CameraUpdate.newCameraPosition(
+              CameraPosition(
+                target: position,
+                zoom: 16,
+              ),
+            ),
+          );
+          timeStamp = DateTime.now();
+        }
+
+      });
+
+    animationController.forward(from: 0.0);
+    oldLatLng = newLatLng;
+  }
+
 
   void updateSpeed() {
     final List<double> speeds = [1, 2, 3, 4];
@@ -120,6 +171,8 @@ class LocationController extends GetxController {
     isPlaying.toggle();
     if (isPlaying.value) {
       _startPlayback();
+      replayCon.unselectStops();
+
     } else {
       _playbackTimer?.cancel();
     _setAddress();
@@ -132,6 +185,7 @@ class LocationController extends GetxController {
     _setData();
     _updateMap();
     _setAddress();
+    replayCon.unselectStops();
   }
 
   _setData(){
@@ -145,10 +199,7 @@ class LocationController extends GetxController {
         .toString();
     currDist.value = Utils.parseDouble(
         data: locations
-            .value[currentIndex.value].trackingData?.distanceFromA)
-        .round()
-        .toInt()
-        .toString();
+            .value[currentIndex.value].trackingData?.distanceFromA).toStringAsFixed(2);
   }
 
 
@@ -171,4 +222,30 @@ class LocationController extends GetxController {
     }
     return "Address not available";
   }
+
+
+  void setStopData({required String speedStop, required String timeStop, required String currDistStop, required LatLng pos}) async{
+    time.value =timeStop;
+    speed.value = Utils.parseDouble(
+        data: speedStop)
+        .toInt()
+        .toString();
+    currDist.value = Utils.parseDouble(
+        data: currDistStop).toStringAsFixed(2);
+
+    address.value = await getAddressFromLatLong(pos.latitude, pos.longitude);
+
+  }
 }
+
+class LatLngTween extends Tween<LatLng> {
+  LatLngTween({required LatLng begin, required LatLng end})
+      : super(begin: begin, end: end);
+
+  @override
+  LatLng lerp(double t) => LatLng(
+    begin!.latitude + (end!.latitude - begin!.latitude) * t,
+    begin!.longitude + (end!.longitude - begin!.longitude) * t,
+  );
+}
+

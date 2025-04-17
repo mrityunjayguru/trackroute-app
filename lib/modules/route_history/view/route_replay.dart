@@ -16,7 +16,24 @@ import '../../../utils/common_import.dart';
 import '../../../utils/utils.dart';
 import '../controller/history_controller.dart';
 
-class RouteReplayView extends StatelessWidget {
+class RouteReplayView extends StatefulWidget {
+  @override
+  State<RouteReplayView> createState() => _RouteReplayViewState();
+}
+
+class _RouteReplayViewState extends State<RouteReplayView> with TickerProviderStateMixin{
+
+  @override
+  void initState() {
+    super.initState();
+    locationController.initAnimation(this);
+  }
+
+  @override
+  void dispose() {
+    locationController.animationController.dispose();
+    super.dispose();
+  }
   final locationController = Get.isRegistered<LocationController>()
       ? Get.find<LocationController>() // Find if already registered
       : Get.put(LocationController());
@@ -28,6 +45,7 @@ class RouteReplayView extends StatelessWidget {
   final historyController = Get.isRegistered<HistoryController>()
       ? Get.find<HistoryController>() // Find if already registered
       : Get.put(HistoryController());
+
   var scrollController = ScrollController();
 
   @override
@@ -58,12 +76,12 @@ class RouteReplayView extends StatelessWidget {
                   onTap: (val) {
                     // controller.showDetails.value = false;
                   },
-                  markers:  {...controller.markers, ...locationController.markers},
+                  markers:  {...controller.markers, ...locationController.markers, ...controller.arrowMarker},
                   polylines: Set<Polyline>.of(controller.polylines),
                   myLocationEnabled: true,
                   myLocationButtonEnabled: false,
                   mapToolbarEnabled: false,
-                  minMaxZoomPreference: MinMaxZoomPreference(5, 20),
+                  minMaxZoomPreference: MinMaxZoomPreference(5, !locationController.isPlaying.value ? 19 : 17),
                 ),
               ),
               Obx(
@@ -94,9 +112,9 @@ class RouteReplayView extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     SvgPicture.asset(
-                                      'assets/images/svg/blue_marker.svg',
-                                      width: 50,
-                                      height: 50,
+                                      'assets/images/svg/blue_stop.svg',
+                                      width: 40,
+                                      height: 40,
                                     ),
                                     SizedBox(
                                       width: 5,
@@ -195,7 +213,8 @@ class RouteReplayView extends StatelessWidget {
                                             height: 4,
                                           ),
                                           Text(
-                                            locationController.time.value,
+                                            locationController.timerOn.value ? locationController.time.value: (locationController.locations.value[0].dateFiled?.split(" ")[1] ??
+                                                "N/A"),
                                             style: AppTextStyles(context)
                                                 .display20W600
                                                 .copyWith(
@@ -216,7 +235,7 @@ class RouteReplayView extends StatelessWidget {
                                     left: 11, bottom: 11, top: 11, right: 11),
                               ),
                               SizedBox(height: 1.5.h),
-                              if(!locationController.isPlaying.value && locationController.timerOn.value)Container(
+                              if((!locationController.isPlaying.value && locationController.timerOn.value) || controller.selectStopIndex.value!=-1)Container(
                                 decoration: BoxDecoration(
                                     color: AppColors.selextedindexcolor,
                                     borderRadius: BorderRadius.circular(
