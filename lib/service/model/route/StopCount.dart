@@ -10,12 +10,15 @@ import 'Location.dart';
 
 class StopCount {
   StopCount({
+
+    this.stopDuration,
       this.id, 
       this.imei, 
       this.igitionOF, 
-      this.location, 
+      this.distanceFromA,
+      this.location,
       this.createdAt, 
-      this.updatedAt, 
+      this.updatedAt,
       this.v,});
 
   StopCount.fromJson(dynamic json) {
@@ -25,6 +28,8 @@ class StopCount {
     location = json['location'] != null ? Location.fromJson(json['location']) : null;
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
+    distanceFromA = json['distanceFromA'].toString();
+    stopDuration = json['stopDuration'].toString();
     v = json['__v'];
   }
   String? id;
@@ -33,6 +38,8 @@ class StopCount {
   Location? location;
   String? createdAt;
   String? updatedAt;
+  String? distanceFromA;
+  String? stopDuration;
   int? v;
 
   Map<String, dynamic> toJson() {

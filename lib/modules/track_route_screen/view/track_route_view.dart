@@ -392,6 +392,7 @@ class TrackRouteView extends StatelessWidget {
                                           width: 50,
                                           height: 50,
                                           child: FloatingActionButton(
+                                            heroTag: 'satellite',
                                             child: Image.asset(
                                               !controller.isSatellite.value? "assets/images/png/satellite.png" : "assets/images/png/default.png",
                                               fit: BoxFit.fill,
@@ -411,6 +412,7 @@ class TrackRouteView extends StatelessWidget {
                                           width: 50,
                                           height: 50,
                                           child: FloatingActionButton(
+                                            heroTag: 'nav1',
                                             child: SvgPicture.asset(
                                               Assets.images.svg.navigation1,
                                               fit: BoxFit.fill,
@@ -484,6 +486,7 @@ class TrackRouteView extends StatelessWidget {
                         width: 50,
                         height: 50,
                         child: FloatingActionButton(
+                          heroTag: 'satellite1',
                           child: Image.asset(
                             !controller.isSatellite.value? "assets/images/png/satellite.png" : "assets/images/png/default.png",
                             fit: BoxFit.fill,
@@ -503,6 +506,7 @@ class TrackRouteView extends StatelessWidget {
                         width: 50,
                         height: 50,
                         child: FloatingActionButton(
+                          heroTag: 'nav',
                           child: SvgPicture.asset(
                             Assets.images.svg.navigation1,
                             fit: BoxFit.fill,

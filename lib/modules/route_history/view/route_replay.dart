@@ -3,10 +3,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:sizer/sizer.dart';
 import 'package:track_route_pro/modules/route_history/controller/location_controller.dart';
-import 'package:track_route_pro/modules/route_history/controller/location_controller.dart';
-import 'package:track_route_pro/modules/route_history/controller/location_controller.dart';
-import 'package:track_route_pro/modules/route_history/controller/replay_controller.dart';
-import 'package:track_route_pro/modules/route_history/controller/replay_controller.dart';
 import 'package:track_route_pro/modules/route_history/controller/replay_controller.dart';
 
 import '../../../config/app_sizer.dart';
@@ -81,7 +77,7 @@ class _RouteReplayViewState extends State<RouteReplayView> with TickerProviderSt
                   myLocationEnabled: true,
                   myLocationButtonEnabled: false,
                   mapToolbarEnabled: false,
-                  minMaxZoomPreference: MinMaxZoomPreference(5, !locationController.isPlaying.value ? 19 : 17),
+                  minMaxZoomPreference: MinMaxZoomPreference(5, !locationController.isPlaying.value ? 19 : 16),
                 ),
               ),
               Obx(
@@ -112,10 +108,10 @@ class _RouteReplayViewState extends State<RouteReplayView> with TickerProviderSt
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     SvgPicture.asset(
-                                      'assets/images/svg/blue_stop.svg',
+                                      'assets/images/svg/blue_marker.svg',
                                       width: 40,
                                       height: 40,
-                                    ),
+                                    ).paddingOnly(top: 4),
                                     SizedBox(
                                       width: 5,
                                     ),
@@ -240,35 +236,57 @@ class _RouteReplayViewState extends State<RouteReplayView> with TickerProviderSt
                                     color: AppColors.selextedindexcolor,
                                     borderRadius: BorderRadius.circular(
                                         AppSizes.radius_50)),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
+                                child: Column(
                                   children: [
-                                    SvgPicture.asset(
-                                        'assets/images/svg/ic_location.svg'),
-                                    Flexible(
-                                      child: Text(
-                                        "${locationController.address.value}",
-                                        style: AppTextStyles(context)
-                                            .display13W500,
-                                      ).paddingOnly(left: 5),
-                                    )
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: [
+                                        SvgPicture.asset(
+                                            'assets/images/svg/ic_location.svg'),
+                                        Flexible(
+                                          child: Text(
+                                            "${locationController.address.value}",
+                                            style: AppTextStyles(context)
+                                                .display13W500,
+                                          ).paddingOnly(left: 5),
+                                        )
+                                      ],
+                                    ).paddingOnly(left: 10, bottom: 7, top: 7),
+                                    if(controller.selectStopIndex.value!=-1)Row(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: [
+
+                                        Flexible(
+                                          child: Text(
+                                            "Stop Duration: ${locationController.stopDuration.value}",
+                                            style: AppTextStyles(context)
+                                                .display13W500,
+                                          ).paddingOnly(left: 8),
+                                        )
+                                      ],
+                                    ).paddingOnly(left: 20, bottom: 7,),
                                   ],
-                                ).paddingOnly(left: 6, bottom: 7, top: 7),
+                                ),
                               ),
                             ],
                           ),
                     Spacer(),
-                    if(locationController.timerOn.value)Container(
+                    if(locationController.timerOn.value || controller.selectStopIndex.value!=-1)Container(
+                      height: 60,
+                      constraints: BoxConstraints(minWidth: 165, maxWidth: 200),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(500),
                         color: AppColors.white,
+
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Transform.translate(
-                            offset: Offset(-4, 0),
+                            offset: Offset(-7, 0),
                             child: Container(
+                              width: 60,
+                              height: 60,
                               padding: EdgeInsets.all(6),
                               decoration: BoxDecoration(
                                   shape: BoxShape.circle,
@@ -276,24 +294,25 @@ class _RouteReplayViewState extends State<RouteReplayView> with TickerProviderSt
                                   border: Border.all(
                                       color: AppColors.selextedindexcolor,
                                       width: 3)),
-                              child: RichText(
-                                textAlign: TextAlign.center,
-                                text: TextSpan(
-                                  text: '${locationController.speed.value}\n',
-                                  style: AppTextStyles(context)
-                                      .display20W600
-                                      .copyWith(color: Colors.black),
-                                  children: [
-                                    TextSpan(
-                                      text: 'KM/P',
-                                      style: AppTextStyles(context)
-                                          .display7W600
-                                          .copyWith(
-                                            color: AppColors.black,
-                                          ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                     '${locationController.speed.value}',
+                                    style: AppTextStyles(context)
+                                        .display20W600
+                                        .copyWith(color: Colors.black),
+
+                                  ),
+                                  Text(
+                                     'KM/H',
+                                    style: AppTextStyles(context)
+                                        .display7W600
+                                        .copyWith(
+                                      color: AppColors.black,
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),

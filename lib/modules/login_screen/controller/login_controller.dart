@@ -232,9 +232,7 @@ class LoginController extends GetxController {
     if(userId.value.isNotEmpty){
       try {
         networkStatus.value =
-            NetworkStatus.LOADING; // Set network status to loading
-
-        // Call the API method from ApiService
+            NetworkStatus.LOADING;
 
         var request = FirebaseUpdateRequest(id: userId.value, firebaseToken: fcmToken);
 

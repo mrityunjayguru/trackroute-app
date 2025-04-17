@@ -167,7 +167,6 @@ class Utils{
   }
 
   static String toStringAsFixed({String? data}){
-    log("To strinf as fixed $data");
     return data==null? "N/A" : (double.tryParse(data) ?? 0).toStringAsFixed(1);
   }
 

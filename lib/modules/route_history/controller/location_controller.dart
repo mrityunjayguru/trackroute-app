@@ -12,10 +12,7 @@ import '../../track_route_screen/controller/track_route_controller.dart';
 import 'common.dart';
 
 class LocationController extends GetxController {
-  final replayCon = Get.isRegistered<ReplayController>()
-      ? Get.find<
-      ReplayController>() // Find if already registered
-      : Get.put(ReplayController());
+
   late AnimationController animationController;
   Animation<LatLng>? animation;
   LatLng? oldLatLng;
@@ -25,6 +22,7 @@ class LocationController extends GetxController {
   final RxString time = "".obs;
   final RxString currDist = "".obs;
   final RxString address = "".obs;
+  final RxString stopDuration = "".obs;
   final RxInt currentIndex = 0.obs;
   final RxBool isPlaying = false.obs;
   final RxBool timerOn = false.obs;
@@ -38,7 +36,7 @@ class LocationController extends GetxController {
 
   void initAnimation(TickerProvider vsync) {
     animationController = AnimationController(
-      duration: const Duration(milliseconds: 500),
+      duration: Duration(milliseconds: getDurationFromSpeed(1)),
       vsync: vsync,
     );
   }
@@ -57,6 +55,7 @@ class LocationController extends GetxController {
     time.value = "";
     currDist.value = "";
     address.value = "";
+    stopDuration.value = "";
     markerIcon = await svgToBitmapDescriptor(
         '${ProjectUrls.imgBaseUrl}${trackCon.deviceDetail.value.data?[0].vehicletype?.icons ?? ""}',
         size: Size(30, 30));
@@ -65,7 +64,7 @@ class LocationController extends GetxController {
 
   void _startPlayback()  {
     _playbackTimer?.cancel();
-    int baseInterval = 500; // 1x = 1000ms
+    int baseInterval = 2000;
     int interval = (baseInterval / playbackSpeed.value).round();
     _playbackTimer = Timer.periodic(Duration(milliseconds: interval), (timer) async {
       if (currentIndex.value < locations.length - 1) {
@@ -112,7 +111,8 @@ class LocationController extends GetxController {
     markers.value = [newMarker];
 
   }
-  void _updateMap() {
+
+  void _updateMap({bool zoom = true}) {
     final data = locations[currentIndex.value];
     final lat = data.trackingData?.location?.latitude ?? 0;
     final lng = data.trackingData?.location?.longitude ?? 0;
@@ -121,7 +121,11 @@ class LocationController extends GetxController {
     if (oldLatLng == null) {
       oldLatLng = newLatLng;
     }
-
+    var replayCon = Get.isRegistered<ReplayController>()
+        ? Get.find<
+        ReplayController>() // Find if already registered
+        : Get.put(ReplayController());
+    super.onInit();
     animation = LatLngTween(begin: oldLatLng ?? newLatLng, end: newLatLng).animate(animationController)
       ..addListener(() {
         final position = animation!.value;
@@ -137,15 +141,18 @@ class LocationController extends GetxController {
         markers.value = [newMarker];
         final timeDiff = DateTime.now().difference(timeStamp).inMilliseconds;
         if(timeDiff > 1000){
-          replayCon.mapController?.animateCamera(
-            CameraUpdate.newCameraPosition(
-              CameraPosition(
-                target: position,
-                zoom: 16,
+          replayCon.mapController.getZoomLevel().then((currentZoom) async {
+            replayCon.mapController?.animateCamera(
+              CameraUpdate.newCameraPosition(
+                CameraPosition(
+                  target: position,
+                  zoom: currentZoom,
+                ),
               ),
-            ),
-          );
-          timeStamp = DateTime.now();
+            );
+            timeStamp = DateTime.now();
+          });
+
         }
 
       });
@@ -162,12 +169,25 @@ class LocationController extends GetxController {
     // Move to next speed in the list (loop back to start)
     int nextIndex = (currentIndex + 1) % speeds.length;
     playbackSpeed.value = speeds[nextIndex];
+    animationController.duration = Duration(
+      milliseconds: getDurationFromSpeed(playbackSpeed.value),
+    );
+    animationController.reset();
     if (_playbackTimer != null && _playbackTimer!.isActive) {
       _startPlayback();
     }
   }
 
+  int getDurationFromSpeed(double speedMultiplier) {
+    const baseDurationMs = 2000;
+    return (baseDurationMs / speedMultiplier).round();
+  }
+
   void togglePlay() async {
+    var replayCon = Get.isRegistered<ReplayController>()
+        ? Get.find<
+        ReplayController>() // Find if already registered
+        : Get.put(ReplayController());
     isPlaying.toggle();
     if (isPlaying.value) {
       _startPlayback();
@@ -180,6 +200,11 @@ class LocationController extends GetxController {
   }
 
   void onSliderChanged(double value) {
+    var replayCon = Get.isRegistered<ReplayController>()
+        ? Get.find<
+        ReplayController>() // Find if already registered
+        : Get.put(ReplayController());
+    super.onInit();
     if(!timerOn.value)timerOn.value = true;
     currentIndex.value = value.toInt();
     _setData();
@@ -224,7 +249,7 @@ class LocationController extends GetxController {
   }
 
 
-  void setStopData({required String speedStop, required String timeStop, required String currDistStop, required LatLng pos}) async{
+  void setStopData({required String speedStop, required String timeStop, required String currDistStop, required String stopDur, required LatLng pos}) async{
     time.value =timeStop;
     speed.value = Utils.parseDouble(
         data: speedStop)
@@ -232,7 +257,7 @@ class LocationController extends GetxController {
         .toString();
     currDist.value = Utils.parseDouble(
         data: currDistStop).toStringAsFixed(2);
-
+    stopDuration.value = stopDur;
     address.value = await getAddressFromLatLong(pos.latitude, pos.longitude);
 
   }
