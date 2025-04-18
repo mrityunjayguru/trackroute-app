@@ -11,6 +11,7 @@ import 'package:track_route_pro/modules/alert_screen/view/alerts_filter.dart';
 import 'package:track_route_pro/modules/alert_screen/view/date_filter.dart';
 import 'package:track_route_pro/utils/common_import.dart';
 import '../../../../service/model/alerts/alert/AlertsResponse.dart';
+import '../../../../utils/utils.dart';
 import '../../../track_route_screen/controller/track_route_controller.dart';
 
 class AlertNotificationTab extends StatelessWidget {
@@ -95,7 +96,7 @@ class AlertNotificationTab extends StatelessWidget {
 
     Future<String> getAddress() async {
       if (data.location?.latitude != null && data.location?.longitude != null) {
-        return await alertController.getAddressFromLatLong(
+        return await Utils().getAddressFromLatLong(
           data.location!.latitude!,
           data.location!.longitude!,
         );

@@ -4,15 +4,10 @@ import 'package:sizer/sizer.dart';
 import 'package:track_route_pro/config/app_sizer.dart';
 import 'package:track_route_pro/config/theme/app_colors.dart';
 import 'package:track_route_pro/config/theme/app_textstyle.dart';
-import 'package:track_route_pro/gen/assets.gen.dart';
-import 'package:track_route_pro/modules/track_route_screen/controller/track_route_controller.dart';
-import 'package:track_route_pro/modules/track_route_screen/controller/track_route_controller.dart';
 import 'package:track_route_pro/modules/track_route_screen/controller/track_route_controller.dart';
 import 'package:track_route_pro/modules/vehicales/controller/vehicales_controller.dart';
 import 'package:track_route_pro/service/model/presentation/track_route/track_route_vehicle_list.dart';
 import 'package:track_route_pro/utils/common_import.dart';
-
-import '../../../../constants/project_urls.dart';
 import '../../../../utils/custom_vehicle_data.dart';
 import '../../../../utils/utils.dart';
 
@@ -60,7 +55,7 @@ class VehicalDetailCard extends StatelessWidget {
       child: FutureBuilder<String>(
         future: (trackingData?.location?.latitude != null &&
                 trackingData?.location?.longitude != null)
-            ? controller.getAddressFromLatLong(
+            ? Utils().getAddressFromLatLong(
                 trackingData?.location?.latitude ?? 0.0,
                 trackingData?.location?.longitude ?? 0.0,
               )
@@ -253,7 +248,7 @@ class VehicalDetailCard extends StatelessWidget {
     if(trackController.checkIfInactive(vehicle: vehicleInfo)){
       if (vehicleInfo.lastLocation?.latitude != null &&
           vehicleInfo.lastLocation?.longitude != null) {
-        return await controller.getAddressFromLatLong(
+        return await Utils().getAddressFromLatLong(
           vehicleInfo.lastLocation?.latitude ?? 0.0,
           vehicleInfo.lastLocation?.longitude ?? 0.0,
         );
@@ -264,7 +259,7 @@ class VehicalDetailCard extends StatelessWidget {
     else{
       if (trackingData?.location?.latitude != null &&
           trackingData?.location?.longitude != null) {
-        return await controller.getAddressFromLatLong(
+        return await Utils().getAddressFromLatLong(
           trackingData?.location?.latitude ?? 0.0,
           trackingData?.location?.longitude ?? 0.0,
         );

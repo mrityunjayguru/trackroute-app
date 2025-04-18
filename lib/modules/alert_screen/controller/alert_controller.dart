@@ -223,58 +223,9 @@ class AlertController extends GetxController {
     showLoader.value = false;
   }
 
-  Future<String> getAddressFromLatLong(
-      double latitude, double longitude) async {
-    try {
-      List<Placemark> placemarks =
-          await placemarkFromCoordinates(latitude, longitude);
-
-      Placemark place = placemarks[0];
-
-      String address =
-          "${place.street}, ${place.locality}, ${place.postalCode}, ${place.country}";
-      return address;
-    } catch (e) {
-      // debugPrint("Error " + e.toString());
-      String address = "Address not available";
-      return address;
-    }
-  }
-
-/*  void filterAlerts(bool isSelected, String vehicleNo,String imei, int index) {
-    closeExpanded();
-    closeExpandedAlerts();
-    // vehicleSelected.value = isSelected;
-    if (isSelected) {
-      selectedVehicleName.value = vehicleNo;
-      selectedVehicleImei.value = imei;
-      selectedVehicleIndex.value = index;
-    } else {
-      selectedVehicleName.value = "";
-      selectedVehicleImei.value = "";
-      selectedVehicleIndex.value = -1;
-    }
-    getAlerts(isLoadMore: false);
-
-  }
-
-  void filterByAlertType(bool isSelected, String alertName,int index){
-    closeExpanded();
-    closeExpandedAlerts();
-    // alertSelected.value = isSelected;
-    if (isSelected) {
-      selectedAlertName.value = {};
-      selectedAlertIndex.value = index;
-    } else {
-      selectedAlertName.value = {};
-      selectedAlertIndex.value = -1;
-    }
-    getAlerts(isLoadMore: false);
-  }*/
 
   Future<void> setAlertsConfig() async {
     try {
-      log("SET NOTIFICATION =======>");
       if (devicesOwnerID.value.isEmpty) {
         String? userId = await AppPreference.getStringFromSF(Constants.userId);
         devicesOwnerID.value = userId ?? "";

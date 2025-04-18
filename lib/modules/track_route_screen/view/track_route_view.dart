@@ -122,7 +122,7 @@ class TrackRouteView extends StatelessWidget {
                                           trackingData?.location?.longitude !=
                                               null) {
                                         // Call the address fetching method if lat/long are available
-                                        controller.getAddressFromLatLong(
+                                        Utils().getAddressFromLatLong(
                                           trackingData?.location?.latitude ??
                                               0.0,
                                           trackingData?.location?.longitude ??
@@ -549,7 +549,7 @@ class TrackRouteView extends StatelessWidget {
               null &&
           controller.deviceDetail.value.data?[0].lastLocation?.longitude !=
               null) {
-        return await controller.getAddressFromLatLong(
+        return await Utils().getAddressFromLatLong(
           controller.deviceDetail.value.data?[0].lastLocation?.latitude ?? 0.0,
           controller.deviceDetail.value.data?[0].lastLocation?.longitude ?? 0.0,
         );
@@ -559,7 +559,7 @@ class TrackRouteView extends StatelessWidget {
     } else {
       if (trackingData?.location?.latitude != null &&
           trackingData?.location?.longitude != null) {
-        return await controller.getAddressFromLatLong(
+        return await Utils().getAddressFromLatLong(
           trackingData?.location?.latitude ?? 0.0,
           trackingData?.location?.longitude ?? 0.0,
         );

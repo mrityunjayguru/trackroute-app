@@ -1,11 +1,8 @@
 import 'dart:async';
 import 'dart:developer' as developer;
 import 'dart:io';
-import 'dart:math';
 import 'dart:ui';
-
 import 'package:flutter/services.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -20,16 +17,15 @@ import 'package:track_route_pro/service/model/presentation/track_route/track_rou
 import 'package:track_route_pro/utils/app_prefrance.dart';
 import 'package:track_route_pro/utils/common_import.dart';
 import 'package:track_route_pro/utils/enums.dart';
-import 'package:track_route_pro/utils/map_item.dart';
 import 'package:track_route_pro/utils/utils.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 import '../../../config/theme/app_colors.dart';
 import '../../../constants/project_urls.dart';
 import '../../../service/model/presentation/vehicle_type/Data.dart';
-import '../../../utils/info_window.dart';
+import '../../../utils/common_map_helper.dart';
 import '../../route_history/controller/common.dart';
 import '../view/widgets/vehicle_dialog.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class TrackRouteController extends GetxController {
   Rx<TrackRouteVehicleList> vehicleList = Rx(TrackRouteVehicleList());
@@ -38,19 +34,14 @@ class TrackRouteController extends GetxController {
   var markers = <Marker>[].obs;
   var circles = <Circle>[].obs;
   RxBool isSheetExpanded = false.obs;
-
-  // New Rx lists for filtered results
   RxList<Data> ignitionOnList = <Data>[].obs;
   RxList<Data> ignitionOffList = <Data>[].obs;
   RxList<Data> activeVehiclesList = <Data>[].obs;
   RxList<Data> inActiveVehiclesList = <Data>[].obs;
   RxList<Data> offlineVehiclesList = <Data>[].obs;
-
-  // RxList<Data> inActiveVehiclesList = <Data>[].obs;
   RxList<Data> allVehicles = <Data>[].obs;
   RxList<DataVehicleType> vehicleTypeList = <DataVehicleType>[].obs;
   RxString devicesOwnerID = RxString('');
-  RxString devicesId = RxString('');
   RxString selectedVehicleIMEI = RxString('');
   late GoogleMapController mapController;
   bool gpsEnabled = false;
@@ -62,23 +53,20 @@ class TrackRouteController extends GetxController {
   RxBool showLoader = false.obs;
   RxBool isShowvehicleDetail = false.obs;
   RxInt stackIndex = RxInt(0);
-  // RxInt selectedVehicleIndex = RxInt(-1);
-  RxBool isListShow = false.obs;
   RxBool isedit = false.obs;
   RxBool isSatellite = false.obs;
   double height = 848;
   bool dialogOpen = false;
-  StreamSubscription<Position>? positionStream;
   var currentLocation =
-      LatLng(20.5937, 78.9629).obs; // Current vehicle location
-  // var polylines = <Polyline>[].obs; // List of polylines to display on the map
+      LatLng(20.5937, 78.9629).obs;
   var isLoading = false.obs; // Loading state
 
   final ApiService apiService = ApiService.create();
   Rx<NetworkStatus> networkStatus = Rx(NetworkStatus.IDLE);
   TextEditingController searchController = TextEditingController();
-  Timer? _refreshTimer;
 
+  Rx<TrackRouteVehicleList> deviceDetail = Rx(TrackRouteVehicleList());
+  IO.Socket? socket;
   @override
   void onInit() {
     super.onInit();
@@ -87,365 +75,20 @@ class TrackRouteController extends GetxController {
 
     loadUser().then(
       (value) {
+        getVehicleTypeList();
+        initSocket();
         devicesByOwnerID(false);
       },
     );
+    // if (!isedit.value) {  //todo
 
-    // Set up a timer to call `devicesByOwnerID` every 30 seconds if `isEdit` is false
-    _refreshTimer = Timer.periodic(Duration(seconds: 10), (timer) {
-      if (!isedit.value) {
-        devicesByOwnerID(false);
-      }
-    });
-  }
-
-  Future<String> getAddressFromLatLong(
-      double latitude, double longitude) async {
-    try {
-      List<Placemark> placemarks =
-          await placemarkFromCoordinates(latitude, longitude);
-      Placemark place = placemarks[0];
-
-      return "${place.street}, ${place.locality}, ${place.postalCode}, ${place.country}";
-    } catch (e) {
-      return "Address not available";
-    }
-    return "Address not available";
-  }
-
-  Future<String> getCurrAddress({double? latitude, double? longitude}) async {
-    try {
-      // log("$latitude  $longitude  ====> LAT LONG");
-      if (latitude == null || longitude == null) return "Address not available";
-      List<Placemark> placemarks =
-          await placemarkFromCoordinates(latitude, longitude);
-      Placemark place = placemarks[0];
-      return "${place.street}, ${place.locality}, ${place.postalCode}, ${place.country}";
-    } catch (e) {
-      // debugPrint("Error LAT LONG ADDRESS" + e.toString());
-      return "Address not available";
-    }
-  }
-
-  List<Data> getVehiclesWithExpiringSubscriptions() {
-    List<Data> expiringVehicles = [];
-
-    DateTime currentDate = DateTime.now();
-
-    vehicleList.value.data?.forEach((vehicle) {
-      if (vehicle.subscriptionExp != null) {
-        DateTime subscriptionExpDate =
-            DateFormat('yyyy-MM-dd').parse(vehicle.subscriptionExp!);
-
-        int daysDifference = subscriptionExpDate.difference(currentDate).inDays;
-
-        if (daysDifference <= 30) {
-          expiringVehicles.add(vehicle);
-        }
-      }
-    });
-
-    return expiringVehicles;
   }
 
 
-
-  Future<BitmapDescriptor> svgToBitmapDescriptorInactiveIcon(
-      {Size size = const Size(120, 120)}) async {
-    try {
-      BitmapDescriptor selectedIcon = await SvgPicture.asset(
-        "assets/images/svg/deactivated-icon.svg",
-        height: 40,
-        width: 40,
-        // fit: BoxFit.scaleDown,
-      ).toBitmapDescriptor();
-      return selectedIcon;
-    } catch (e) {
-      // debugPrint("Error loading SVG: $e");
-      return BitmapDescriptor.defaultMarker;
-    }
-  }
-
-  Future<BitmapDescriptor> svgToBitmapDescriptorOfflineIcon(
-      {Size size = const Size(120, 120)}) async {
-    try {
-      BitmapDescriptor selectedIcon = await SvgPicture.asset(
-        "assets/images/svg/offline.svg",
-        height: 40,
-        width: 40,
-        // fit: BoxFit.scaleDown,
-      ).toBitmapDescriptor();
-      return selectedIcon;
-    } catch (e) {
-      // debugPrint("Error loading SVG: $e");
-      return BitmapDescriptor.defaultMarker;
-    }
-  }
-
-  /* Future<BitmapDescriptor> createMarkerIcon(String indexedImage,
-      {int width = 120, int height = 120}) async {
-    try {
-      // Load image from network
-      final ByteData data =
-          await NetworkAssetBundle(Uri.parse(indexedImage)).load("");
-      final Uint8List bytes = data.buffer.asUint8List();
-
-      // Decode the image to get its original size
-      final ui.Codec codec = await ui.instantiateImageCodec(
-        bytes,
-        targetWidth: width,
-        targetHeight: height,
-      );
-      final ui.FrameInfo frameInfo = await codec.getNextFrame();
-
-      // Convert the resized image to bytes
-      final ByteData? resizedData =
-          await frameInfo.image.toByteData(format: ui.ImageByteFormat.png);
-      final Uint8List resizedBytes = resizedData!.buffer.asUint8List();
-
-      return BitmapDescriptor.fromBytes(resizedBytes);
-    } catch (e) {
-      return BitmapDescriptor.defaultMarker;
-    }
-  }
-
-*/
-
-  // Function to Filter for Vehicles with Ignition On
-  List<Data> filterIgnitionOn(List<Data> vehicleList) {
-    return vehicleList.where((vehicle) {
-      return vehicle.trackingData?.ignition?.status == true; // Ignition is on
-    }).toList();
-  }
-
-  // Function to Filter for Vehicles with Ignition Off
-  List<Data> filterIgnitionOff(List<Data> vehicleList) {
-    return vehicleList.where((vehicle) {
-      return vehicle.trackingData?.ignition?.status == false; // Ignition is off
-    }).toList();
-  }
-
-  // Function to Filter for Active Vehicles
-  List<Data> filterActiveVehicles(List<Data> vehicleList) {
-    return vehicleList.where((vehicle) {
-      return vehicle.status == 'Active' &&
-          (vehicle.subscriptionExp == null
-              ? vehicle.status == 'Active'
-              : (DateFormat('yyyy-MM-dd')
-                          .parse(vehicle.subscriptionExp!)
-                          .difference(DateTime.now())
-                          .inDays +
-                      1 >
-                  0)); // Status is Active
-    }).toList();
-  }
-
-  List<Data> filterInactive(List<Data> vehicleList) {
-    return vehicleList.where((vehicle) {
-      return vehicle.status != "Active" ||
-          (vehicle.subscriptionExp == null
-              ? vehicle.status != 'Active'
-              : (DateFormat('yyyy-MM-dd')
-                          .parse(vehicle.subscriptionExp!)
-                          .difference(DateTime.now())
-                          .inDays +
-                      1 <=
-                  0)); // Status is Active
-    }).toList();
-  }
-
-  List<Data> filterOffline(List<Data> vehicleList) {
-    return vehicleList.where((vehicle) {
-      return vehicle.trackingData?.status?.toLowerCase() !=
-          "online"; // Status is Active
-    }).toList();
-  }
-
-  Future<Position?> getCurrentLocation() async {
-    try {
-      await _requestLocationPermission(updateCamera: false);
-      return await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high);
-    } catch (e) {
-      // print('Error fetching location: $e');
-      return null;
-    }
-  }
-
-  void updateCameraPosition(
-      {required double latitude,
-      required double longitude,
-      required double course}) {
-    if (Get.put(BottomBarController()).selectedIndex == 2) {
-      if (mapController != null) {
-        mapController.animateCamera(
-          CameraUpdate.newCameraPosition(
-            CameraPosition(
-                // bearing: course,
-                target: LatLng(latitude, longitude),
-                zoom: 7),
-          ),
-        );
-      }
-    }
-  }
-
-  void updateCameraPositionToCurrentLocation() async {
-    if (Get.put(BottomBarController()).selectedIndex == 2) {
-      Position? data = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high);
-      if (data != null && mapController != null) {
-        mapController.animateCamera(
-          CameraUpdate.newCameraPosition(
-            CameraPosition(
-                target: LatLng(data.latitude, data.longitude), zoom: 7),
-          ),
-        );
-      }
-    }
-  }
-
-  void updateCameraPositionWithZoom(
-      {required double latitude,
-      required double longitude,
-      required double course}) async {
-    if (Get.put(BottomBarController()).selectedIndex == 2) {
-      if (mapController != null) {
-        // double offset = 0.0009;
-        /*LatLng newLatLng =
-            await calcLatLong(offset, course, latitude, longitude);*/
-        mapController.animateCamera(
-          CameraUpdate.newCameraPosition(
-            CameraPosition(
-              bearing: course,
-              target: LatLng(latitude, longitude), //todo
-              zoom: 17,
-            ),
-          ),
-        );
-      }
-    }
-  }
-
-  Future<LatLng> calcLatLong(
-      double offset, double course, double lat, double long) async {
-    // double course = Utils.parseDouble(data: data?.trackingData?.course);
-
-    // Convert course to radians for proper offset calculation
-    double courseRad = course * (pi / 180);
-    double offsetLat = offset * cos(courseRad);
-    double offsetLong = offset * sin(courseRad);
-
-    LatLng vehiclePosition = LatLng(
-      lat + offsetLat,
-      long + offsetLong,
-    );
-
-    // Convert LatLng to screen coordinates
-    ScreenCoordinate screenPosition =
-        await mapController.getScreenCoordinate(vehiclePosition);
-
-    // Move the point upwards by 30% of the screen height
-    int adjustedY = (screenPosition.y + (height * 0.9)).toInt();
-
-    // Convert back to LatLng
-    LatLng adjustedLatLng = await mapController
-        .getLatLng(ScreenCoordinate(x: screenPosition.x, y: adjustedY));
-    return adjustedLatLng;
-  }
-
-  // On Map Created
-  void onMapCreated(GoogleMapController controller) {
-    mapController = controller;
-  }
-
-  void _onMarkerTapped(int index, String imei, String vehicleNo, double course,
-      {double? lat, double? long}) async {
-    isShowVehicleDetails(index, imei);
-    isExpanded.value = false;
-    await devicesByDetails(imei, updateCamera: false, showDialog: true);
-/*
-    try {
-      if (Platform.isIOS) {
-        addCustomMarker(LatLng((lat ?? 0) + 0.0011, long ?? 0),
-            "Vehicle No.: $vehicleNo", "IMEI: $imei");
-      }
-    } catch (e, s) {
-      log("EXCEPTION $e ====> $s");
-    }*/
-
-    /* if(Platform.isIOS){
-        customInfoWindowController.addInfoWindow!(
-          _buildCustomInfoWindow(vehicleNo, imei),
-          LatLng((lat ?? 0), long ?? 0),
-        );
-    }*/
-    if (lat != null && long != null) {
-      updateCameraPositionWithZoom(
-          latitude: lat, longitude: long, course: course);
-    }
-  }
-
-  Widget _buildCustomInfoWindow(String? vehicleNo, String imei) {
-    return Container(
-      width: 200,
-      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 5)],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            'Vehicle No: ${vehicleNo ?? "N/A"}',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 3),
-          Text('IMEI: $imei'),
-        ],
-      ),
-    );
-  }
-
-  Future<void> addCustomMarker(
-      LatLng position, String text1, String text2) async {
-    Uint8List? markerIcon = await _captureMarkerWidget();
-
-    if (markerIcon != null) {
-      final marker = Marker(
-        markerId: MarkerId("INFOWINDOWMARKER$text1$text2"),
-        position: position,
-        icon: BitmapDescriptor.fromBytes(markerIcon),
-      );
-
-      markers.add(marker);
-    }
-  }
-
-  Future<Uint8List?> _captureMarkerWidget() async {
-    /* RenderRepaintBoundary? boundary =
-        markerKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
-    if (boundary != null) {
-      ui.Image image = await boundary.toImage(pixelRatio: 2.0);
-      ByteData? byteData =
-          await image.toByteData(format: ui.ImageByteFormat.png);
-      return byteData?.buffer.asUint8List();
-    }
-    return null;*/
-  }
-
-  Future<Uint8List?> getWidgetMarker(String text1, String text2) async {
-    final recorder = PictureRecorder();
-    final canvas = Canvas(recorder);
-    final painter = MarkerPainter(text1, text2);
-
-    painter.paint(canvas, Size(500, 120));
-
-    final img = await recorder.endRecording().toImage(500, 120);
-    final byteData = await img.toByteData(format: ImageByteFormat.png);
-    return byteData?.buffer.asUint8List();
+  @override
+  void onClose() {
+    socket?.dispose();
+    super.onClose();
   }
 
   Future<void> loadUser() async {
@@ -454,83 +97,39 @@ class TrackRouteController extends GetxController {
     devicesOwnerID.value = userId ?? '';
   }
 
-  Future<void> isShowVehicleDetails(int index, String imei) async {
-    isShowvehicleDetail.value = true;
-    // selectedVehicleIndex.value = index;
-    selectedVehicleIMEI.value = imei;
-  }
+///SOCKET
+  void initSocket() {
+    socket = IO.io(
+      'http://localhost:3100',
+      IO.OptionBuilder()
+          .setTransports(['websocket'])
+          .disableAutoConnect()
+          .build(),
+    );
 
-  // Method to check location permissions and GPS status
-  Future<void> checkStatus() async {
-    bool _permissionGranted = await _isPermissionGranted();
-    bool _gpsEnabled = await _isGpsEnabled();
+    socket!.connect();
 
-    if (_gpsEnabled && _permissionGranted) {
-      _startLocationTracking();
-    } else {
-      if (!_gpsEnabled) await _requestEnableGps();
-      if (!_permissionGranted) await _requestLocationPermission();
-    }
-  }
+    socket!.onConnect((_) {
+      print('✅ Connected to socket server: ${socket!.id}');
 
-  // Method to request location permission
-  Future<bool> _isPermissionGranted() async {
-    return await Permission.locationWhenInUse.isGranted;
-  }
+      socket!.emit('registerUser', {
+        'userImei': [
+          '00000000000',
+          '00000000001',
+          '00000000002',
+          '00000000003',
+          '00000000004',
+        ],
+        'socketId': socket!.id,
+      });
+    });
 
-  // Method to check if GPS is enabled
-  Future<bool> _isGpsEnabled() async {
-    return await Geolocator.isLocationServiceEnabled();
-  }
+    socket!.on('vehicleData', (data) {
+      print('📡 vehicleData received: $data');
+      // vehicleData.value = Map<String, dynamic>.from(data);
+    });
 
-  // Request to enable GPS
-  Future<void> _requestEnableGps() async {
-    bool isGpsActive = await Geolocator.openLocationSettings();
-    gpsEnabled = isGpsActive;
-  }
-
-  // Request location permission
-  Future<void> _requestLocationPermission({bool updateCamera = true}) async {
-    PermissionStatus permissionStatus =
-        await Permission.locationWhenInUse.request();
-    permissionGranted = permissionStatus == PermissionStatus.granted;
-    if (permissionGranted) {
-      _startLocationTracking(updateCamera: updateCamera);
-    } else {
-      Utils.getSnackbar("Please turn on device location", "");
-    }
-  }
-
-  void _startLocationTracking({bool updateCamera = true}) async {
-    // getCurrentLocation();
-    Position pos = await Geolocator.getCurrentPosition();
-
-    currentLocation.value = LatLng(pos.latitude, pos.longitude);
-    if (updateCamera) {
-      mapController.animateCamera(
-        CameraUpdate.newCameraPosition(
-          CameraPosition(target: currentLocation.value, zoom: 7),
-        ),
-      );
-    }
-
-    // positionStream = Geolocator.getPositionStream(
-    //         locationSettings: LocationSettings(accuracy: LocationAccuracy.high))
-    //     .listen((Position position) {
-    //   updateCurrentPosition(position.latitude, position.longitude);
-    // });
-  }
-
-  // Method to update current position on the map
-  void updateCurrentPosition(double latitude, double longitude) {
-    // currentLocation.value = LatLng(latitude, longitude);
-    // mapController.animateCamera(CameraUpdate.newLatLng(currentLocation.value));
-  }
-
-  @override
-  void onClose() {
-    positionStream?.cancel();
-    super.onClose();
+    socket!.onDisconnect((_) => print('❌ Disconnected from socket'));
   }
 
   ///API SERVICE FOR ALL DEVICE
@@ -587,7 +186,7 @@ class TrackRouteController extends GetxController {
                 title: 'All'),
           ];
 
-          getVehicleTypeList();
+
 
           if (!isFilterSelected.value && !isShowvehicleDetail.value) {
             markers.value = [];
@@ -617,23 +216,14 @@ class TrackRouteController extends GetxController {
                 markers.add(m);
               }
             }
-            /*  if (updateCamera &&
-                allVehiclesRes.isNotEmpty &&
-                allVehiclesRes[0].trackingData?.location?.latitude != null &&
-                allVehiclesRes[0].trackingData?.location?.longitude != null) {
-              updateCameraPosition(
-                  latitude:
-                      allVehiclesRes[0].trackingData?.location?.latitude ?? 0,
-                  longitude:
-                      allVehiclesRes[0].trackingData?.location?.longitude ?? 0);
-            }*/
+
           } else if (isFilterSelected.value) {
             checkFilterIndex(false);
           } else if (isShowvehicleDetail.value &&
               selectedVehicleIMEI.value.isNotEmpty &&
               !dialogOpen) {
             devicesByDetails(
-              selectedVehicleIMEI.value ?? '',
+              selectedVehicleIMEI.value,
             );
           }
         } else if (response.status == 400) {
@@ -666,34 +256,6 @@ class TrackRouteController extends GetxController {
     }
   }
 
-  Rx<TrackRouteVehicleList> deviceDetail = Rx(TrackRouteVehicleList());
-
-  /* Map<int, double> zoomOffsetMap = {
-    3: 14,
-    4: 8,
-    5: 5,
-    6: 1.8,
-    7: 1.5,
-    8: 0.5,
-    9: 0.3,
-    10: 0.14,
-    11: 0.07,
-    12: 0.05,
-    13: 0.03,
-    14: 0.01,
-    15: 0.0038,
-    16: 0.0017,
-    17: 0.00115,
-    18: 0.0009,
-    19: 0.0004,
-  };
-
-  double getOffset(double zoom) {
-    int zoomLevel = zoom.round(); // Convert to integer (rounding down)
-    return zoomOffsetMap[zoomLevel] ?? 0.0; // Default to 0 if not found
-  }
-*/
-  // ///API SEVICE FOR DEVICE DETAILS
   Future<void> devicesByDetails(String imei,
       {bool updateCamera = true,
       bool showDialog = false,
@@ -721,39 +283,6 @@ class TrackRouteController extends GetxController {
                   latitude: data?.trackingData?.location?.latitude ?? 0,
                   longitude: data?.trackingData?.location?.longitude ?? 0);
             } else {
-              /* double offsetLat = 0;
-              double offsetLong = 0;*/
-
-              /* mapController.getZoomLevel().then((currentZoom) {
-
-                offsetLat = getOffset(currentZoom);
-                if(Utils.parseDouble(data: data?.trackingData?.course)  == 0){
-                  offsetLat*=-1;
-                }
-                else if(Utils.parseDouble(data: data?.trackingData?.course)==90){
-                  offsetLong = -1 * offsetLat;
-                  offsetLat =0;
-                }
-                else if(Utils.parseDouble(data: data?.trackingData?.course)==270){
-                  offsetLong = offsetLat;
-                  offsetLat =0;
-                }
-                developer.log("CURRENT ZOOM => $currentZoom $offsetLat ${data?.trackingData?.course}");
-                mapController.animateCamera(
-                  CameraUpdate.newCameraPosition(
-                    CameraPosition(
-                        bearing:
-                            Utils.parseDouble(data: data?.trackingData?.course),
-                        target: LatLng(
-                          (data?.trackingData?.location?.latitude ?? 0) +
-                              offsetLat,
-                          (data?.trackingData?.location?.longitude ?? 0) + offsetLong,
-                        ),
-                        zoom: currentZoom),
-                  ),
-                );
-              });*/
-
               mapController.getZoomLevel().then((currentZoom) async {
                 /* double offset =
                     getOffset(currentZoom); // Get offset based on zoom
@@ -784,14 +313,12 @@ class TrackRouteController extends GetxController {
           relayStatus.value = response.data?[0].immobiliser ?? "Stop";
           // vehicleRegistrationNumber.text = data?.vehicleRegistrationNo ?? '';
           vehicleName.text = data?.vehicleNo ?? '';
-          dateAdded.text = formatDate(data?.dateAdded);
+          dateAdded.text = Utils().formatDate(data?.dateAdded);
           driverName.text = data?.driverName ?? '';
           developer.log("DRIVER NaME ${driverName.text}");
           driverMobileNo.text = data?.mobileNo ?? '';
-          // vehicleBrand.text = data?.vehicleBrand ?? '';
-          // vehicleModel.text = data?.vehicleModel ?? '';
           maxSpeedUpdate.text =
-              ((data?.maxSpeed ?? 0).toStringAsFixed(0) ?? '').toString();
+              ((data?.maxSpeed ?? 0).toStringAsFixed(0)).toString();
           latitudeUpdate.text = (data?.location?.latitude ?? '').toString();
           longitudeUpdate.text = (data?.location?.longitude ?? '').toString();
           parkingUpdate.value = data?.parking ?? false;
@@ -800,11 +327,11 @@ class TrackRouteController extends GetxController {
           geofence.value = data?.locationStatus ?? false;
           areaUpdate.text = (data?.area ?? '').toString();
 
-          insuranceExpiryDate.text = formatDate(data?.insuranceExpiryDate);
-          pollutionExpiryDate.text = formatDate(data?.pollutionExpiryDate);
-          fitnessExpiryDate.text = formatDate(data?.fitnessExpiryDate);
+          insuranceExpiryDate.text = Utils().formatDate(data?.insuranceExpiryDate);
+          pollutionExpiryDate.text = Utils().formatDate(data?.pollutionExpiryDate);
+          fitnessExpiryDate.text = Utils().formatDate(data?.fitnessExpiryDate);
           nationalPermitExpiryDate.text =
-              formatDate(data?.nationalPermitExpiryDate);
+              Utils().formatDate(data?.nationalPermitExpiryDate);
           if (showDialog && (deviceDetail.value.data?.isNotEmpty ?? false)) {
             if ((deviceDetail.value.data?[0].vehicleNo?.isEmpty ?? true) ||
                 (deviceDetail.value.data?[0].driverName?.isEmpty ?? true)) {
@@ -853,7 +380,8 @@ class TrackRouteController extends GetxController {
             ));
             circles.value = List.from(circles);
           }
-        } else {
+        }
+        else {
           isShowvehicleDetail.value = false;
           selectedVehicleIMEI.value = "";
           // selectedVehicleIndex.value = -1;
@@ -868,19 +396,231 @@ class TrackRouteController extends GetxController {
     }
   }
 
-  String formatDate(String? dateStr) {
-    if (dateStr == null) return ''; // Handle null case
-    try {
-      // Parse the date string to a DateTime object
-      DateTime dateTime = DateTime.parse(dateStr);
-      // Format the date as dd-mm-yyyy
-      return DateFormat('dd-MM-yyyy').format(dateTime);
-    } catch (e) {
-      return '-'; // Handle parsing error
+  Future<void> isShowVehicleDetails(int index, String imei) async {
+    isShowvehicleDetail.value = true;
+    // selectedVehicleIndex.value = index;
+    selectedVehicleIMEI.value = imei;
+  }
+
+  void showAllVehicles() async {
+    circles.value = [];
+    isShowvehicleDetail.value = false;
+    isSheetExpanded.value = false;
+    markers.value = [];
+    // selectedVehicleIndex.value = -1;
+    selectedVehicleIMEI.value = "";
+    isvehicleSelected.value = false;
+    checkFilterIndex(false);
+    if ((vehicleList.value.data?.isNotEmpty ?? false)) {
+      int? validIndex = vehicleList.value.data?.indexWhere((vehicle) =>
+      vehicle.trackingData?.location?.latitude != null &&
+          vehicle.trackingData?.location?.longitude != null);
+
+      if (validIndex != null && validIndex != -1) {
+        var vehicle = vehicleList.value.data?[validIndex];
+        updateCameraPosition(
+            course: Utils.parseDouble(data: vehicle?.trackingData?.course),
+            latitude: vehicle?.trackingData?.location?.latitude ?? 0,
+            longitude: vehicle?.trackingData?.location?.longitude ?? 0);
+      } else {
+        updateCameraPositionToCurrentLocation();
+      }
+    } else {
+      updateCameraPositionToCurrentLocation();
     }
   }
 
-// ALL VAR FOR EDIT DETAILS
+  Future<String> getCurrAddress({double? latitude, double? longitude}) async {
+    try {
+      // log("$latitude  $longitude  ====> LAT LONG");
+      if (latitude == null || longitude == null) return "Address not available";
+      List<Placemark> placemarks =
+      await placemarkFromCoordinates(latitude, longitude);
+      Placemark place = placemarks[0];
+      return "${place.street}, ${place.locality}, ${place.postalCode}, ${place.country}";
+    } catch (e) {
+      // debugPrint("Error LAT LONG ADDRESS" + e.toString());
+      return "Address not available";
+    }
+  }
+
+
+
+  /// FILTERING
+  List<Data> getVehiclesWithExpiringSubscriptions() {
+    List<Data> expiringVehicles = [];
+
+    DateTime currentDate = DateTime.now();
+
+    vehicleList.value.data?.forEach((vehicle) {
+      if (vehicle.subscriptionExp != null) {
+        DateTime subscriptionExpDate =
+        DateFormat('yyyy-MM-dd').parse(vehicle.subscriptionExp!);
+
+        int daysDifference = subscriptionExpDate.difference(currentDate).inDays;
+
+        if (daysDifference <= 30) {
+          expiringVehicles.add(vehicle);
+        }
+      }
+    });
+
+    return expiringVehicles;
+  }
+
+  List<Data> filterIgnitionOn(List<Data> vehicleList) {
+    return vehicleList.where((vehicle) {
+      return vehicle.trackingData?.ignition?.status == true; // Ignition is on
+    }).toList();
+  }
+
+  List<Data> filterIgnitionOff(List<Data> vehicleList) {
+    return vehicleList.where((vehicle) {
+      return vehicle.trackingData?.ignition?.status == false; // Ignition is off
+    }).toList();
+  }
+
+  List<Data> filterActiveVehicles(List<Data> vehicleList) {
+    return vehicleList.where((vehicle) {
+      return vehicle.status == 'Active' &&
+          (vehicle.subscriptionExp == null
+              ? vehicle.status == 'Active'
+              : (DateFormat('yyyy-MM-dd')
+              .parse(vehicle.subscriptionExp!)
+              .difference(DateTime.now())
+              .inDays +
+              1 >
+              0)); // Status is Active
+    }).toList();
+  }
+
+  List<Data> filterInactive(List<Data> vehicleList) {
+    return vehicleList.where((vehicle) {
+      return vehicle.status != "Active" ||
+          (vehicle.subscriptionExp == null
+              ? vehicle.status != 'Active'
+              : (DateFormat('yyyy-MM-dd')
+              .parse(vehicle.subscriptionExp!)
+              .difference(DateTime.now())
+              .inDays +
+              1 <=
+              0)); // Status is Active
+    }).toList();
+  }
+
+  List<Data> filterOffline(List<Data> vehicleList) {
+    return vehicleList.where((vehicle) {
+      return vehicle.trackingData?.status?.toLowerCase() !=
+          "online"; // Status is Active
+    }).toList();
+  }
+
+  bool checkIfInactive({Data? vehicle}) {
+    if (vehicle != null) {
+      return vehicle.status != "Active" ||
+          (vehicle.subscriptionExp == null
+              ? vehicle.status != 'Active'
+              : (DateFormat('yyyy-MM-dd')
+              .parse(vehicle.subscriptionExp!)
+              .difference(DateTime.now())
+              .inDays +
+              1 <=
+              0));
+    }
+    return true;
+  }
+
+  bool checkIfOffline({Data? vehicle}) {
+    if (vehicle != null) {
+      return vehicle.trackingData?.status?.toLowerCase() != "online";
+    }
+    return true;
+  }
+
+
+  void updateFilteredList() {
+    List<Data> allVehicles = vehicleList.value.data ?? [];
+
+    // Apply search filtering
+    List<Data> filteredBySearch = allVehicles.where((vehicle) {
+      return vehicle.vehicleNo
+          ?.toLowerCase()
+          .contains(searchController.text.toLowerCase()) ??
+          true;
+    }).toList();
+    filteredVehicleList.value = filteredBySearch;
+    filteredVehicleList.refresh();
+    developer.log("filtered list ${filteredVehicleList.value.length}");
+  }
+
+
+  void checkFilterIndex(bool updateCamera) async {
+    List<Data> vehiclesToDisplay = [];
+    if (isFilterSelectedindex.value == 2) {
+      vehiclesToDisplay = activeVehiclesList;
+    } else if (isFilterSelectedindex.value == 0) {
+      vehiclesToDisplay = ignitionOnList;
+    } else if (isFilterSelectedindex.value == 1) {
+      vehiclesToDisplay = ignitionOffList;
+    } else if (isFilterSelectedindex.value == 3) {
+      vehiclesToDisplay = inActiveVehiclesList;
+    } else if (isFilterSelectedindex.value == 4) {
+      vehiclesToDisplay = offlineVehiclesList;
+    } else {
+      vehiclesToDisplay = allVehicles;
+    }
+
+    if (vehiclesToDisplay.isNotEmpty &&
+        updateCamera &&
+        vehiclesToDisplay[0].trackingData?.location?.latitude != null &&
+        vehiclesToDisplay[0].trackingData?.location?.longitude != null) {
+      updateCameraPosition(
+          course: Utils.parseDouble(
+              data: vehiclesToDisplay[0]?.trackingData?.course),
+          latitude: vehiclesToDisplay[0].trackingData?.location?.latitude ?? 0,
+          longitude:
+          vehiclesToDisplay[0].trackingData?.location?.longitude ?? 0);
+    }
+    //else {
+    //   updateCameraPositionToCurrentLocation();
+    // }
+
+    if (isShowvehicleDetail.value &&
+        selectedVehicleIMEI.value.isNotEmpty &&
+        !dialogOpen) {
+      devicesByDetails(
+        selectedVehicleIMEI.value ?? '',
+      );
+    } else if (!isShowvehicleDetail.value &&
+        selectedVehicleIMEI.value.isEmpty) {
+      for (var vehicle in vehiclesToDisplay) {
+        if (vehicle.trackingData?.location?.latitude != null &&
+            vehicle.trackingData?.location?.longitude != null) {
+          bool isInactive = checkIfInactive(vehicle: vehicle);
+          bool isOffline = checkIfOffline(vehicle: vehicle);
+          double? lat = vehicle.trackingData?.location?.latitude;
+          double? long = vehicle.trackingData?.location?.longitude;
+          if (isInactive) {
+            lat = vehicle.lastLocation?.latitude;
+            long = vehicle.lastLocation?.longitude;
+          }
+          Marker marker = await createMarker(
+              id: vehicle.deviceId,
+              img: vehicle.vehicletype?.icons,
+              long: long,
+              lat: lat,
+              vehicleNo: vehicle.vehicleNo,
+              imei: vehicle.imei ?? "",
+              course: Utils.parseDouble(data: vehicle.trackingData?.course),
+              isOffline: isOffline,
+              isInactive: isInactive);
+          markers.add(marker);
+        }
+      }
+    }
+  }
+
+  /// EDIT VEHICLE DETAILS
 
   TextEditingController vehicleRegistrationNumber = TextEditingController();
   TextEditingController vehicleName = TextEditingController();
@@ -937,19 +677,9 @@ class TrackRouteController extends GetxController {
       }
 
       final body = {
-        // "vehicleRegistrationNo": vehicleRegistrationNumber.text,
         "vehicleNo": vehicleName.text,
-        // "IMEINo" :deviceDetail.value.data?[0].imei,
-        // "deviceID" :deviceDetail.value.data?[0].deviceId,
-        // "dateAdded": dateAdded.text.isNotEmpty
-        //     ? DateFormat('yyyy-MM-dd')
-        //         .format(DateFormat('dd-MM-yyyy').parse(dateAdded.text))
-        //     : "",
         "driverName": driverName.text,
         "mobileNo": driverMobileNo.text,
-        // "vehicleType": vehicleType.value.id.toString(),
-        // "vehicleBrand": vehicleBrand.text,
-        // "vehicleModel": vehicleModel.text,
         "insuranceExpiryDate": insuranceExpiryDate.text.isNotEmpty
             ? DateFormat('yyyy-MM-dd').format(
                 DateFormat('dd-MM-yyyy').parse(insuranceExpiryDate.text))
@@ -980,13 +710,6 @@ class TrackRouteController extends GetxController {
       devicesByDetails(deviceDetail.value.data?[0].imei ?? "",
           updateCamera: false);
       Utils.getSnackbar('Success', 'Your detail is updated');
-      // deviceDetail.value.data?.clear();
-      // deviceDetail.value.data?.clear();
-      //  if (response.message == "success") {
-      //   networkStatus.value = NetworkStatus.SUCCESS;
-      //   stackIndex.value = 0;
-      //
-      // }
     } catch (e) {
       networkStatus.value = NetworkStatus.ERROR;
 
@@ -1053,138 +776,6 @@ class TrackRouteController extends GetxController {
     }
   }
 
-  Future<Marker> createMarker(
-      {double? lat,
-      double? long,
-      String? img,
-      String? id,
-      required double course,
-      required String imei,
-      required bool isInactive,
-      required bool isOffline,
-      String? vehicleNo}) async {
-    BitmapDescriptor markerIcon = BitmapDescriptor.defaultMarker;
-    developer.log("IMEI MARkER $imei");
-    if (isInactive) {
-      markerIcon = await svgToBitmapDescriptorInactiveIcon();
-    } else {
-      markerIcon = await svgToBitmapDescriptor('${ProjectUrls.imgBaseUrl}$img');
-    }
-    final markerId = "${ProjectUrls.imgBaseUrl}$img$imei";
-    final marker = Marker(
-        rotation: course,
-        markerId: MarkerId(markerId),
-        position: LatLng(
-          lat ?? 0,
-          long ?? 0,
-        ),
-        /* infoWindow: Platform.isAndroid
-            ? InfoWindow(
-                title: 'Vehicle No: ${vehicleNo}',
-                snippet: 'IMEI: ${imei}',
-              )
-            : InfoWindow.noText,*/
-        icon: markerIcon,
-        flat: true,
-        anchor: Offset(0.5, 0.5),
-        onTap: () => _onMarkerTapped(-1, imei, vehicleNo ?? "-", course,
-            lat: lat, long: long));
-    return marker;
-  }
-
-  void showAllVehicles() async {
-    circles.value = [];
-    isShowvehicleDetail.value = false;
-    isSheetExpanded.value = false;
-    markers.value = [];
-    // selectedVehicleIndex.value = -1;
-    selectedVehicleIMEI.value = "";
-    isvehicleSelected.value = false;
-    checkFilterIndex(false);
-    if ((vehicleList.value.data?.isNotEmpty ?? false)) {
-      int? validIndex = vehicleList.value.data?.indexWhere((vehicle) =>
-          vehicle.trackingData?.location?.latitude != null &&
-          vehicle.trackingData?.location?.longitude != null);
-
-      if (validIndex != null && validIndex != -1) {
-        var vehicle = vehicleList.value.data?[validIndex];
-        updateCameraPosition(
-            course: Utils.parseDouble(data: vehicle?.trackingData?.course),
-            latitude: vehicle?.trackingData?.location?.latitude ?? 0,
-            longitude: vehicle?.trackingData?.location?.longitude ?? 0);
-      } else {
-        updateCameraPositionToCurrentLocation();
-      }
-    } else {
-      updateCameraPositionToCurrentLocation();
-    }
-  }
-
-  void checkFilterIndex(bool updateCamera) async {
-    List<Data> vehiclesToDisplay = [];
-    if (isFilterSelectedindex.value == 2) {
-      vehiclesToDisplay = activeVehiclesList;
-    } else if (isFilterSelectedindex.value == 0) {
-      vehiclesToDisplay = ignitionOnList;
-    } else if (isFilterSelectedindex.value == 1) {
-      vehiclesToDisplay = ignitionOffList;
-    } else if (isFilterSelectedindex.value == 3) {
-      vehiclesToDisplay = inActiveVehiclesList;
-    } else if (isFilterSelectedindex.value == 4) {
-      vehiclesToDisplay = offlineVehiclesList;
-    } else {
-      vehiclesToDisplay = allVehicles;
-    }
-
-    if (vehiclesToDisplay.isNotEmpty &&
-        updateCamera &&
-        vehiclesToDisplay[0].trackingData?.location?.latitude != null &&
-        vehiclesToDisplay[0].trackingData?.location?.longitude != null) {
-      updateCameraPosition(
-          course: Utils.parseDouble(
-              data: vehiclesToDisplay[0]?.trackingData?.course),
-          latitude: vehiclesToDisplay[0].trackingData?.location?.latitude ?? 0,
-          longitude:
-              vehiclesToDisplay[0].trackingData?.location?.longitude ?? 0);
-    }
-    //else {
-    //   updateCameraPositionToCurrentLocation();
-    // }
-
-    if (isShowvehicleDetail.value &&
-        selectedVehicleIMEI.value.isNotEmpty &&
-        !dialogOpen) {
-      devicesByDetails(
-        selectedVehicleIMEI.value ?? '',
-      );
-    } else if (!isShowvehicleDetail.value &&
-        selectedVehicleIMEI.value.isEmpty) {
-      for (var vehicle in vehiclesToDisplay) {
-        if (vehicle.trackingData?.location?.latitude != null &&
-            vehicle.trackingData?.location?.longitude != null) {
-          bool isInactive = checkIfInactive(vehicle: vehicle);
-          bool isOffline = checkIfOffline(vehicle: vehicle);
-          double? lat = vehicle.trackingData?.location?.latitude;
-          double? long = vehicle.trackingData?.location?.longitude;
-          if (isInactive) {
-            lat = vehicle.lastLocation?.latitude;
-            long = vehicle.lastLocation?.longitude;
-          }
-          Marker marker = await createMarker(
-              id: vehicle.deviceId,
-              img: vehicle.vehicletype?.icons,
-              long: long,
-              lat: lat,
-              vehicleNo: vehicle.vehicleNo,
-              imei: vehicle.imei ?? "",
-              course: Utils.parseDouble(data: vehicle.trackingData?.course),
-              isOffline: isOffline,
-              isInactive: isInactive);
-          markers.add(marker);
-        }
-      }
-    }
-  }
 
   RxString relayStatus = "".obs;
 
@@ -1253,6 +844,175 @@ class TrackRouteController extends GetxController {
     }
   }
 
+
+  void resetGeneralInfo() {
+    final data = deviceDetail.value.data?[0];
+    // vehicleRegistrationNumber.text = data?.vehicleRegistrationNo ?? '';
+    vehicleName.text = data?.vehicleNo ?? '';
+    dateAdded.text = Utils().formatDate(data?.dateAdded);
+    driverName.text = data?.driverName ?? '';
+    driverMobileNo.text = data?.mobileNo ?? '';
+    insuranceExpiryDate.text = Utils().formatDate(data?.insuranceExpiryDate);
+    pollutionExpiryDate.text = Utils().formatDate(data?.pollutionExpiryDate);
+    fitnessExpiryDate.text = Utils().formatDate(data?.fitnessExpiryDate);
+    nationalPermitExpiryDate.text = Utils().formatDate(data?.nationalPermitExpiryDate);
+  }
+
+  void getCurrLocationForGeofence() async {
+    Position? data = await getCurrentLocation();
+    latitudeUpdate.text = (data?.latitude ?? "").toString();
+    longitudeUpdate.text = (data?.longitude ?? "").toString();
+  }
+
+
+  /// Location tracking methods
+
+  Future<Position?> getCurrentLocation() async {
+    try {
+      await _requestLocationPermission(updateCamera: false);
+      return await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+    } catch (e) {
+      // print('Error fetching location: $e');
+      return null;
+    }
+  }
+
+  // Method to check location permissions and GPS status
+  Future<void> checkStatus() async {
+    bool _permissionGranted = await _isPermissionGranted();
+    bool _gpsEnabled = await _isGpsEnabled();
+
+    if (_gpsEnabled && _permissionGranted) {
+      _startLocationTracking();
+    } else {
+      if (!_gpsEnabled) await _requestEnableGps();
+      if (!_permissionGranted) await _requestLocationPermission();
+    }
+  }
+
+  // Method to request location permission
+  Future<bool> _isPermissionGranted() async {
+    return await Permission.locationWhenInUse.isGranted;
+  }
+
+  // Method to check if GPS is enabled
+  Future<bool> _isGpsEnabled() async {
+    return await Geolocator.isLocationServiceEnabled();
+  }
+
+  // Request to enable GPS
+  Future<void> _requestEnableGps() async {
+    bool isGpsActive = await Geolocator.openLocationSettings();
+    gpsEnabled = isGpsActive;
+  }
+
+  // Request location permission
+  Future<void> _requestLocationPermission({bool updateCamera = true}) async {
+    PermissionStatus permissionStatus =
+    await Permission.locationWhenInUse.request();
+    permissionGranted = permissionStatus == PermissionStatus.granted;
+    if (permissionGranted) {
+      _startLocationTracking(updateCamera: updateCamera);
+    } else {
+      Utils.getSnackbar("Please turn on device location", "");
+    }
+  }
+
+  void _startLocationTracking({bool updateCamera = true}) async {
+    // getCurrentLocation();
+    Position pos = await Geolocator.getCurrentPosition();
+
+    currentLocation.value = LatLng(pos.latitude, pos.longitude);
+    if (updateCamera) {
+      mapController.animateCamera(
+        CameraUpdate.newCameraPosition(
+          CameraPosition(target: currentLocation.value, zoom: 7),
+        ),
+      );
+    }
+
+    // positionStream = Geolocator.getPositionStream(
+    //         locationSettings: LocationSettings(accuracy: LocationAccuracy.high))
+    //     .listen((Position position) {
+    //   updateCurrentPosition(position.latitude, position.longitude);
+    // });
+  }
+
+///MAP methods
+
+
+  void updateCameraPosition(
+      {required double latitude,
+        required double longitude,
+        required double course}) {
+    if (Get.put(BottomBarController()).selectedIndex == 2) {
+      if (mapController != null) {
+        mapController.animateCamera(
+          CameraUpdate.newCameraPosition(
+            CameraPosition(
+              // bearing: course,
+                target: LatLng(latitude, longitude),
+                zoom: 7),
+          ),
+        );
+      }
+    }
+  }
+
+  void updateCameraPositionToCurrentLocation() async {
+    if (Get.put(BottomBarController()).selectedIndex == 2) {
+      Position? data = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+      if (data != null && mapController != null) {
+        mapController.animateCamera(
+          CameraUpdate.newCameraPosition(
+            CameraPosition(
+                target: LatLng(data.latitude, data.longitude), zoom: 7),
+          ),
+        );
+      }
+    }
+  }
+
+  void updateCameraPositionWithZoom(
+      {required double latitude,
+        required double longitude,
+        required double course}) async {
+    if (Get.put(BottomBarController()).selectedIndex == 2) {
+      if (mapController != null) {
+        // double offset = 0.0009;
+        /*LatLng newLatLng =
+            await calcLatLong(offset, course, latitude, longitude);*/
+        mapController.animateCamera(
+          CameraUpdate.newCameraPosition(
+            CameraPosition(
+              bearing: course,
+              target: LatLng(latitude, longitude), //todo
+              zoom: 17,
+            ),
+          ),
+        );
+      }
+    }
+  }
+
+  // On Map Created
+  void onMapCreated(GoogleMapController controller) {
+    mapController = controller;
+  }
+
+  void _onMarkerTapped(int index, String imei, String vehicleNo, double course,
+      {double? lat, double? long}) async {
+    isShowVehicleDetails(index, imei);
+    isExpanded.value = false;
+    await devicesByDetails(imei, updateCamera: false, showDialog: true);
+    if (lat != null && long != null) {
+      updateCameraPositionWithZoom(
+          latitude: lat, longitude: long, course: course);
+    }
+  }
+
   void openMaps({LatLng? data}) async {
     try {
       if (data != null) {
@@ -1288,67 +1048,42 @@ class TrackRouteController extends GetxController {
     }
   }
 
-  void resetGeneralInfo() {
-    final data = deviceDetail.value.data?[0];
-    // vehicleRegistrationNumber.text = data?.vehicleRegistrationNo ?? '';
-    vehicleName.text = data?.vehicleNo ?? '';
-    dateAdded.text = formatDate(data?.dateAdded);
-    driverName.text = data?.driverName ?? '';
-    driverMobileNo.text = data?.mobileNo ?? '';
-    // vehicleBrand.text = data?.vehicleBrand ?? '';
-    // vehicleModel.text = data?.vehicleModel ?? '';
-    // vehicleType.value = DataVehicleType(
-    //     id: data?.vehicletype?.sId ?? "",
-    //     name: data?.vehicletype?.vehicleTypeName ?? "");
-    insuranceExpiryDate.text = formatDate(data?.insuranceExpiryDate);
-    pollutionExpiryDate.text = formatDate(data?.pollutionExpiryDate);
-    fitnessExpiryDate.text = formatDate(data?.fitnessExpiryDate);
-    nationalPermitExpiryDate.text = formatDate(data?.nationalPermitExpiryDate);
-  }
-
-  void getCurrLocationForGeofence() async {
-    Position? data = await getCurrentLocation();
-    latitudeUpdate.text = (data?.latitude ?? "").toString();
-    longitudeUpdate.text = (data?.longitude ?? "").toString();
-  }
-
-  bool checkIfInactive({Data? vehicle}) {
-    if (vehicle != null) {
-      return vehicle.status != "Active" ||
-          (vehicle.subscriptionExp == null
-              ? vehicle.status != 'Active'
-              : (DateFormat('yyyy-MM-dd')
-                          .parse(vehicle.subscriptionExp!)
-                          .difference(DateTime.now())
-                          .inDays +
-                      1 <=
-                  0));
+  Future<Marker> createMarker(
+      {double? lat,
+        double? long,
+        String? img,
+        String? id,
+        required double course,
+        required String imei,
+        required bool isInactive,
+        required bool isOffline,
+        String? vehicleNo}) async {
+    BitmapDescriptor markerIcon = BitmapDescriptor.defaultMarker;
+    developer.log("IMEI MARkER $imei");
+    if (isInactive) {
+      markerIcon = await svgToBitmapDescriptorInactiveIcon();
+    } else {
+      markerIcon = await svgToBitmapDescriptor('${ProjectUrls.imgBaseUrl}$img');
     }
-    return true;
+    final markerId = "${ProjectUrls.imgBaseUrl}$img$imei";
+    final marker = Marker(
+        rotation: course,
+        markerId: MarkerId(markerId),
+        position: LatLng(
+          lat ?? 0,
+          long ?? 0,
+        ),
+        /* infoWindow: Platform.isAndroid
+            ? InfoWindow(
+                title: 'Vehicle No: ${vehicleNo}',
+                snippet: 'IMEI: ${imei}',
+              )
+            : InfoWindow.noText,*/
+        icon: markerIcon,
+        flat: true,
+        anchor: Offset(0.5, 0.5),
+        onTap: () => _onMarkerTapped(-1, imei, vehicleNo ?? "-", course,
+            lat: lat, long: long));
+    return marker;
   }
-
-  bool checkIfOffline({Data? vehicle}) {
-    if (vehicle != null) {
-      return vehicle.trackingData?.status?.toLowerCase() != "online";
-    }
-    return true;
-  }
-
-
-  void updateFilteredList() {
-    List<Data> allVehicles = vehicleList.value.data ?? [];
-
-    // Apply search filtering
-    List<Data> filteredBySearch = allVehicles.where((vehicle) {
-      return vehicle.vehicleNo
-          ?.toLowerCase()
-          .contains(searchController.text.toLowerCase()) ??
-          true;
-    }).toList();
-    filteredVehicleList.value = filteredBySearch;
-    filteredVehicleList.refresh();
-    developer.log("filtered list ${filteredVehicleList.value.length}");
-  }
-
-
 }

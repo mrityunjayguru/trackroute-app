@@ -30,27 +30,6 @@ class VehicalesController extends GetxController {
   TextEditingController searchController = TextEditingController();
   RxList<Data> filteredVehicleList = <Data>[].obs; // List for search results
 
-  RxString address = ''.obs;
-
-  Future<String> getAddressFromLatLong(
-      double latitude, double longitude) async {
-    try {
-      List<Placemark> placemarks =
-          await placemarkFromCoordinates(latitude, longitude);
-
-      Placemark place = placemarks[0];
-
-      String address =
-          "${place.street}, ${place.locality}, ${place.postalCode}, ${place.country}";
-
-      // log("ADDRESS =====> $address");
-      return address;
-    } catch (e) {
-      // debugPrint("Error " + e.toString());
-      address.value = "Address not available";
-      return address.value;
-    }
-  }
 
   @override
   void onInit() {

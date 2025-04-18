@@ -344,19 +344,6 @@ class HistoryController extends GetxController {
     }
   }
 
-  Future<String> getAddressFromLatLong(
-      double latitude, double longitude) async {
-    try {
-      List<Placemark> placemarks =
-          await placemarkFromCoordinates(latitude, longitude);
-      Placemark place = placemarks[0];
-
-      return "${place.street}, ${place.locality}, ${place.subLocality}, ${place.country}";
-    } catch (e) {
-      // debugPrint("Error " + e.toString());
-      return "Address not available";
-    }
-  }
 
   void onMapCreated(GoogleMapController controller) {
     mapController = controller;
@@ -442,7 +429,7 @@ class HistoryController extends GetxController {
     BitmapDescriptor markerIcon = await createCustomIconWithNumber(index,
         isselected: true, width: 100, height: 100, maxSpeed: maxSpeed);
     markers[index - 1] = markers[index - 1].copyWith(iconParam: markerIcon);
-    markerAddress.value = await getAddressFromLatLong(lat ?? 0, long ?? 0);
+    markerAddress.value = await Utils().getAddressFromLatLong(lat ?? 0, long ?? 0);
     for (int i = 0; i < markers.length; i++) {
       if (i != index - 1) {
         BitmapDescriptor markerIconFalse = await createCustomIconWithNumber(

@@ -232,23 +232,9 @@ class LocationController extends GetxController {
 
 
   _setAddress() async{
-    address.value = await getAddressFromLatLong(locations
+    address.value = await Utils().getAddressFromLatLong(locations
         .value[currentIndex.value].trackingData?.location?.latitude ?? 0, locations
         .value[currentIndex.value].trackingData?.location?.longitude ?? 0);
-  }
-
-  Future<String> getAddressFromLatLong(
-      double latitude, double longitude) async {
-    try {
-      List<Placemark> placemarks =
-      await placemarkFromCoordinates(latitude, longitude);
-      Placemark place = placemarks[0];
-
-      return "${place.street}, ${place.locality}, ${place.postalCode}, ${place.country}";
-    } catch (e) {
-      return "Address not available";
-    }
-    return "Address not available";
   }
 
 
@@ -261,7 +247,7 @@ class LocationController extends GetxController {
     currDist.value = Utils.parseDouble(
         data: currDistStop).toStringAsFixed(2);
     stopDuration.value = stopDur;
-    address.value = await getAddressFromLatLong(pos.latitude, pos.longitude);
+    address.value = await Utils().getAddressFromLatLong(pos.latitude, pos.longitude);
 
   }
 }

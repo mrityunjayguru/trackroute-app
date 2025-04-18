@@ -2,8 +2,10 @@ import 'dart:developer';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:intl/intl.dart';
 import 'package:sizer/sizer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -195,5 +197,31 @@ class Utils{
 
   static TextInputFormatter intFormatter() {
     return FilteringTextInputFormatter.digitsOnly;
+  }
+
+  Future<String> getAddressFromLatLong(
+      double latitude, double longitude) async {
+    try {
+      List<Placemark> placemarks =
+      await placemarkFromCoordinates(latitude, longitude);
+      Placemark place = placemarks[0];
+
+      return "${place.street}, ${place.locality}, ${place.postalCode}, ${place.country}";
+    } catch (e) {
+      return "Address not available";
+    }
+    return "Address not available";
+  }
+
+  String formatDate(String? dateStr) {
+    if (dateStr == null) return ''; // Handle null case
+    try {
+      // Parse the date string to a DateTime object
+      DateTime dateTime = DateTime.parse(dateStr);
+      // Format the date as dd-mm-yyyy
+      return DateFormat('dd-MM-yyyy').format(dateTime);
+    } catch (e) {
+      return '-'; // Handle parsing error
+    }
   }
 }
