@@ -158,7 +158,7 @@ class VehicleDataWidget extends StatelessWidget {
                   controller.editGeofence.value = false;
                   controller.editSpeed.value = false;
                   controller.isExpanded.value = false;
-                  controller.devicesByDetails(imei);
+                  controller.devicesByDetails();
                 },
                 child: Text(
                   'Manage Vehicle',

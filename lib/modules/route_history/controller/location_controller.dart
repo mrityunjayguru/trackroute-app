@@ -57,7 +57,7 @@ class LocationController extends GetxController {
     address.value = "";
     stopDuration.value = "";
     markerIcon = await svgToBitmapDescriptor(
-        '${ProjectUrls.imgBaseUrl}${trackCon.deviceDetail.value.data?[0].vehicletype?.icons ?? ""}',
+        '${ProjectUrls.imgBaseUrl}${trackCon.deviceDetail.value?.vehicletype?.icons ?? ""}',
         size: Size(30, 30));
     _updateMap();
   }

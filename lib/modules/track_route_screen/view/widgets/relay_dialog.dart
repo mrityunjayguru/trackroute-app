@@ -1,15 +1,12 @@
 import 'package:flutter_svg/svg.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:sizer/sizer.dart';
-
-import '../../../../common/textfield/apptextfield.dart';
 import '../../../../config/app_sizer.dart';
 import '../../../../config/theme/app_colors.dart';
 import '../../../../config/theme/app_textstyle.dart';
 import '../../../../utils/common_import.dart';
-import '../../../../utils/utils.dart';
 import '../../controller/track_route_controller.dart';
-import 'edit_text_field.dart';
+
 
 class RelayDialog extends StatelessWidget {
   RelayDialog({super.key});
@@ -109,7 +106,7 @@ class RelayDialog extends StatelessWidget {
                   onTap: () {
                       Get.showOverlay(
                           asyncFunction: () => controller.stopEngine(
-                              controller.deviceDetail.value.data?[0].imei ??
+                              controller.deviceDetail.value?.imei ??
                                   ""),
                           loadingWidget: LoadingAnimationWidget.dotsTriangle(
                             color: AppColors.white,

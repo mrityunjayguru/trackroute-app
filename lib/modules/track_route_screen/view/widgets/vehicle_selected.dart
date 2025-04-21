@@ -31,132 +31,135 @@ class VehicleSelected extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(
-      () => Scaffold(
-        resizeToAvoidBottomInset: false,
-        backgroundColor:
-            controller.isedit.value ? AppColors.color_f6f8fc : Colors.white,
-        appBar: PreferredSize(
-          preferredSize: controller.isedit.value
-              ? Size.fromHeight(6.h + 6.h + 4.8.h)
-              : Size.fromHeight(6.h + 4.8.h),
-          child: Column(children: [
-            SizedBox(
-              height: 4.8.h,
-            ),
-            Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(AppSizes.radius_50),
-                    topRight: Radius.circular(AppSizes.radius_50),
-                    bottomRight: Radius.circular(AppSizes.radius_10),
-                    bottomLeft: Radius.circular(AppSizes.radius_10)),
-                color: AppColors.whiteOff,
+      () => PopScope(
+        canPop: false,
+        child: Scaffold(
+          resizeToAvoidBottomInset: false,
+          backgroundColor:
+              controller.isedit.value ? AppColors.color_f6f8fc : Colors.white,
+          appBar: PreferredSize(
+            preferredSize: controller.isedit.value
+                ? Size.fromHeight(6.h + 6.h + 4.8.h)
+                : Size.fromHeight(6.h + 4.8.h),
+            child: Column(children: [
+              SizedBox(
+                height: 4.8.h,
               ),
-              child: Column(
-                children: [
-                  if (controller.isedit.value)
-                    Utils().topBar(
-                        context: context,
-                        rightIcon: 'assets/images/svg/ic_arrow_left.svg',
-                        onTap: () {
-                          controller.stackIndex.value = 1;
-                          controller.isedit.value = false;
-                          controller.editGeofence.value = false;
-                          controller.editSpeed.value = false;
-                          controller.resetGeneralInfo();
-                        },
-                        name: 'Edit General Info')
-                  else
-                    Utils().topBar(
-                        context: context,
-                        rightIcon: 'assets/images/svg/ic_arrow_left.svg',
-                        onTap: () {
-                          controller.stackIndex.value = 0;
-                        },
-                        name:
-                            'Manage ${controller.deviceDetail.value.data?[0].vehicleNo != null ? "-" : ""}${controller.deviceDetail.value.data?[0].vehicleNo ?? ''}'),
-                  if (controller.isedit.value)
-                    Container(
-                      height: 7.h,
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.only(
-                              bottomLeft: Radius.circular(AppSizes.radius_10),
-                              bottomRight:
-                                  Radius.circular(AppSizes.radius_10))),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(AppSizes.radius_50),
+                      topRight: Radius.circular(AppSizes.radius_50),
+                      bottomRight: Radius.circular(AppSizes.radius_10),
+                      bottomLeft: Radius.circular(AppSizes.radius_10)),
+                  color: AppColors.whiteOff,
+                ),
+                child: Column(
+                  children: [
+                    if (controller.isedit.value)
+                      Utils().topBar(
+                          context: context,
+                          rightIcon: 'assets/images/svg/ic_arrow_left.svg',
+                          onTap: () {
+                            controller.stackIndex.value = 1;
+                            controller.isedit.value = false;
+                            controller.editGeofence.value = false;
+                            controller.editSpeed.value = false;
+                            controller.resetGeneralInfo();
+                          },
+                          name: 'Edit General Info')
+                    else
+                      Utils().topBar(
+                          context: context,
+                          rightIcon: 'assets/images/svg/ic_arrow_left.svg',
+                          onTap: () {
+                            controller.stackIndex.value = 0;
+                          },
+                          name:
+                              'Manage ${controller.deviceDetail.value?.vehicleNo != null ? "-" : ""}${controller.deviceDetail.value?.vehicleNo ?? ''}'),
+                    if (controller.isedit.value)
+                      Container(
+                        height: 7.h,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.only(
+                                bottomLeft: Radius.circular(AppSizes.radius_10),
+                                bottomRight:
+                                    Radius.circular(AppSizes.radius_10))),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Device IMEI No.",
+                                    style: AppTextStyles(context)
+                                        .display12W400
+                                        .copyWith(color: AppColors.grayLight),
+                                  ),
+                                  Text(
+                                      "${controller.deviceDetail.value?.imei ?? ""}",
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: AppTextStyles(context).display14W400)
+                                ],
+                              ),
+                            ),
+                            Expanded(
+                                child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 Text(
-                                  "Device IMEI No.",
+                                  "Date Added",
                                   style: AppTextStyles(context)
                                       .display12W400
                                       .copyWith(color: AppColors.grayLight),
                                 ),
                                 Text(
-                                    "${controller.deviceDetail.value.data?[0].imei ?? ""}",
+                                    "${formatDate(controller.deviceDetail.value?.dateAdded) ?? '-'}",
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                     style: AppTextStyles(context).display14W400)
                               ],
+                            ))
+                          ],
+                        ).paddingOnly(top: 12, bottom: 12, left: 10, right: 10),
+                      )
+                  ],
+                ),
+              )
+            ]).paddingOnly(top: 12, bottom: 0, left: 10, right: 10),
+          ),
+          body: SingleChildScrollView(
+            child: Container(
+              color: controller.isedit.value
+                  ? AppColors.color_f6f8fc
+                  : AppColors.white,
+              child: controller.isedit.value
+                  ? editGeneralInfo(context)
+                      .paddingSymmetric(horizontal: 4.w * 0.9)
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        geofenceWidget(context).paddingOnly(bottom: 16),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(child: parkingWidget(context)),
+                            SizedBox(
+                              width: 4.w,
                             ),
-                          ),
-                          Expanded(
-                              child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text(
-                                "Date Added",
-                                style: AppTextStyles(context)
-                                    .display12W400
-                                    .copyWith(color: AppColors.grayLight),
-                              ),
-                              Text(
-                                  "${formatDate(controller.deviceDetail.value.data?[0].dateAdded) ?? '-'}",
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: AppTextStyles(context).display14W400)
-                            ],
-                          ))
-                        ],
-                      ).paddingOnly(top: 12, bottom: 12, left: 10, right: 10),
-                    )
-                ],
-              ),
-            )
-          ]).paddingOnly(top: 12, bottom: 0, left: 10, right: 10),
-        ),
-        body: SingleChildScrollView(
-          child: Container(
-            color: controller.isedit.value
-                ? AppColors.color_f6f8fc
-                : AppColors.white,
-            child: controller.isedit.value
-                ? editGeneralInfo(context)
-                    .paddingSymmetric(horizontal: 4.w * 0.9)
-                : Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      geofenceWidget(context).paddingOnly(bottom: 16),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(child: parkingWidget(context)),
-                          SizedBox(
-                            width: 4.w,
-                          ),
-                          Expanded(child: speedWidget(context)),
-                        ],
-                      ),
-                      generalInfoWidget(context),
-                      immobilizerWidget(context),
-                      subExpiry(context),
-                    ],
-                  ).paddingSymmetric(horizontal: 4.w * 0.9),
+                            Expanded(child: speedWidget(context)),
+                          ],
+                        ),
+                        generalInfoWidget(context),
+                        immobilizerWidget(context),
+                        subExpiry(context),
+                      ],
+                    ).paddingSymmetric(horizontal: 4.w * 0.9),
+            ),
           ),
         ),
       ),
@@ -456,71 +459,71 @@ class VehicleSelected extends StatelessWidget {
               buildRow(
                 context,
                 'Date Added',
-                '${formatDate(controller.deviceDetail.value.data?[0].dateAdded) ?? '-'}',
+                '${formatDate(controller.deviceDetail.value?.dateAdded) ?? '-'}',
               ),
               SizedBox(height: 10),
               buildRow(
                 context,
                 'Vehicle No.',
-                '${controller.deviceDetail.value.data?[0].vehicleNo ?? '-'}',
+                '${controller.deviceDetail.value?.vehicleNo ?? '-'}',
               ),
               SizedBox(height: 10),
               buildRow(
                 context,
                 'Driven By',
-                '${controller.deviceDetail.value.data?[0].driverName ?? '-'}',
+                '${controller.deviceDetail.value?.driverName ?? '-'}',
               ),
               SizedBox(height: 10),
               buildRow(
                 context,
                 'Calling Number',
-                '${controller.deviceDetail.value.data?[0].mobileNo ?? '-'}',
+                '${controller.deviceDetail.value?.mobileNo ?? '-'}',
               ),
               /* SizedBox(height: 10),
             */ /*  buildRow(
                 context,
                 'Vehicle Type',
-                '${controller.deviceDetail.value.data?[0].vehicletype?.vehicleTypeName ?? '-'}',
+                '${controller.deviceDetail.value?.vehicletype?.vehicleTypeName ?? '-'}',
               ),*/ /*
               SizedBox(height: 10),
               buildRow(
                 context,
                 'Vehicle Brand',
-                '${controller.deviceDetail.value.data?[0].vehicleBrand ?? '-'}',
+                '${controller.deviceDetail.value?.vehicleBrand ?? '-'}',
               ),
               SizedBox(height: 10),
              */ /* buildRow(
                 context,
                 'Vehicle Model',
-                '${controller.deviceDetail.value.data?[0].vehicleModel ?? '-'}',
+                '${controller.deviceDetail.value?.vehicleModel ?? '-'}',
               ),*/
               SizedBox(height: 10),
               buildRow(
                 context,
                 'Insurance Expiry',
                 formatDate(
-                    '${controller.deviceDetail.value.data?[0].insuranceExpiryDate ?? '-'}'),
+                    '${controller.deviceDetail.value?.insuranceExpiryDate ?? '-'}'),
               ),
               SizedBox(height: 10),
               buildRow(
                 context,
                 'Pollution Expiry',
                 formatDate(
-                    '${controller.deviceDetail.value.data?[0].pollutionExpiryDate ?? '-'}'),
+                    '${controller.deviceDetail.value?.pollutionExpiryDate ?? '-'}'),
               ),
               SizedBox(height: 10),
               buildRow(
                 context,
                 'Fitness Expiry',
                 formatDate(
-                    '${controller.deviceDetail.value.data?[0].fitnessExpiryDate ?? '-'}'),
+                    '${controller.deviceDetail.value?.fitnessExpiryDate ?? '-'}'),
               ),
               SizedBox(height: 10),
               buildRow(
                 context,
                 'National Permit Expiry',
                 formatDate(
-                    '${controller.deviceDetail.value.data?[0].nationalPermitExpiryDate ?? '-'}'),
+                    '${controller.deviceDetail.value?.nationalPermitExpiryDate ?? '-'}'),
               ),
             ],
           ).paddingSymmetric(horizontal: 3.w, vertical: 1.h),
@@ -534,17 +537,17 @@ class VehicleSelected extends StatelessWidget {
 
   Widget immobilizerWidget(BuildContext context) {
     bool active = true;
-    if ((controller.deviceDetail.value.data?[0].displayParameters?.relay ==
+    if ((controller.deviceDetail.value?.displayParameters?.relay ==
             null) ||
-        (controller.deviceDetail.value.data?[0].displayParameters?.relay ==
+        (controller.deviceDetail.value?.displayParameters?.relay ==
             false) ||
         (controller
-                .deviceDetail.value.data?[0].trackingData?.ignition?.status ==
+                .deviceDetail.value?.trackingData?.ignition?.status ==
             true) ||
-        (controller.deviceDetail.value.data?[0].trackingData?.motion ??
+        (controller.deviceDetail.value?.trackingData?.motion ??
             false) ||
         Utils.parseDouble(
-                data: (controller.deviceDetail.value.data?[0].trackingData
+                data: (controller.deviceDetail.value?.trackingData
                             ?.currentSpeed ??
                         "")
                     .toString()) >
@@ -616,7 +619,7 @@ class VehicleSelected extends StatelessWidget {
                       if (controller.relayStatus == "Stop") {
                         Get.showOverlay(
                             asyncFunction: () => controller.startEngine(
-                                controller.deviceDetail.value.data?[0].imei ??
+                                controller.deviceDetail.value?.imei ??
                                     ""),
                             loadingWidget: LoadingAnimationWidget.dotsTriangle(
                               color: AppColors.white,
@@ -712,7 +715,7 @@ class VehicleSelected extends StatelessWidget {
                 Obx(
                   () => Text(
                     formatDateString(
-                        '${controller.deviceDetail.value.data?[0].subscriptionExp ?? '-'}'),
+                        '${controller.deviceDetail.value?.subscriptionExp ?? '-'}'),
                     style: AppTextStyles(context).display16W500,
                   ),
                 ),
@@ -732,7 +735,7 @@ class VehicleSelected extends StatelessWidget {
               controller.isFilterSelectedindex.value = -1;
               controller.showAllVehicles();
               Get.put(BottomBarController()).updateIndexForRenewal(
-                  controller.deviceDetail.value.data?[0].imei ?? "");
+                  controller.deviceDetail.value?.imei ?? "");
               controller.stackIndex.value = 0;
             },
             child: Container(
@@ -757,7 +760,7 @@ class VehicleSelected extends StatelessWidget {
 
   Widget geofenceWidget(BuildContext context) {
     bool active = true;
-    if (controller.deviceDetail.value.data?[0].displayParameters?.geoFencing ==
+    if (controller.deviceDetail.value?.displayParameters?.geoFencing ==
         null) {
       active = false;
     }
@@ -818,9 +821,9 @@ class VehicleSelected extends StatelessWidget {
                                   FutureBuilder(
                                     future: controller.getCurrAddress(
                                         latitude: controller.deviceDetail.value
-                                            .data?[0].location?.latitude,
+                                            ?.location?.latitude,
                                         longitude: controller.deviceDetail.value
-                                            .data?[0].location?.longitude),
+                                            ?.location?.longitude),
                                     builder: (BuildContext context,
                                         AsyncSnapshot<dynamic> snapshot) {
                                       return Text(
@@ -997,7 +1000,7 @@ class VehicleSelected extends StatelessWidget {
 
   Widget parkingWidget(BuildContext context) {
     bool active = true;
-    if (controller.deviceDetail.value.data?[0].displayParameters?.parking ==
+    if (controller.deviceDetail.value?.displayParameters?.parking ==
         null) {
       active = false;
     }
@@ -1142,7 +1145,7 @@ class VehicleSelected extends StatelessWidget {
                     Row(
                       children: [
                         Text(
-                          '${(controller.deviceDetail.value.data?[0].maxSpeed ?? 0).toStringAsFixed(0) ?? '-'} ',
+                          '${(controller.deviceDetail.value?.maxSpeed ?? 0).toStringAsFixed(0) ?? '-'} ',
                           style: AppTextStyles(context).display24W600,
                         ),
                         Text(

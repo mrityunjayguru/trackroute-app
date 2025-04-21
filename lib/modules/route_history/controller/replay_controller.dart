@@ -194,7 +194,7 @@ class ReplayController extends GetxController {
           ? Get.find<TrackRouteController>() // Find if already registered
           : Get.put(TrackRouteController());
       var markerIcon = await svgToBitmapDescriptor(
-          '${ProjectUrls.imgBaseUrl}${trackCon.deviceDetail.value.data?[0].vehicletype?.icons ?? ""}');
+          '${ProjectUrls.imgBaseUrl}${trackCon.deviceDetail.value?.vehicletype?.icons ?? ""}');
       final startMarker = Marker(
         markerId: const MarkerId('start_marker'),
         position: LatLng(startLat, startLng),

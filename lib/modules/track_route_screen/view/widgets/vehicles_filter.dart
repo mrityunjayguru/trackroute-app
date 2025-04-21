@@ -97,7 +97,6 @@ class VehiclesList extends StatelessWidget {
                                               controller.checkIfInactive(
                                                   vehicle: vehicle);
                                           return InkWell(
-
                                             onTap: () {
                                               controller.isShowVehicleDetails(
                                                   controller.vehicleList.value
@@ -110,38 +109,38 @@ class VehiclesList extends StatelessWidget {
                                                       -1,
                                                   vehicle.imei ?? '');
                                               controller.devicesByDetails(
-                                                  vehicle.imei ?? '',
-                                                  showDialog: true,
-                                                  zoom: true);
+                                                  showDialog: true, zoom: true);
                                               controller.isExpanded.value =
                                                   false;
                                               controller.isFilterSelected
                                                   .value = false;
                                               controller.isFilterSelectedindex
                                                   .value = -1;
-                                              controller.searchController.clear();
+                                              controller.searchController
+                                                  .clear();
                                             },
                                             child: Container(
                                               padding:
                                                   const EdgeInsets.symmetric(
-                                                      horizontal: 8,
-                                                      ),
+                                                horizontal: 8,
+                                              ),
                                               child: Row(
-
                                                 children: [
                                                   Expanded(
                                                     child: Container(
                                                       child: Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
                                                         children: [
                                                           Text(
                                                             'Vehicle',
-                                                            style:
-                                                            AppTextStyles(context)
+                                                            style: AppTextStyles(
+                                                                    context)
                                                                 .display12W400
                                                                 .copyWith(
-                                                                color: AppColors
-                                                                    .grayLight),
+                                                                    color: AppColors
+                                                                        .grayLight),
                                                           ),
                                                           Text(
                                                             '${vehicle.vehicleNo ?? "-"}',
@@ -156,13 +155,14 @@ class VehiclesList extends StatelessWidget {
                                                                             .black),
                                                           ),
                                                         ],
-                                                      ).paddingSymmetric(vertical: 4),
+                                                      ).paddingSymmetric(
+                                                          vertical: 4),
                                                     ),
                                                   ),
                                                   const SizedBox(width: 4),
                                                   InkWell(
-
                                                     onTap: () {
+                                                      /// if inactive then show the vehicle details or else go to manage screen
                                                       if (isInactive) {
                                                         controller
                                                             .isShowVehicleDetails(
@@ -171,17 +171,15 @@ class VehiclesList extends StatelessWidget {
                                                                     '');
                                                         controller
                                                             .devicesByDetails(
-                                                                vehicle.imei ??
-                                                                    '',
                                                                 showDialog:
                                                                     true,
                                                                 zoom: true);
-                                                        controller
-                                                            .isExpanded
+                                                        controller.isExpanded
                                                             .value = false;
                                                         controller
                                                             .isFilterSelected
                                                             .value = false;
+
                                                         controller
                                                             .isFilterSelectedindex
                                                             .value = -1;
@@ -191,23 +189,25 @@ class VehiclesList extends StatelessWidget {
                                                             .value = true;
                                                         controller.isedit
                                                             .value = false;
-                                                        controller
-                                                            .stackIndex
+                                                        controller.stackIndex
                                                             .value = 1;
-                                                        controller
-                                                            .editGeofence
+                                                        controller.editGeofence
                                                             .value = false;
                                                         controller.editSpeed
                                                             .value = false;
-                                                        controller
-                                                            .isExpanded
+                                                        controller.isExpanded
                                                             .value = false;
                                                         controller
-                                                            .devicesByDetails(
-                                                                vehicle.imei ??
-                                                                    '');
+                                                            .selectedVehicleIMEI
+                                                            .value = vehicle
+                                                                .imei ??
+                                                            '';
+                                                        controller
+                                                            .devicesByDetails();
                                                       }
-                                                      controller.searchController.clear();
+                                                      controller
+                                                          .searchController
+                                                          .clear();
                                                     },
                                                     child: Text(
                                                       'Manage',
@@ -220,7 +220,8 @@ class VehiclesList extends StatelessWidget {
                                                                       .grayLight
                                                                   : AppColors
                                                                       .blue),
-                                                    ).paddingSymmetric(vertical: 4),
+                                                    ).paddingSymmetric(
+                                                        vertical: 4),
                                                   )
                                                 ],
                                               ),
@@ -279,8 +280,6 @@ class VehiclesList extends StatelessWidget {
                                       controller.markers.value = [];
                                       controller.isShowvehicleDetail.value =
                                           false;
-                                     /* controller.selectedVehicleIndex.value =
-                                          -1;*/
                                       controller.selectedVehicleIMEI.value = "";
                                       controller.checkFilterIndex(true);
                                     },

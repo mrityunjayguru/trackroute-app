@@ -306,10 +306,10 @@ class HistoryController extends GetxController {
           time = data[i].dateFiled?.split(" ")[1] ?? "N/A";
         }
         bool isOverSpeed = (data[i].trackingData?.currentSpeed != null ||
-                (controller.deviceDetail.value.data?.isNotEmpty ?? false) ||
-                controller.deviceDetail.value.data?[0].maxSpeed != null)
+                (controller.deviceDetail.value!=null) ||
+                controller.deviceDetail.value?.maxSpeed != null)
             ? ((Utils.parseDouble(data: data[i].trackingData?.currentSpeed) ?? 0) >
-                (controller.deviceDetail.value.data?[0].maxSpeed ?? 0))
+                (controller.deviceDetail.value?.maxSpeed ?? 0))
             : false;
         if (isOverSpeed) {
           overSpeedIndex.add(i);

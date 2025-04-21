@@ -16,6 +16,7 @@ import 'package:track_route_pro/modules/track_route_screen/view/widgets/vehicles
 import 'package:track_route_pro/modules/track_route_screen/view/widgets/vehicles_filter.dart';
 import 'package:track_route_pro/utils/common_import.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+
 import '../../../utils/utils.dart';
 import '../../route_history/view/route_history_filter.dart';
 
@@ -65,8 +66,7 @@ class TrackRouteView extends StatelessWidget {
                       : VehicleSelected(),
                 ),
                 if (controller.isShowvehicleDetail.value &&
-                    (controller.deviceDetail.value.data?.isNotEmpty ??
-                        false)) ...[
+                    (controller.deviceDetail.value != null)) ...[
                   DraggableScrollableSheet(
                     initialChildSize: 0.32, // Initial size of the sheet
                     minChildSize: 0.1, // Minimum size before closing
@@ -74,7 +74,7 @@ class TrackRouteView extends StatelessWidget {
                     builder: (BuildContext context,
                         ScrollController scrollController) {
                       bool isActive = true;
-                      if (controller.deviceDetail.value.data?[0].status
+                      if (controller.deviceDetail.value?.status
                               ?.toLowerCase() !=
                           "active") {
                         isActive = false;
@@ -86,13 +86,14 @@ class TrackRouteView extends StatelessWidget {
                           if (notification.extent <= 0.1) {
                             controller.showAllVehicles();
                           }
-                          if (notification.extent >= 0.55) { // maxChildSize
+                          if (notification.extent >= 0.55) {
+                            // maxChildSize
                             if (!controller.isSheetExpanded.value) {
-                               controller.isSheetExpanded.value = true;
+                              controller.isSheetExpanded.value = true;
                             }
                           } else {
                             if (controller.isSheetExpanded.value) {
-                               controller.isSheetExpanded.value = false;
+                              controller.isSheetExpanded.value = false;
                             }
                           }
                           return true;
@@ -111,11 +112,9 @@ class TrackRouteView extends StatelessWidget {
                                 child: SingleChildScrollView(
                                   controller: scrollController,
                                   child: Obx(() {
-                                    if (controller.deviceDetail.value.data
-                                            ?.isNotEmpty ??
-                                        false) {
-                                      var trackingData = controller.deviceDetail
-                                          .value.data?[0].trackingData;
+                                    if (controller.deviceDetail.value != null) {
+                                      var trackingData = controller
+                                          .deviceDetail.value?.trackingData;
                                       String address = "Fetching Address...";
                                       if (trackingData?.location?.latitude !=
                                               null &&
@@ -159,18 +158,17 @@ class TrackRouteView extends StatelessWidget {
                                           }
                                           return VehicalDetailBottomSheet(
                                             expiryDate: controller.deviceDetail
-                                                .value.data?[0].subscriptionExp,
+                                                .value?.subscriptionExp,
                                             isActive: isActive,
                                             displayParameters: controller
                                                 .deviceDetail
                                                 .value
-                                                .data?[0]
-                                                .displayParameters,
-                                            imei: controller.deviceDetail.value
-                                                    .data?[0].imei ??
+                                                ?.displayParameters,
+                                            imei: controller
+                                                    .deviceDetail.value?.imei ??
                                                 "",
                                             vehicalNo: controller.deviceDetail
-                                                    .value.data?[0].vehicleNo ??
+                                                    .value?.vehicleNo ??
                                                 '-',
                                             dateTime: "$date $time",
                                             address: address,
@@ -179,18 +177,13 @@ class TrackRouteView extends StatelessWidget {
                                             currentSpeed: controller
                                                     .deviceDetail
                                                     .value
-                                                    .data?[0]
-                                                    .trackingData
+                                                    ?.trackingData
                                                     ?.currentSpeed ??
                                                 0,
                                             deviceID:
-                                                '${controller.deviceDetail.value.data?[0].deviceId ?? ""}',
-                                            icon: controller
-                                                    .deviceDetail
-                                                    .value
-                                                    .data?[0]
-                                                    .vehicletype
-                                                    ?.icons ??
+                                                '${controller.deviceDetail.value?.deviceId ?? ""}',
+                                            icon: controller.deviceDetail.value
+                                                    ?.vehicletype?.icons ??
                                                 "",
                                             ignition:
                                                 trackingData?.ignition?.status,
@@ -208,36 +201,32 @@ class TrackRouteView extends StatelessWidget {
                                                 ? true
                                                 : false,
                                             door: trackingData?.door,
-                                            geofence: controller
-                                                    .deviceDetail
-                                                    .value
-                                                    .data?[0]
-                                                    .locationStatus ??
+                                            geofence: controller.deviceDetail
+                                                    .value?.locationStatus ??
                                                 false,
                                             immob: controller.deviceDetail.value
-                                                        .data?[0].immobiliser !=
+                                                        ?.immobiliser !=
                                                     null
                                                 ? (controller.deviceDetail.value
-                                                        .data?[0].immobiliser ==
+                                                        ?.immobiliser ==
                                                     "Stop")
                                                 : null,
-                                            parking: controller.deviceDetail
-                                                .value.data?[0].parking,
+                                            parking: controller
+                                                .deviceDetail.value?.parking,
                                             engine: controller
                                                     .deviceDetail
                                                     .value
-                                                    .data?[0]
-                                                    .trackingData
+                                                    ?.trackingData
                                                     ?.ignition
                                                     ?.status ??
                                                 false,
                                             fuel: controller.deviceDetail.value
-                                                        .data?[0].fuelStatus !=
+                                                        ?.fuelStatus !=
                                                     "Off"
-                                                ? "${controller.deviceDetail.value.data?[0]?.fuelLevel ?? "N/A"}"
+                                                ? "${controller.deviceDetail.value?.fuelLevel ?? "N/A"}"
                                                 : "N/A",
                                             vehicleName:
-                                                "${controller.deviceDetail.value.data?[0].vehicletype?.vehicleTypeName ?? ""}",
+                                                "${controller.deviceDetail.value?.vehicletype?.vehicleTypeName ?? ""}",
                                             temp: (trackingData?.temperature ??
                                                     "N/A")
                                                 .toString(),
@@ -258,8 +247,8 @@ class TrackRouteView extends StatelessWidget {
                                                         ?.internalBattery ??
                                                     "N/A")
                                                 .toString(),
-                                            summary: controller.deviceDetail
-                                                .value.data?[0].summary,
+                                            summary: controller
+                                                .deviceDetail.value?.summary,
                                           );
                                         },
                                       );
@@ -275,13 +264,13 @@ class TrackRouteView extends StatelessWidget {
                                 child: InkWell(
                                   onTap: () {
                                     if (isActive &&
-                                        (controller.deviceDetail.value.data?[0]
-                                                .mobileNo?.isNotEmpty ??
+                                        (controller.deviceDetail.value?.mobileNo
+                                                ?.isNotEmpty ??
                                             false)) {
                                       Utils.makePhoneCall(
-                                          '${controller.deviceDetail.value.data?[0].mobileNo}');
+                                          '${controller.deviceDetail.value?.mobileNo}');
                                     } else if (controller.deviceDetail.value
-                                            .data?[0].mobileNo?.isNotEmpty ??
+                                            ?.mobileNo?.isNotEmpty ??
                                         true) {
                                       Get.snackbar("", "",
                                           snackStyle: SnackStyle.FLOATING,
@@ -348,16 +337,14 @@ class TrackRouteView extends StatelessWidget {
                                         controller
                                                 .deviceDetail
                                                 .value
-                                                .data?[0]
-                                                .trackingData
+                                                ?.trackingData
                                                 ?.location
                                                 ?.latitude ??
                                             0.0,
                                         controller
                                                 .deviceDetail
                                                 .value
-                                                .data?[0]
-                                                .trackingData
+                                                ?.trackingData
                                                 ?.location
                                                 ?.longitude ??
                                             0.0,
@@ -381,75 +368,85 @@ class TrackRouteView extends StatelessWidget {
                                 ),
                               ),
 
-                              Obx(()=>
-                                Positioned(
+                              Obx(
+                                () => Positioned(
                                   top: -150,
                                   right: 4.w,
                                   child: DeferPointer(
-                                    child: Column(
-                                      children:[
-                                        SizedBox(
-                                          width: 50,
-                                          height: 50,
-                                          child: FloatingActionButton(
-                                            heroTag: 'satellite',
-                                            child: Image.asset(
-                                              !controller.isSatellite.value? "assets/images/png/satellite.png" : "assets/images/png/default.png",
-                                              fit: BoxFit.fill,
-                                            ),
-                                            backgroundColor:
-                                            AppColors.transparent,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(
-                                                  AppSizes.radius_50),
-                                            ),
-                                            onPressed: () {
-                                              controller.isSatellite.value = !controller.isSatellite.value;
-                                            },
+                                    child: Column(children: [
+                                      SizedBox(
+                                        width: 50,
+                                        height: 50,
+                                        child: FloatingActionButton(
+                                          heroTag: 'satellite',
+                                          child: Image.asset(
+                                            !controller.isSatellite.value
+                                                ? "assets/images/png/satellite.png"
+                                                : "assets/images/png/default.png",
+                                            fit: BoxFit.fill,
                                           ),
-                                        ).paddingOnly(bottom: 16),
-                                        SizedBox(
-                                          width: 50,
-                                          height: 50,
-                                          child: FloatingActionButton(
-                                            heroTag: 'nav1',
-                                            child: SvgPicture.asset(
-                                              Assets.images.svg.navigation1,
-                                              fit: BoxFit.fill,
-                                            ),
-                                            backgroundColor:
-                                            AppColors.selextedindexcolor,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(
-                                                  AppSizes.radius_50),
-                                            ),
-                                            onPressed: () async {
-                                              // Fetch the current location
-                                              Position? position = await controller
-                                                  .getCurrentLocation();
-                                              if (position != null) {
-                                                controller.updateCameraPosition(
-                                                    course: 0,
-                                                    latitude: position.latitude - 1,
-                                                    longitude: position.longitude);
-                                              } else {
-                                                Utils.getSnackbar("Error",
-                                                    "Current location not available");
-                                              }
-                                            },
+                                          backgroundColor:
+                                              AppColors.transparent,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                                AppSizes.radius_50),
                                           ),
+                                          onPressed: () {
+                                            controller.isSatellite.value =
+                                                !controller.isSatellite.value;
+                                          },
                                         ),
-                                      ]
-                                    ),
+                                      ).paddingOnly(bottom: 16),
+                                      SizedBox(
+                                        width: 50,
+                                        height: 50,
+                                        child: FloatingActionButton(
+                                          heroTag: 'nav1',
+                                          child: SvgPicture.asset(
+                                            Assets.images.svg.navigation1,
+                                            fit: BoxFit.fill,
+                                          ),
+                                          backgroundColor:
+                                              AppColors.selextedindexcolor,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                                AppSizes.radius_50),
+                                          ),
+                                          onPressed: () async {
+                                            // Fetch the current location
+                                            Position? position =
+                                                await controller
+                                                    .getCurrentLocation();
+                                            if (position != null) {
+                                              controller.updateCameraPosition(
+                                                  course: 0,
+                                                  latitude:
+                                                      position.latitude - 1,
+                                                  longitude:
+                                                      position.longitude);
+                                            } else {
+                                              Utils.getSnackbar("Error",
+                                                  "Current location not available");
+                                            }
+                                          },
+                                        ),
+                                      ),
+                                    ]),
                                   ),
                                 ),
                               ),
 
-                              Obx(()=>
-                                Positioned(
+                              Obx(
+                                () => Positioned(
                                   top: -24,
                                   right: 35.w,
-                                  child: SvgPicture.asset(controller.isSheetExpanded.value ? "assets/images/svg/notched_down.svg": "assets/images/svg/notched_up.svg", width: 24, height: 24,),
+                                  child: SvgPicture.asset(
+                                    controller.isSheetExpanded.value
+                                        ? "assets/images/svg/notched_down.svg"
+                                        : "assets/images/svg/notched_up.svg",
+                                    width: 24,
+                                    height: 24,
+                                  ),
                                 ),
                               )
                             ],
@@ -488,17 +485,19 @@ class TrackRouteView extends StatelessWidget {
                         child: FloatingActionButton(
                           heroTag: 'satellite1',
                           child: Image.asset(
-                            !controller.isSatellite.value? "assets/images/png/satellite.png" : "assets/images/png/default.png",
+                            !controller.isSatellite.value
+                                ? "assets/images/png/satellite.png"
+                                : "assets/images/png/default.png",
                             fit: BoxFit.fill,
                           ),
-                          backgroundColor:
-                          AppColors.transparent,
+                          backgroundColor: AppColors.transparent,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                                AppSizes.radius_50),
+                            borderRadius:
+                                BorderRadius.circular(AppSizes.radius_50),
                           ),
                           onPressed: () {
-                            controller.isSatellite.value = !controller.isSatellite.value;
+                            controller.isSatellite.value =
+                                !controller.isSatellite.value;
                           },
                         ),
                       ).paddingOnly(bottom: 16),
@@ -513,7 +512,8 @@ class TrackRouteView extends StatelessWidget {
                           ),
                           backgroundColor: AppColors.selextedindexcolor,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(AppSizes.radius_50),
+                            borderRadius:
+                                BorderRadius.circular(AppSizes.radius_50),
                           ),
                           onPressed: () async {
                             // Fetch the current location
@@ -542,16 +542,13 @@ class TrackRouteView extends StatelessWidget {
   }
 
   Future<String> getAddress() async {
-    var trackingData = controller.deviceDetail.value.data?[0].trackingData;
-    if (controller.checkIfInactive(
-        vehicle: controller.deviceDetail.value.data?[0])) {
-      if (controller.deviceDetail.value.data?[0].lastLocation?.latitude !=
-              null &&
-          controller.deviceDetail.value.data?[0].lastLocation?.longitude !=
-              null) {
+    var trackingData = controller.deviceDetail.value?.trackingData;
+    if (controller.checkIfInactive(vehicle: controller.deviceDetail.value)) {
+      if (controller.deviceDetail.value?.lastLocation?.latitude != null &&
+          controller.deviceDetail.value?.lastLocation?.longitude != null) {
         return await Utils().getAddressFromLatLong(
-          controller.deviceDetail.value.data?[0].lastLocation?.latitude ?? 0.0,
-          controller.deviceDetail.value.data?[0].lastLocation?.longitude ?? 0.0,
+          controller.deviceDetail.value?.lastLocation?.latitude ?? 0.0,
+          controller.deviceDetail.value?.lastLocation?.longitude ?? 0.0,
         );
       } else {
         return Future.value("Address Unavailable");

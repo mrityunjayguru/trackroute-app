@@ -85,10 +85,6 @@ class ProfileController extends GetxController {
         if (response.status == 200) {
           selectedVehicleIndex.clear();
           networkStatus.value = NetworkStatus.SUCCESS;
-          final controller = Get.isRegistered<TrackRouteController>()
-              ? Get.find<TrackRouteController>() // Find if already registered
-              : Get.put(TrackRouteController());
-          controller.devicesByOwnerID(false);
           Utils.getSnackbar('Success', 'Generated request for renewal');
         } else {
           Utils.getSnackbar('Error', '${response.message}');

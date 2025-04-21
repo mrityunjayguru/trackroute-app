@@ -71,7 +71,7 @@ class VehicleDialog extends StatelessWidget {
                       )),
                 ],
               ).paddingOnly(left: 15, right: 15, bottom: 15),
-              if (controller.deviceDetail.value.data?[0].vehicleNo?.isEmpty ??
+              if (controller.deviceDetail.value?.vehicleNo?.isEmpty ??
                   true)
                 EditTextField(
                   controller: controller.vehicleName,
@@ -85,7 +85,7 @@ class VehicleDialog extends StatelessWidget {
                       .copyWith(color: AppColors.color_969696),
                   textStyle: AppTextStyles(context).display16W500,
                 ).paddingOnly(left: 15, right: 15, bottom: 15),
-            /*  if (controller.deviceDetail.value.data?[0].vehicleRegistrationNo
+            /*  if (controller.deviceDetail.value?.vehicleRegistrationNo
                       ?.isEmpty ??
                   true)
                 EditTextField(
@@ -100,7 +100,7 @@ class VehicleDialog extends StatelessWidget {
                       .copyWith(color: AppColors.color_969696),
                   textStyle: AppTextStyles(context).display16W500,
                 ).paddingOnly(left: 15, right: 15, bottom: 15),*/
-              if (controller.deviceDetail.value.data?[0].driverName?.isEmpty ??
+              if (controller.deviceDetail.value?.driverName?.isEmpty ??
                   true)
                 EditTextField(
                   controller: controller.driverName,

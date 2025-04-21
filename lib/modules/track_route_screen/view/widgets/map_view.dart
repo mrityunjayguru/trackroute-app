@@ -41,9 +41,9 @@ class MapViewTrackRoute extends StatelessWidget {
             minMaxZoomPreference: MinMaxZoomPreference(0, 19),
           ),
           if (controller.isShowvehicleDetail.value &&
-              (controller.deviceDetail.value.data?.isNotEmpty ?? false) &&
+              (controller.deviceDetail.value!=null) &&
               controller.checkIfOffline(
-                  vehicle: controller.deviceDetail.value.data?[0]))
+                  vehicle: controller.deviceDetail.value))
             Positioned(
               top: 10,
               child: Container(
