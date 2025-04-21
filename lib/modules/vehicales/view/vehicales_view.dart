@@ -167,11 +167,12 @@ class _VehicalesViewState extends State<VehicalesView> {
                     return InkWell(
                       onTap: () {
                         bottomController.updateIndex(2);
+                        controller.trackRouteController.removeFilter();
                         controller.trackRouteController
-                            .isShowVehicleDetails(index, vehicle.imei ?? "");
-                        controller.trackRouteController.devicesByDetails(   //todo-change
+                            .isShowVehicleDetails(vehicle.imei ?? "");
+                      /*  controller.trackRouteController.devicesByDetails(  //todo-change
                             showDialog: true,
-                            zoom: true);
+                            zoom: true);*/
 
                       },
                       child: VehicalDetailCard(

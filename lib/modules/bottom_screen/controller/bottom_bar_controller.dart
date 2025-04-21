@@ -23,8 +23,6 @@ class BottomBarController extends GetxController {
           ? Get.find<TrackRouteController>() // Find if already registered
           : Get.put(TrackRouteController());
       controller.isExpanded.value = false;
-      controller.isedit.value = false;
-      controller.stackIndex.value = 0;
       controller.isFilterSelected.value = false;
       controller.isFilterSelectedindex.value = -1;
       controller.showAllVehicles();

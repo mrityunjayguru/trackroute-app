@@ -100,8 +100,10 @@ class Assets {
   static const String svgIcFlashGreen = 'assets/images/svg/ic_flash_green.svg';
   static const String svgIcFlashRed = 'assets/images/svg/ic_flash_red.svg';
   static const String svgIcFuel = 'assets/images/svg/ic_fuel.svg';
+  static const String svgIcGeofence = 'assets/images/svg/ic_geofence.svg';
   static const String svgIcGeofenceIcon = 'assets/images/svg/ic_geofence_icon.svg';
   static const String svgIcGps = 'assets/images/svg/ic_gps.svg';
+  static const String svgIcGpsNew = 'assets/images/svg/ic_gps_new.svg';
   static const String svgIcIsolationMode = 'assets/images/svg/ic_Isolation_Mode.svg';
   static const String svgIcLoading = 'assets/images/svg/ic_loading.svg';
   static const String svgIcLocation = 'assets/images/svg/ic_location.svg';
@@ -115,6 +117,7 @@ class Assets {
   static const String svgIcRacing = 'assets/images/svg/ic_racing.svg';
   static const String svgIcRelayIcon = 'assets/images/svg/ic_relay_icon.svg';
   static const String svgIcSad = 'assets/images/svg/ic_sad.svg';
+  static const String svgIcSignal = 'assets/images/svg/ic_signal.svg';
   static const String svgIcSignalTower = 'assets/images/svg/ic_signal_tower.svg';
   static const String svgIcSpeedometer = 'assets/images/svg/ic_speedometer.svg';
   static const String svgIcView = 'assets/images/svg/ic_view.svg';
@@ -124,6 +127,7 @@ class Assets {
   static const String svgMaxSpeedIcon = 'assets/images/svg/max_speed_icon.svg';
   static const String svgMaxSpeedMarker = 'assets/images/svg/max_speed_marker.svg';
   static const String svgNavigation1 = 'assets/images/svg/navigation1.svg';
+  static const String svgNoInternet = 'assets/images/svg/no_internet.svg';
   static const String svgNotchedDown = 'assets/images/svg/notched_down.svg';
   static const String svgNotchedUp = 'assets/images/svg/notched_up.svg';
   static const String svgNotifIconSetting = 'assets/images/svg/notif_icon_setting.svg';
@@ -142,6 +146,7 @@ class Assets {
   static const String svgSpeedIcon = 'assets/images/svg/speed_icon.svg';
   static const String svgTarckRoutePro = 'assets/images/svg/tarck_route_pro.svg';
   static const String svgTempIcon = 'assets/images/svg/temp_icon.svg';
+  static const String svgTrackingWidget = 'assets/images/svg/tracking_bg_widget.svg';
   static const String svgUnselectedMarker = 'assets/images/svg/unselected_marker.svg';
   static const String svgUserIcon = 'assets/images/svg/user_icon.svg';
   static const String svgVibrationAlertIcon = 'assets/images/svg/vibration_alert_icon.svg';

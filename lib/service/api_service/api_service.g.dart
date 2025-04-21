@@ -14,7 +14,7 @@ class _ApiService implements ApiService {
     this.baseUrl,
     this.errorLogger,
   }) {
-    baseUrl ??= 'https://app.trackroutepro.com';
+    baseUrl ??= 'http://3.108.26.115:3100';
   }
 
   final Dio _dio;

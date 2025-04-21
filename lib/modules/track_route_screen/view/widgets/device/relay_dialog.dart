@@ -1,11 +1,14 @@
 import 'package:flutter_svg/svg.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:sizer/sizer.dart';
-import '../../../../config/app_sizer.dart';
-import '../../../../config/theme/app_colors.dart';
-import '../../../../config/theme/app_textstyle.dart';
-import '../../../../utils/common_import.dart';
-import '../../controller/track_route_controller.dart';
+import 'package:track_route_pro/modules/track_route_screen/controller/track_device_controller.dart';
+import 'package:track_route_pro/modules/track_route_screen/controller/track_device_controller.dart';
+import 'package:track_route_pro/modules/track_route_screen/controller/track_device_controller.dart';
+import '../../../../../config/app_sizer.dart';
+import '../../../../../config/theme/app_colors.dart';
+import '../../../../../config/theme/app_textstyle.dart';
+import '../../../../../utils/common_import.dart';
+import '../../../controller/track_route_controller.dart';
 
 
 class RelayDialog extends StatelessWidget {
@@ -14,6 +17,10 @@ class RelayDialog extends StatelessWidget {
   final controller = Get.isRegistered<TrackRouteController>()
       ? Get.find<TrackRouteController>() // Find if already registered
       : Get.put(TrackRouteController());
+
+  final deviceController = Get.isRegistered<DeviceController>()
+      ? Get.find<DeviceController>() // Find if already registered
+      : Get.put(DeviceController());
 
   @override
   Widget build(BuildContext context) {
@@ -105,8 +112,8 @@ class RelayDialog extends StatelessWidget {
                 child: InkWell(
                   onTap: () {
                       Get.showOverlay(
-                          asyncFunction: () => controller.stopEngine(
-                              controller.deviceDetail.value?.imei ??
+                          asyncFunction: () => deviceController.stopEngine(
+                              deviceController.deviceDetail.value?.imei ??
                                   ""),
                           loadingWidget: LoadingAnimationWidget.dotsTriangle(
                             color: AppColors.white,

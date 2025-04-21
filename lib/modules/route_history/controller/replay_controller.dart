@@ -14,6 +14,7 @@ import '../../../service/model/route/StopCount.dart';
 import '../../../service/model/route/TrackingData.dart';
 import '../../../utils/common_import.dart';
 import '../../../utils/utils.dart';
+import '../../track_route_screen/controller/track_device_controller.dart';
 import 'common.dart';
 
 class ReplayController extends GetxController {
@@ -190,11 +191,11 @@ class ReplayController extends GetxController {
           vehicleListReplay.first.trackingData!.location!.latitude!;
       final startLng =
           vehicleListReplay.first.trackingData!.location!.longitude!;
-      final trackCon = Get.isRegistered<TrackRouteController>()
-          ? Get.find<TrackRouteController>() // Find if already registered
-          : Get.put(TrackRouteController());
+      final controller = Get.isRegistered<DeviceController>()
+          ? Get.find<DeviceController>() // Find if already registered
+          : Get.put(DeviceController());
       var markerIcon = await svgToBitmapDescriptor(
-          '${ProjectUrls.imgBaseUrl}${trackCon.deviceDetail.value?.vehicletype?.icons ?? ""}');
+          '${ProjectUrls.imgBaseUrl}${controller.deviceDetail.value?.vehicletype?.icons ?? ""}');
       final startMarker = Marker(
         markerId: const MarkerId('start_marker'),
         position: LatLng(startLat, startLng),

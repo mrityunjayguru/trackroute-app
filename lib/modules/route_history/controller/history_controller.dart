@@ -10,6 +10,9 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:ui' as ui;
 import 'dart:typed_data';
 import 'package:intl/intl.dart';
+import 'package:track_route_pro/modules/track_route_screen/controller/track_device_controller.dart';
+import 'package:track_route_pro/modules/track_route_screen/controller/track_device_controller.dart';
+import 'package:track_route_pro/modules/track_route_screen/controller/track_device_controller.dart';
 import 'package:track_route_pro/service/api_service/api_service.dart';
 import 'package:track_route_pro/utils/common_import.dart';
 import 'package:track_route_pro/utils/enums.dart';
@@ -290,9 +293,9 @@ class HistoryController extends GetxController {
     polylines.value = [];
     List<LatLng> polylineCoordinates = [];
     // int maxSpeedIndex = findIndexWithMaxSpeed(data) ?? -1;
-    final controller = Get.isRegistered<TrackRouteController>()
-        ? Get.find<TrackRouteController>() // Find if already registered
-        : Get.put(TrackRouteController());
+    final controller = Get.isRegistered<DeviceController>()
+        ? Get.find<DeviceController>() // Find if already registered
+        : Get.put(DeviceController());
     // debugPrint("MAX SPEED INDEX $maxSpeedIndex");
     for (int i = 0; i < data.length; i++) {
       if (data[i].trackingData?.location?.latitude != null &&

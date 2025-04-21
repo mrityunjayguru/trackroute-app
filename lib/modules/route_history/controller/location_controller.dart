@@ -8,6 +8,7 @@ import '../../../constants/project_urls.dart';
 import '../../../service/model/route/Data.dart';
 import '../../../utils/common_import.dart';
 import '../../../utils/utils.dart';
+import '../../track_route_screen/controller/track_device_controller.dart';
 import '../../track_route_screen/controller/track_route_controller.dart';
 import 'common.dart';
 
@@ -43,9 +44,9 @@ class LocationController extends GetxController {
 
 
   void loadData(List<RouteHistoryResponse> data) async {
-    final trackCon = Get.isRegistered<TrackRouteController>()
-        ? Get.find<TrackRouteController>() // Find if already registered
-        : Get.put(TrackRouteController());
+    final controller = Get.isRegistered<DeviceController>()
+        ? Get.find<DeviceController>() // Find if already registered
+        : Get.put(DeviceController());
     locations.assignAll(data);
     playbackSpeed.value = 1.0;
     timerOn.value = false;
@@ -57,7 +58,7 @@ class LocationController extends GetxController {
     address.value = "";
     stopDuration.value = "";
     markerIcon = await svgToBitmapDescriptor(
-        '${ProjectUrls.imgBaseUrl}${trackCon.deviceDetail.value?.vehicletype?.icons ?? ""}',
+        '${ProjectUrls.imgBaseUrl}${controller.deviceDetail.value?.vehicletype?.icons ?? ""}',
         size: Size(30, 30));
     _updateMap();
   }

@@ -148,17 +148,13 @@ class VehicleDataWidget extends StatelessWidget {
                           BottomBarController>() // Find if already registered
                       : Get.put(BottomBarController());
                   bottomController.updateIndex(2);
-                  controller.isFilterSelected.value = false;
-                  controller.isFilterSelectedindex.value = -1;
-                  controller.showAllVehicles();
-                  // controller.isShowvehicleDetail.value = false;
-                  controller.isvehicleSelected.value = true;
-                  controller.isedit.value = false;
+                  // controller.showAllVehicles();
+                /*  controller.isedit.value = false;
                   controller.stackIndex.value = 1;
                   controller.editGeofence.value = false;
                   controller.editSpeed.value = false;
                   controller.isExpanded.value = false;
-                  controller.devicesByDetails();
+                  controller.devicesByDetails();*/ //todo
                 },
                 child: Text(
                   'Manage Vehicle',

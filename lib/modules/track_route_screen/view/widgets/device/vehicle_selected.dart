@@ -6,20 +6,23 @@ import 'package:sizer/sizer.dart';
 import 'package:track_route_pro/config/app_sizer.dart';
 import 'package:track_route_pro/config/theme/app_colors.dart';
 import 'package:track_route_pro/config/theme/app_textstyle.dart';
+import 'package:track_route_pro/modules/track_route_screen/controller/track_device_controller.dart';
+import 'package:track_route_pro/modules/track_route_screen/controller/track_device_controller.dart';
+import 'package:track_route_pro/modules/track_route_screen/controller/track_device_controller.dart';
 import 'package:track_route_pro/modules/track_route_screen/controller/track_route_controller.dart';
-import 'package:track_route_pro/modules/track_route_screen/view/widgets/relay_dialog.dart';
+import 'package:track_route_pro/modules/track_route_screen/view/widgets/device/relay_dialog.dart';
 import 'package:track_route_pro/utils/common_import.dart';
 
-import '../../../../utils/utils.dart';
-import '../../../bottom_screen/controller/bottom_bar_controller.dart';
+import '../../../../../utils/utils.dart';
+import '../../../../bottom_screen/controller/bottom_bar_controller.dart';
 import 'edit_text_field.dart';
 
 class VehicleSelected extends StatelessWidget {
   VehicleSelected({super.key});
 
-  final controller = Get.isRegistered<TrackRouteController>()
-      ? Get.find<TrackRouteController>() // Find if already registered
-      : Get.put(TrackRouteController());
+  final controller = Get.isRegistered<DeviceController>()
+      ? Get.find<DeviceController>() // Find if already registered
+      : Get.put(DeviceController());
 
   final WidgetStateProperty<Icon?> thumbIcon =
       WidgetStateProperty.resolveWith<Icon?>(
@@ -61,7 +64,6 @@ class VehicleSelected extends StatelessWidget {
                           context: context,
                           rightIcon: 'assets/images/svg/ic_arrow_left.svg',
                           onTap: () {
-                            controller.stackIndex.value = 1;
                             controller.isedit.value = false;
                             controller.editGeofence.value = false;
                             controller.editSpeed.value = false;
@@ -73,7 +75,7 @@ class VehicleSelected extends StatelessWidget {
                           context: context,
                           rightIcon: 'assets/images/svg/ic_arrow_left.svg',
                           onTap: () {
-                            controller.stackIndex.value = 0;
+                           //todo
                           },
                           name:
                               'Manage ${controller.deviceDetail.value?.vehicleNo != null ? "-" : ""}${controller.deviceDetail.value?.vehicleNo ?? ''}'),
@@ -419,7 +421,6 @@ class VehicleSelected extends StatelessWidget {
             InkWell(
               onTap: () {
                 controller.isedit.value = true;
-                controller.stackIndex.value = 1;
                 controller.editGeofence.value = false;
                 controller.editSpeed.value = false;
               },
@@ -479,24 +480,6 @@ class VehicleSelected extends StatelessWidget {
                 'Calling Number',
                 '${controller.deviceDetail.value?.mobileNo ?? '-'}',
               ),
-              /* SizedBox(height: 10),
-            */ /*  buildRow(
-                context,
-                'Vehicle Type',
-                '${controller.deviceDetail.value?.vehicletype?.vehicleTypeName ?? '-'}',
-              ),*/ /*
-              SizedBox(height: 10),
-              buildRow(
-                context,
-                'Vehicle Brand',
-                '${controller.deviceDetail.value?.vehicleBrand ?? '-'}',
-              ),
-              SizedBox(height: 10),
-             */ /* buildRow(
-                context,
-                'Vehicle Model',
-                '${controller.deviceDetail.value?.vehicleModel ?? '-'}',
-              ),*/
               SizedBox(height: 10),
               buildRow(
                 context,
@@ -731,12 +714,8 @@ class VehicleSelected extends StatelessWidget {
           Expanded(
               child: InkWell(
             onTap: () {
-              controller.isFilterSelected.value = false;
-              controller.isFilterSelectedindex.value = -1;
-              controller.showAllVehicles();
               Get.put(BottomBarController()).updateIndexForRenewal(
                   controller.deviceDetail.value?.imei ?? "");
-              controller.stackIndex.value = 0;
             },
             child: Container(
               height: 6.h,
@@ -759,6 +738,9 @@ class VehicleSelected extends StatelessWidget {
   }
 
   Widget geofenceWidget(BuildContext context) {
+    final trackCon = Get.isRegistered<TrackRouteController>()
+        ? Get.find<TrackRouteController>() // Find if already registered
+        : Get.put(TrackRouteController());
     bool active = true;
     if (controller.deviceDetail.value?.displayParameters?.geoFencing ==
         null) {
@@ -819,7 +801,7 @@ class VehicleSelected extends StatelessWidget {
                                 ),
                                 if (active)
                                   FutureBuilder(
-                                    future: controller.getCurrAddress(
+                                    future: trackCon.getCurrAddress(
                                         latitude: controller.deviceDetail.value
                                             ?.location?.latitude,
                                         longitude: controller.deviceDetail.value
