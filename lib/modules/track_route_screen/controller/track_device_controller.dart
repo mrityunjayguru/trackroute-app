@@ -1,13 +1,14 @@
 import 'dart:async';
+import 'dart:developer' as developer;
 
 import 'package:geolocator/geolocator.dart';
-import 'package:get/get_rx/src/rx_types/rx_types.dart';
-import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
-import 'dart:developer' as developer;
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:track_route_pro/modules/track_route_screen/controller/track_route_controller.dart';
+import 'package:track_route_pro/service/model/presentation/track_route/Summary.dart';
+import 'package:track_route_pro/service/model/presentation/track_route/track_route_vehicle_list.dart';
+
 import '../../../config/theme/app_colors.dart';
 import '../../../constants/constant.dart';
 import '../../../constants/project_urls.dart';
@@ -16,8 +17,6 @@ import '../../../service/model/presentation/vehicle_type/Data.dart';
 import '../../../utils/app_prefrance.dart';
 import '../../../utils/common_import.dart';
 import '../../../utils/enums.dart';
-import 'package:track_route_pro/service/model/presentation/track_route/track_route_vehicle_list.dart';
-
 import '../../../utils/utils.dart';
 import '../view/widgets/device/vehicle_dialog.dart';
 
@@ -42,6 +41,7 @@ class DeviceController extends GetxController {
   Rx<NetworkStatus> networkStatus = Rx(NetworkStatus.IDLE);
 
   Rx<Data?> deviceDetail = Rx(Data());
+  Rx<Summary?> summaryTrip = Rx(Summary());
   IO.Socket? socket;
 
   @override
@@ -64,7 +64,10 @@ class DeviceController extends GetxController {
   }
 
   ///SOCKET
-  void initSocket() {
+  void initSocket() async {
+    if (devicesOwnerID.value.isEmpty) {
+      await loadUser();
+    }
     socket = IO.io(
       '${ProjectUrls.baseUrl}',
       IO.OptionBuilder()
@@ -74,7 +77,7 @@ class DeviceController extends GetxController {
     );
 
     socket!.connect();
-    developer.log('✅ Connected to socket server: ${socket!.id}');
+
     socket!.onConnect((_) {
       developer.log('✅ Connected to socket server: ${socket!.id}');
 
@@ -100,6 +103,7 @@ class DeviceController extends GetxController {
           // storeVehicleData();
 
           deviceDetail.value = vehicleListData.first;
+          devicesByDetails();
         }
         for (var vehicle in vehicleListData ?? []) {
           developer.log(
@@ -129,7 +133,11 @@ class DeviceController extends GetxController {
 
   /// DEVICE API
 
-  Future<void> getDeviceByIMEI() async {
+  Future<void> getDeviceByIMEI(
+      {bool initialize = true,
+      bool updateCamera = true,
+      bool showDialog = false,
+      bool zoom = false}) async {
     try {
       final body = {"deviceId": "${selectedVehicleIMEI.value}"};
       networkStatus.value = NetworkStatus.LOADING;
@@ -139,7 +147,10 @@ class DeviceController extends GetxController {
         networkStatus.value = NetworkStatus.SUCCESS;
         if (response.data?.isNotEmpty ?? false) {
           deviceDetail.value = response.data?.first;
-          deviceDetail.refresh();
+          devicesByDetails(zoom: zoom, showDialog: showDialog);
+          if (initialize) {
+            initSocket();
+          }
         }
       } else if (response.status == 400) {
         networkStatus.value = NetworkStatus.ERROR;
@@ -149,10 +160,11 @@ class DeviceController extends GetxController {
       networkStatus.value = NetworkStatus.ERROR;
     }
   }
+
   Future<void> devicesByDetails(
       {bool updateCamera = true,
-        bool showDialog = false,
-        bool zoom = false}) async {
+      bool showDialog = false,
+      bool zoom = false}) async {
     try {
       /*   deviceDetail.value = vehicleList.value.data
           ?.where(
@@ -168,26 +180,18 @@ class DeviceController extends GetxController {
             data?.trackingData?.location?.latitude != null &&
             data?.trackingData?.location?.longitude != null) {
           if (zoom) {
-            trackController.updateCameraPositionWithZoom(
+            developer.log("UPDATE CAMERA");
+            updateCameraPositionWithZoom(
                 course: Utils.parseDouble(data: data?.trackingData?.course),
                 latitude: data?.trackingData?.location?.latitude ?? 0,
                 longitude: data?.trackingData?.location?.longitude ?? 0);
           } else {
             mapController.getZoomLevel().then((currentZoom) async {
-              /* double offset =
-                    getOffset(currentZoom); // Get offset based on zoom
-                double course =
-                    Utils.parseDouble(data: data?.trackingData?.course);
-                LatLng newLatLng = await calcLatLong(
-                    offset,
-                    course,
-                    (data?.trackingData?.location?.latitude ?? 0),
-                    (data?.trackingData?.location?.longitude ?? 0));*/
               mapController.animateCamera(
                 CameraUpdate.newCameraPosition(
                   CameraPosition(
                     bearing:
-                    Utils.parseDouble(data: data?.trackingData?.course),
+                        Utils.parseDouble(data: data?.trackingData?.course),
                     // Keep map aligned with vehicle movement
                     target: LatLng(
                         (data?.trackingData?.location?.latitude ?? 0),
@@ -275,8 +279,34 @@ class DeviceController extends GetxController {
         selectedVehicleIMEI.value = "";
         // selectedVehicleIndex.value = -1;
       }
-    } catch (e, s) {}
+    } catch (e, s) {
+      developer.log("EXCEPTION $e $s");
+    }
   }
+  Future<void> getDeviceByIMEITripSummary(
+  ) async {
+    try {
+      summaryTrip.value=null;
+      final body = {"deviceId": "${selectedVehicleIMEI.value}"};
+      networkStatus.value = NetworkStatus.LOADING;
+
+      final response = await apiService.devicesByOwnerID(body);
+      if (response.status == 200) {
+        networkStatus.value = NetworkStatus.SUCCESS;
+        if (response.data?.isNotEmpty ?? false) {
+          developer.log("SUMARY TRIP ${response.data?.first.summary}");
+          summaryTrip.value = response.data?.first.summary;
+          developer.log("SUMARY TRIP ${summaryTrip.value?.latestTripKm}");
+        }
+      } else if (response.status == 400) {
+        networkStatus.value = NetworkStatus.ERROR;
+      }
+    } catch (e, s) {
+      developer.log("exception ==> $e $s");
+      networkStatus.value = NetworkStatus.ERROR;
+    }
+  }
+
   /// EDIT VEHICLE DETAILS
 
   TextEditingController vehicleRegistrationNumber = TextEditingController();
@@ -306,9 +336,9 @@ class DeviceController extends GetxController {
 
   Future<void> editDevicesByDetails(
       {bool editGeofence = false,
-        bool editSpeed = false,
-        bool editGeneral = false,
-        required BuildContext context}) async {
+      bool editSpeed = false,
+      bool editGeneral = false,
+      required BuildContext context}) async {
     try {
       double? lat;
       double? long;
@@ -338,19 +368,19 @@ class DeviceController extends GetxController {
         "mobileNo": driverMobileNo.text,
         "insuranceExpiryDate": insuranceExpiryDate.text.isNotEmpty
             ? DateFormat('yyyy-MM-dd').format(
-            DateFormat('dd-MM-yyyy').parse(insuranceExpiryDate.text))
+                DateFormat('dd-MM-yyyy').parse(insuranceExpiryDate.text))
             : "",
         "pollutionExpiryDate": pollutionExpiryDate.text.isNotEmpty
             ? DateFormat('yyyy-MM-dd').format(
-            DateFormat('dd-MM-yyyy').parse(pollutionExpiryDate.text))
+                DateFormat('dd-MM-yyyy').parse(pollutionExpiryDate.text))
             : "",
         "fitnessExpiryDate": fitnessExpiryDate.text.isNotEmpty
             ? DateFormat('yyyy-MM-dd')
-            .format(DateFormat('dd-MM-yyyy').parse(fitnessExpiryDate.text))
+                .format(DateFormat('dd-MM-yyyy').parse(fitnessExpiryDate.text))
             : "",
         "nationalPermitExpiryDate": nationalPermitExpiryDate.text.isNotEmpty
             ? DateFormat('yyyy-MM-dd').format(
-            DateFormat('dd-MM-yyyy').parse(nationalPermitExpiryDate.text))
+                DateFormat('dd-MM-yyyy').parse(nationalPermitExpiryDate.text))
             : "",
         "_id": deviceDetail.value?.sId ?? '',
         "maxSpeed": maxSpeedUpdate.text.trim(),
@@ -363,7 +393,7 @@ class DeviceController extends GetxController {
       networkStatus.value = NetworkStatus.LOADING;
 
       await apiService.editDevicesByOwnerID(body);
-      devicesByDetails(updateCamera: false);
+      getDeviceByIMEI(initialize: false,updateCamera: false);
       Utils.getSnackbar('Success', 'Your detail is updated');
     } catch (e) {
       networkStatus.value = NetworkStatus.ERROR;
@@ -383,7 +413,7 @@ class DeviceController extends GetxController {
       networkStatus.value = NetworkStatus.LOADING;
 
       await apiService.editDevicesByOwnerID(body);
-      devicesByDetails(updateCamera: false);
+      getDeviceByIMEI(initialize: false,updateCamera: false);
       Utils.getSnackbar('Success', 'Your detail is updated');
     } catch (e) {
       networkStatus.value = NetworkStatus.ERROR;
@@ -459,7 +489,7 @@ class DeviceController extends GetxController {
       }
 
       if (response.message == "success") {
-        devicesByDetails(updateCamera: false);
+        getDeviceByIMEI(initialize: false,updateCamera: false);
         // checkRelayStatus(imei);
         networkStatus.value = NetworkStatus.SUCCESS;
       }
@@ -481,7 +511,7 @@ class DeviceController extends GetxController {
         Utils.getSnackbar("Engine", response.data.message);
       }
       if (response.message == "success") {
-        devicesByDetails(updateCamera: false);
+        getDeviceByIMEI(initialize: false,updateCamera: false);
         // checkRelayStatus(imei);
         networkStatus.value = NetworkStatus.SUCCESS;
       }
@@ -511,6 +541,39 @@ class DeviceController extends GetxController {
     longitudeUpdate.text = (data?.longitude ?? "").toString();
   }
 
-  /// Location tracking methods
+  Stream<String> addressStream() async* {
+    while (true) {
+      await Future.delayed(Duration(seconds: 10));
+
+      final lat = deviceDetail.value?.trackingData?.location?.latitude;
+      final lon = deviceDetail.value?.trackingData?.location?.longitude;
+
+      if (lat != null && lon != null) {
+        try {
+          final address = await Utils().getAddressFromLatLong(lat, lon);
+          yield address;
+        } catch (e) {
+          yield "Error Fetching Address";
+        }
+      } else {
+        yield "Address Unavailable";
+      }
+    }
+  }
+
+  void updateCameraPositionWithZoom(
+      {required double latitude,
+        required double longitude,
+        required double course}) async {
+    mapController.animateCamera(
+      CameraUpdate.newCameraPosition(
+        CameraPosition(
+          bearing: course,
+          target: LatLng(latitude, longitude), //todo
+          zoom: 17,
+        ),
+      ),
+    );
+  }
 
 }

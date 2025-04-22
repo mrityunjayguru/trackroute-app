@@ -96,10 +96,7 @@ class VehiclesList extends StatelessWidget {
                                                   vehicle: vehicle);
                                           return InkWell(
                                             onTap: () {
-                                              controller.isShowVehicleDetails(
-                                                  vehicle.imei ?? '');
-                                             /* controller.devicesByDetails(
-                                                  showDialog: true, zoom: true);*/ //todo
+                                              controller.isShowVehicleDetails(vehicle.imei ?? "");
                                               controller.removeFilter();
                                               controller.searchController
                                                   .clear();
@@ -148,30 +145,12 @@ class VehiclesList extends StatelessWidget {
                                                   InkWell(
                                                     onTap: () {
                                                       /// if inactive then show the vehicle details or else go to manage screen
-                                                      controller
-                                                          .isShowVehicleDetails(
-                                                          vehicle.imei ??
-                                                              '');
                                                       controller.removeFilter();
                                                       if (isInactive) {
-                                                       /* controller
-                                                            .devicesByDetails(
-                                                                showDialog:
-                                                                    true,
-                                                                zoom: true);*/ //todo
-
-                                                      } else {
-                                                        /*controller.stackIndex
-                                                            .value = 1;
-                                                        controller.isedit
-                                                            .value = false;
-
-                                                        controller.editGeofence
-                                                            .value = false;
-                                                        controller.editSpeed
-                                                            .value = false;
                                                         controller
-                                                            .devicesByDetails();*/ //todo
+                                                            .isShowVehicleDetails(vehicle.imei ?? "");
+                                                      } else {
+                                                        controller.showEditView();
                                                       }
                                                       controller
                                                           .searchController

@@ -45,7 +45,7 @@ class MyApp extends StatelessWidget {
       return Material(
         child: GetMaterialApp(
           debugShowCheckedModeBanner: false,
-          title: 'Flutter Demo',
+          title: 'Track Route Pro',
           theme: ThemeData(
             colorScheme: ColorScheme.fromSeed(
               seedColor: Color(0xffD9E821),

@@ -71,7 +71,6 @@ class VehicalDetailCard extends StatelessWidget {
           }
 
           return VehicleDataWidget(
-            summary: vehicleInfo.summary,
             expiryDate: vehicleInfo.subscriptionExp,
             isActive: vehicleInfo.status?.toLowerCase() == "active",
             temp: (trackingData?.temperature ?? "N/A").toString(),

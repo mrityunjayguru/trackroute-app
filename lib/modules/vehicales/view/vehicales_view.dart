@@ -170,10 +170,6 @@ class _VehicalesViewState extends State<VehicalesView> {
                         controller.trackRouteController.removeFilter();
                         controller.trackRouteController
                             .isShowVehicleDetails(vehicle.imei ?? "");
-                      /*  controller.trackRouteController.devicesByDetails(  //todo-change
-                            showDialog: true,
-                            zoom: true);*/
-
                       },
                       child: VehicalDetailCard(
                         vehicleInfo: vehicle,

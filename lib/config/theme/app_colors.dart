@@ -85,6 +85,8 @@ class AppColors {
   static Color dangerDark = const Color(0xffa92e2e);
   static Color dangerLight = const Color(0xffffeaea);
   static Color color_e23226 = const Color(0xffe23226);
+  static Color color_434345 = const Color(0xff434345);
+  static Color color_ED1C24 = const Color(0xffED1C24);
 
   //WARNING
   static Color warning = const Color(0xffFFD02C);

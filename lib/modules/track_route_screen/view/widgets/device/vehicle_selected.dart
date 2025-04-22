@@ -75,7 +75,7 @@ class VehicleSelected extends StatelessWidget {
                           context: context,
                           rightIcon: 'assets/images/svg/ic_arrow_left.svg',
                           onTap: () {
-                           //todo
+                           Get.back();
                           },
                           name:
                               'Manage ${controller.deviceDetail.value?.vehicleNo != null ? "-" : ""}${controller.deviceDetail.value?.vehicleNo ?? ''}'),

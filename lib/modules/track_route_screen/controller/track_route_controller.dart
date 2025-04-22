@@ -10,6 +10,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:track_route_pro/constants/constant.dart';
 import 'package:track_route_pro/gen/assets.gen.dart';
 import 'package:track_route_pro/modules/bottom_screen/controller/bottom_bar_controller.dart';
+import 'package:track_route_pro/modules/track_route_screen/controller/track_device_controller.dart';
+import 'package:track_route_pro/modules/track_route_screen/view/widgets/device/vehicle_selected.dart';
 import 'package:track_route_pro/modules/vehicales/model/filter_model.dart';
 import 'package:track_route_pro/service/api_service/api_service.dart';
 import 'package:track_route_pro/service/model/presentation/track_route/track_route_vehicle_list.dart';
@@ -124,7 +126,6 @@ class TrackRouteController extends GetxController {
   }
 
 
-
   void storeVehicleData() async {
     final allVehiclesRes = vehicleList.value.data ?? [];
     allVehicles.value = allVehiclesRes;
@@ -212,13 +213,36 @@ class TrackRouteController extends GetxController {
   }
 
 
-
   Future<void> isShowVehicleDetails(String imei) async {
-  //todo
+    ///init socket & store data in deviceDetails for one device
+    final controller = Get.isRegistered<DeviceController>()
+        ? Get.find<DeviceController>() // Find if already registered
+        : Get.put(DeviceController());
+    controller.getDeviceByIMEI(zoom: true, showDialog: true);
+    controller.selectedVehicleIMEI.value = imei;
     Get.to(() => TrackDeviceView(),
         transition: Transition.upToDown,
         duration: const Duration(milliseconds: 300));
 
+  }
+
+
+  void showEditView()  {
+    ///store data in deviceDetails for one device and edit data
+    final controller = Get.isRegistered<DeviceController>()
+        ? Get.find<DeviceController>() // Find if already registered
+        : Get.put(DeviceController());
+    controller.getDeviceByIMEI(zoom: true, showDialog: true, initialize: false);
+    Get.to(() => VehicleSelected(),
+        transition: Transition.upToDown,
+        duration: const Duration(milliseconds: 300));
+    controller.isedit
+        .value = false;
+
+    controller.editGeofence
+        .value = false;
+    controller.editSpeed
+    .value = false;
   }
 
   void removeFilter(){
@@ -616,7 +640,6 @@ class TrackRouteController extends GetxController {
       required bool isOffline,
       String? vehicleNo}) async {
     BitmapDescriptor markerIcon = BitmapDescriptor.defaultMarker;
-    developer.log("IMEI MARkER $imei");
     if (isInactive) {
       markerIcon = await svgToBitmapDescriptorInactiveIcon();
     } else {

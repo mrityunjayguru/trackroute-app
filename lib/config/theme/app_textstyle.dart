@@ -40,6 +40,7 @@ class AppTextStyles {
   late final TextStyle textHeader;
   late final TextStyle display6W400;
   late final TextStyle display7W600;
+  late final TextStyle display8W600;
   late final TextStyle display14W400;
   late final TextStyle display10W400;
   late final TextStyle display9W400;
@@ -94,6 +95,7 @@ class AppTextStyles {
   late final TextStyle display24W700;
   late final TextStyle display30W400;
   late final TextStyle display30W700;
+  late final TextStyle display32W600;
   late final TextStyle display32W700;
   late final TextStyle display36W700;
 
@@ -264,6 +266,11 @@ class AppTextStyles {
     display7W600 = Theme.of(context!).textTheme.displaySmall!.copyWith(
       fontFamily: BaseFonts.SFPro,
       fontSize: 7,
+      fontWeight: FontWeight.w600,
+    );
+    display8W600 = Theme.of(context!).textTheme.displaySmall!.copyWith(
+      fontFamily: BaseFonts.SFPro,
+      fontSize: 8,
       fontWeight: FontWeight.w600,
     );
     display10W400 = Theme.of(context!).textTheme.displaySmall!.copyWith(
@@ -539,6 +546,11 @@ class AppTextStyles {
           fontSize: 30,
           fontWeight: FontWeight.w700,
         );
+    display32W600 = Theme.of(context!).textTheme.displayLarge!.copyWith(
+      fontFamily: BaseFonts.SFPro,
+      fontSize: 32,
+      fontWeight: FontWeight.w600,
+    );
     display32W700 = Theme.of(context!).textTheme.displayLarge!.copyWith(
           fontFamily: BaseFonts.SFPro,
           fontSize: 32,
