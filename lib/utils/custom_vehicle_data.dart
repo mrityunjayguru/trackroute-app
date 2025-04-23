@@ -991,13 +991,13 @@ class VehicleDataWidget extends StatelessWidget {
             immobilizerSubTitle, 'assets/images/svg/ic_relay_icon.svg'),
       if (displayParameters?.geoFencing == true)
         _buildVehicleItem(context, 'Geofence', geofenceIsActive,
-            geofenceSubTitle, 'assets/images/svg/ic_geofence_icon.svg'),
+            geofenceSubTitle, 'assets/images/svg/ic_geofence.svg'),
       if (displayParameters?.gps == true)
         _buildVehicleItem(context, 'GPS', gpsIsActive, gpsSubTitle,
-            'assets/images/svg/gps.svg'),
+            'assets/images/svg/ic_gps_new.svg'),
       if (displayParameters?.network == true)
         _buildVehicleItem(context, 'Network', networkIsActive, networkSubTitle,
-            'assets/images/svg/ic_signal_tower.svg'),
+            'assets/images/svg/ic_signal.svg'),
       if (displayParameters?.ac == true)
         _buildVehicleItem(context, 'AC', acIsActive, acSubTitle,
             'assets/images/svg/ic_ac.svg'),

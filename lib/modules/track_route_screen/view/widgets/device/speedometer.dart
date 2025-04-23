@@ -77,6 +77,12 @@ class SpeedometerPainter extends CustomPainter {
       ..color = Colors.black
       ..style = PaintingStyle.fill;
 
+    final Paint backgroundArcPaint = Paint()
+      ..color = AppColors.color_434345 // grey color for background arc
+      ..strokeWidth = 6
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+
     final Paint arcPaint = Paint()
       ..color = color
       ..strokeWidth = 6
@@ -92,7 +98,13 @@ class SpeedometerPainter extends CustomPainter {
     // Draw arc from 135° to 45°
     final startAngle = 3 * pi / 4;
     final sweepAngle = 3 * pi / 2 * percentage;
-
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius-10),
+      startAngle,
+      3 * pi / 2,
+      false,
+      backgroundArcPaint,
+    );
     canvas.drawArc(
       Rect.fromCircle(center: center, radius: radius - 10),
       startAngle,

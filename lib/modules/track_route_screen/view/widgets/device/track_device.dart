@@ -179,31 +179,50 @@ class TrackDeviceView extends StatelessWidget {
                                 ),
                               ).paddingOnly(top: 12),
                         ),
-                        if ((controller.deviceDetail.value != null) &&
-                            trackController.checkIfOffline(
-                                vehicle: controller.deviceDetail.value))
-                          IntrinsicWidth(
-                            child: Container(
-                              padding: EdgeInsets.all(5),
-                              decoration: BoxDecoration(
-                                  color: AppColors.color_F26221,
-                                  borderRadius: BorderRadius.circular(
-                                      AppSizes.radius_50)),
-                              child: Row(
-                                children: [
-                                  SvgPicture.asset(
-                                    "assets/images/svg/no_internet.svg",
-                                  ).paddingOnly(right: 2),
-                                  Text(
-                                    "No Internet Connection - you're offline",
-                                    style: AppTextStyles(context)
-                                        .display13W500
-                                        .copyWith(color: Colors.white),
-                                  ).paddingOnly(left: 6, bottom: 7, top: 7),
-                                ],
-                              ).paddingSymmetric(horizontal: 16),
-                            ).paddingSymmetric(horizontal: 16, vertical: 10),
-                          ),
+                        StreamBuilder<bool>(
+                          stream: controller.internetStatusStream(),
+                          builder: (context, snapshot) {
+                            String message = "";
+                            Color color = Colors.grey;
+
+                            if (snapshot.connectionState == ConnectionState.active || snapshot.connectionState == ConnectionState.done) {
+                              if (snapshot.data == true) {
+                                message = "";
+                                color = Colors.green;
+                              } else {
+                                message = "No Internet Connection - you're offline";
+                                color = Colors.red;
+                              }
+                            }
+                            if(message.isEmpty){
+                              return SizedBox.shrink();
+                            }
+                            return IntrinsicWidth(
+                              child: Container(
+                                padding: EdgeInsets.all(5),
+                                decoration: BoxDecoration(
+                                    color: AppColors.color_F26221,
+                                    borderRadius: BorderRadius.circular(
+                                        AppSizes.radius_50)),
+                                child: Row(
+                                  children: [
+                                    SvgPicture.asset(
+                                      "assets/images/svg/no_internet.svg",
+                                    ).paddingOnly(right: 2),
+                                    Text(
+                                      message,
+                                      style: AppTextStyles(context)
+                                          .display13W500
+                                          .copyWith(color: Colors.white),
+                                    ).paddingOnly(left: 6, bottom: 7, top: 7),
+                                  ],
+                                ).paddingSymmetric(horizontal: 16),
+                              ).paddingSymmetric(horizontal: 16, vertical: 10),
+                            );
+                          },
+                        )
+
+
                       ],
                     ).paddingSymmetric(horizontal: 4.w * 0.9),
                   ),
@@ -350,15 +369,46 @@ class TrackDeviceView extends StatelessWidget {
                 bottom: 10,
                 child: Column(
                   children: [
-                    SizedBox(
-                      height: 125,
+                    Container(
+                      width: context.width,
                       child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          ListView(
-                            shrinkWrap: true,
-                            scrollDirection: Axis.horizontal,
-                            children: _buildVehicleItemsLeft(context),
-                          ).paddingOnly(top: 10),
+                          SizedBox(
+                            height:85,
+                            child: Column(
+                              children: [
+                                Flexible(
+                                  child: ListView(
+                                    shrinkWrap: true,
+                                    scrollDirection: Axis.horizontal,
+                                    children: _buildVehicleItemsLeft(context),
+                                  ).paddingOnly(top: 10,bottom: 4+10),
+                                ),
+                                Container(
+                                  height: 30,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "Last Update",
+                                        style: AppTextStyles(context)
+                                            .display11W500
+                                            .copyWith(color: AppColors.grayLight),
+                                      ).paddingOnly(bottom: 2),
+                                      Text(
+                                        date + " | " + time,
+                                        style: AppTextStyles(context)
+                                            .display11W500
+                                            .copyWith(color: AppColors.white),
+                                      )
+                                    ],
+                                  ),
+                                ).paddingOnly(bottom: 4),
+                              ],
+                            ),
+                          ).paddingOnly(left: 14),
+                          Spacer(),
                           SpeedometerWidget(
                               color: (controller.deviceDetail.value
                                   ?.trackingData?.currentSpeed ?? 0) == 0
@@ -387,12 +437,49 @@ class TrackDeviceView extends StatelessWidget {
                               distance: controller.deviceDetail.value
                                   ?.trackingData?.dailyDistance ??
                                   0)
-                              .paddingOnly(bottom: 6, left: 25, right: 25),
-                          ListView(
-                            shrinkWrap: true,
-                            scrollDirection: Axis.horizontal,
-                            children: _buildVehicleItemsRight(context),
-                          ).paddingOnly(top: 10),
+                              .paddingOnly(bottom: 6, left: 2.5.w, right: 2.w),
+                          Spacer(),
+                          SizedBox(
+                            height: 85,
+                            child: Column(
+                              children: [
+                                Flexible(
+                                  child: ListView(
+                                    shrinkWrap: true,
+                                    scrollDirection: Axis.horizontal,
+                                    children: _buildVehicleItemsRight(context),
+                                  ).paddingOnly(top: 10, bottom: 4),
+                                ),
+                                Container(
+                                  margin: EdgeInsets.only(top: 10),
+                                  height: 30,
+                                  child: InkWell(
+                                    onTap: () {
+                                      controller.getDeviceByIMEITripSummary();
+                                      Get.to(() => DeviceSelectPage(),
+                                          transition: Transition.upToDown,
+                                          duration: const Duration(milliseconds: 300));
+                                    },
+                                    child: Container(
+                                      height: 26,
+                                      width: 100,
+                                      constraints: BoxConstraints(maxHeight: 26, minHeight: 26),
+                                      decoration: BoxDecoration(
+
+                                          color: AppColors.selextedindexcolor,
+                                          borderRadius: BorderRadius.circular(4)
+                                      ),
+                                      child: Center(
+                                          child: Text(
+                                            "More Info",
+                                            style: AppTextStyles(context).display14W500,
+                                          )),
+                                    ),
+                                  ),
+                                ).paddingOnly(bottom: 4)
+                              ],
+                            ),
+                          ).paddingOnly(right: 14),
                         ],
                       ),
                     ),
@@ -418,59 +505,7 @@ class TrackDeviceView extends StatelessWidget {
                   ],
                 ),
               ),
-              Positioned(
-                bottom: 20,
-                child: Container(
-                  width: context.width,
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        width: 100,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Last Update",
-                              style: AppTextStyles(context)
-                                  .display11W500
-                                  .copyWith(color: AppColors.grayLight),
-                            ).paddingOnly(bottom: 5),
-                            Text(
-                              date + " | " + time,
-                              style: AppTextStyles(context)
-                                  .display11W500
-                                  .copyWith(color: AppColors.white),
-                            )
-                          ],
-                        ),
-                      ).paddingOnly(bottom: 10),
-                      InkWell(
-                        onTap: () {
-                          controller.getDeviceByIMEITripSummary();
-                          Get.to(() => DeviceSelectPage(),
-                              transition: Transition.upToDown,
-                              duration: const Duration(milliseconds: 300));
-                        },
-                        child: Container(
-                          height: 26,
-                          width: 100,
-                          decoration: BoxDecoration(
-                              color: AppColors.selextedindexcolor,
-                              borderRadius: BorderRadius.circular(4)
-                          ),
-                          child: Center(
-                              child: Text(
-                                "More Info",
-                                style: AppTextStyles(context).display14W600,
-                              )),
-                        ),
-                      ).paddingOnly(bottom: 10)
-                    ],
-                  ),
-                ),
-              ),
+
               if (controller.isLoading.value)
                 Positioned.fill(
                   child: Container(
@@ -493,19 +528,6 @@ class TrackDeviceView extends StatelessWidget {
     DisplayParameters? displayParameters =
         controller.deviceDetail.value?.displayParameters;
     return [
-      if (displayParameters?.engine == true)
-        _buildVehicleItem(
-            context,
-            'Engine',
-            controller.deviceDetail.value?.trackingData?.ignition?.status ??
-                false,
-            'assets/images/svg/ic_engine_icon.svg'),
-      if (displayParameters?.gps == true)
-        _buildVehicleItem(
-            context,
-            'GPS',
-            controller.deviceDetail.value?.trackingData?.gps,
-            'assets/images/svg/gps.svg'),
       if (displayParameters?.network == true)
         _buildVehicleItem(
             context,
@@ -514,7 +536,21 @@ class TrackDeviceView extends StatelessWidget {
                 ? null
                 : controller.deviceDetail.value?.trackingData?.network ==
                 "Connected",
-            'assets/images/svg/ic_signal_tower.svg'),
+            'assets/images/svg/ic_signal.svg').paddingOnly(right: 10),
+      if (displayParameters?.gps == true)
+        _buildVehicleItem(
+            context,
+            'GPS',
+            controller.deviceDetail.value?.trackingData?.gps,
+            'assets/images/svg/ic_gps_new.svg').paddingOnly(right: 10),
+      if (displayParameters?.engine == true)
+        _buildVehicleItem(
+            context,
+            'Engine',
+            controller.deviceDetail.value?.trackingData?.ignition?.status ??
+                false,
+            'assets/images/svg/ic_engine_icon.svg').paddingOnly(right: 10),
+
     ];
   }
 
@@ -527,19 +563,20 @@ class TrackDeviceView extends StatelessWidget {
             context,
             'AC',
             controller.deviceDetail.value?.trackingData?.ac,
-            'assets/images/svg/ic_ac.svg'),
-      if (displayParameters?.parking == true)
-        _buildVehicleItem(
-            context,
-            'Parking',
-            controller.deviceDetail.value?.parking,
-            'assets/images/svg/ic_parking_icon.svg'),
+            'assets/images/svg/ic_ac.svg').paddingOnly(left: 10),
       if (displayParameters?.geoFencing == true)
         _buildVehicleItem(
             context,
             'Geofence',
             controller.deviceDetail.value?.locationStatus ?? false,
-            'assets/images/svg/ic_geofence_icon.svg'),
+            'assets/images/svg/ic_geofence.svg').paddingOnly(left: 10),
+      if (displayParameters?.parking == true)
+        _buildVehicleItem(
+            context,
+            'Parking',
+            controller.deviceDetail.value?.parking,
+            'assets/images/svg/ic_parking_icon.svg').paddingOnly(left: 10),
+
     ];
   }
 
@@ -557,7 +594,7 @@ class TrackDeviceView extends StatelessWidget {
                     ? AppColors.selextedindexcolor
                     : AppColors.color_f4f4f4),
                 BlendMode.srcIn)),
-        SizedBox(width: 10),
+
       ],
     );
   }

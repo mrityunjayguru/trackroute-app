@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:developer' as developer;
-
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
@@ -8,7 +8,7 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:track_route_pro/modules/track_route_screen/controller/track_route_controller.dart';
 import 'package:track_route_pro/service/model/presentation/track_route/Summary.dart';
 import 'package:track_route_pro/service/model/presentation/track_route/track_route_vehicle_list.dart';
-
+import 'dart:io';
 import '../../../config/theme/app_colors.dart';
 import '../../../constants/constant.dart';
 import '../../../constants/project_urls.dart';
@@ -31,6 +31,7 @@ class DeviceController extends GetxController {
   RxString selectedVehicleIMEI = RxString('');
   late GoogleMapController mapController;
   RxBool isedit = false.obs;
+  RxBool isOffline = false.obs;
   RxBool isExpanded = false.obs;
   bool dialogOpen = false;
   var currentLocation = LatLng(20.5937, 78.9629).obs;
@@ -49,6 +50,7 @@ class DeviceController extends GetxController {
     super.onInit();
     isLoading.value = true;
     loadUser();
+
   }
 
   @override
@@ -94,14 +96,6 @@ class DeviceController extends GetxController {
             .map((item) => Data.fromJson(item as Map<String, dynamic>))
             .toList();
         if (!isedit.value && vehicleListData.isNotEmpty) {
-          /*   int index = vehicleList.value.data?.indexWhere(
-                (element) => element.imei == vehicleListData.first.imei,
-              ) ??
-              -1;
-
-      vehicleList.value.data?[index] = vehicleListData.first;*/
-          // storeVehicleData();
-
           deviceDetail.value = vehicleListData.first;
           devicesByDetails();
         }
@@ -576,4 +570,23 @@ class DeviceController extends GetxController {
     );
   }
 
+
+  Future<bool> checkNetwork() async {
+    bool isConnected = false;
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        isConnected = true;
+      }
+    } on SocketException catch (_) {
+      isConnected = false;
+    }
+    return isConnected;
+  }
+  Stream<bool> internetStatusStream() async* {
+    while (true) {
+      await Future.delayed(Duration(seconds: 30));
+      yield await checkNetwork();
+    }
+  }
 }
