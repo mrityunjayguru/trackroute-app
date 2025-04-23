@@ -29,6 +29,7 @@ class DeviceController extends GetxController {
   RxList<DataVehicleType> vehicleTypeList = <DataVehicleType>[].obs;
   RxString devicesOwnerID = RxString('');
   RxString selectedVehicleIMEI = RxString('');
+  RxString fuelValue = RxString('N/A');
   late GoogleMapController mapController;
   RxBool isedit = false.obs;
   RxBool isOffline = false.obs;
@@ -247,7 +248,7 @@ class DeviceController extends GetxController {
               lat: lat,
               long: long,
               img: data?.vehicletype?.icons,
-              id: data?.deviceId,
+              id: data?.deviceId.toString(),
               vehicleNo: data?.vehicleNo,
               isOffline: isOffline,
               isInactive: isInactive);
@@ -288,9 +289,9 @@ class DeviceController extends GetxController {
       if (response.status == 200) {
         networkStatus.value = NetworkStatus.SUCCESS;
         if (response.data?.isNotEmpty ?? false) {
-          developer.log("SUMARY TRIP ${response.data?.first.summary}");
+          // developer.log("SUMARY TRIP ${response.data?.first.summary}");
           summaryTrip.value = response.data?.first.summary;
-          developer.log("SUMARY TRIP ${summaryTrip.value?.latestTripKm}");
+          fuelValue.value = response.data?.first.fuelStatus != "Off" ? (response.data?.first.fuelLevel ?? "N/A").toString() : "N/A";
         }
       } else if (response.status == 400) {
         networkStatus.value = NetworkStatus.ERROR;

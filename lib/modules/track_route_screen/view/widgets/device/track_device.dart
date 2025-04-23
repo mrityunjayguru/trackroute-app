@@ -37,23 +37,20 @@ class TrackDeviceView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(
-          () {
+      () {
         bool isActive = true;
         if (controller.deviceDetail.value?.status?.toLowerCase() != "active") {
           isActive = false;
         }
         String date = 'Update unavailable';
         String time = "";
-        if (controller.deviceDetail.value?.trackingData?.lastUpdateTime
-            ?.isNotEmpty ?? false) {
+        if (controller
+                .deviceDetail.value?.trackingData?.lastUpdateTime?.isNotEmpty ??
+            false) {
           date =
-          '${DateFormat("dd MMM y").format(DateTime.parse(
-              controller.deviceDetail.value?.trackingData?.lastUpdateTime ?? "")
-              .toLocal()) ?? ''}';
+              '${DateFormat("dd MMM y").format(DateTime.parse(controller.deviceDetail.value?.trackingData?.lastUpdateTime ?? "").toLocal()) ?? ''}';
           time =
-          '${DateFormat("HH:mm").format(DateTime.parse(
-              controller.deviceDetail.value?.trackingData?.lastUpdateTime ?? "")
-              .toLocal()) ?? ''}';
+              '${DateFormat("HH:mm").format(DateTime.parse(controller.deviceDetail.value?.trackingData?.lastUpdateTime ?? "").toLocal()) ?? ''}';
         }
         return PopScope(
           canPop: false,
@@ -87,97 +84,83 @@ class TrackDeviceView extends StatelessWidget {
                     child: Column(
                       children: [
                         Obx(
-                              () =>
-                              Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(
-                                          AppSizes.radius_50),
-                                      topRight: Radius.circular(
-                                          AppSizes.radius_50),
-                                      bottomRight: controller.isExpanded.value
-                                          ? Radius.circular(AppSizes.radius_16)
-                                          : Radius.circular(AppSizes.radius_50),
-                                      bottomLeft: controller.isExpanded.value
-                                          ? Radius.circular(AppSizes.radius_16)
-                                          : Radius.circular(
-                                          AppSizes.radius_50)),
-                                  color: AppColors.whiteOff,
-                                ),
-                                child: Column(
-                                  children: [
-                                    GestureDetector(
-                                      behavior: HitTestBehavior.deferToChild,
-                                      onTap: () {
-                                        controller.closeSocket();
-                                        Get.back();
-                                        /* controller.isExpanded.value =
+                          () => Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(AppSizes.radius_50),
+                                  topRight: Radius.circular(AppSizes.radius_50),
+                                  bottomRight: controller.isExpanded.value
+                                      ? Radius.circular(AppSizes.radius_16)
+                                      : Radius.circular(AppSizes.radius_50),
+                                  bottomLeft: controller.isExpanded.value
+                                      ? Radius.circular(AppSizes.radius_16)
+                                      : Radius.circular(AppSizes.radius_50)),
+                              color: AppColors.whiteOff,
+                            ),
+                            child: Column(
+                              children: [
+                                GestureDetector(
+                                  behavior: HitTestBehavior.deferToChild,
+                                  onTap: () {
+                                    controller.closeSocket();
+                                    Get.back();
+                                    /* controller.isExpanded.value =
                                       !controller.isExpanded.value;*/
-                                        // controller.searchController.clear(); //todo
-                                      },
-                                      child: Container(
-                                        height:
-                                        MediaQuery
-                                            .of(context)
-                                            .size
-                                            .height < 670
+                                    // controller.searchController.clear(); //todo
+                                  },
+                                  child: Container(
+                                    height:
+                                        MediaQuery.of(context).size.height < 670
                                             ? 7.h
                                             : 6.h,
-                                        // Increase height for smaller screens
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(
-                                              AppSizes.radius_50),
-                                          color: AppColors.black,
+                                    // Increase height for smaller screens
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(
+                                          AppSizes.radius_50),
+                                      color: AppColors.black,
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Obx(
+                                          () => Image.network(
+                                              width: 25,
+                                              height: 25,
+                                              "${ProjectUrls.imgBaseUrl}${dataController.settings.value.logo}",
+                                              errorBuilder: (context, error,
+                                                      stackTrace) =>
+                                                  SvgPicture.asset(
+                                                    Assets.images.svg
+                                                        .icIsolationMode,
+                                                    color: AppColors.black,
+                                                  )).paddingSymmetric(
+                                              horizontal: 10),
                                         ),
-                                        child: Row(
-                                          children: [
-                                            Obx(
-                                                  () =>
-                                                  Image.network(
-                                                      width: 25,
-                                                      height: 25,
-                                                      "${ProjectUrls
-                                                          .imgBaseUrl}${dataController
-                                                          .settings.value
-                                                          .logo}",
-                                                      errorBuilder: (context,
-                                                          error,
-                                                          stackTrace) =>
-                                                          SvgPicture.asset(
-                                                            Assets.images.svg
-                                                                .icIsolationMode,
-                                                            color: AppColors
-                                                                .black,
-                                                          )).paddingSymmetric(
-                                                      horizontal: 10),
-                                            ),
-                                            Expanded(
-                                              child: Text(
-                                                controller.deviceDetail.value
+                                        Expanded(
+                                          child: Text(
+                                            controller.deviceDetail.value
                                                     ?.vehicleNo ??
-                                                    "Tracking",
-                                                overflow: TextOverflow.ellipsis,
-                                                style: AppTextStyles(context)
-                                                    .display20W400
-                                                    .copyWith(
+                                                "Tracking",
+                                            overflow: TextOverflow.ellipsis,
+                                            style: AppTextStyles(context)
+                                                .display20W400
+                                                .copyWith(
                                                     color: AppColors.whiteOff),
-                                              ),
-                                            ),
-                                            SvgPicture.asset(
-                                              /* !controller.isExpanded.value
+                                          ),
+                                        ),
+                                        SvgPicture.asset(
+                                                /* !controller.isExpanded.value
                                   ? Assets.images.svg.icArrowDown
                                   :*/ //todo
                                                 'assets/images/svg/ic_arrow_left.svg')
-                                                .paddingOnly(
-                                                right: 12, left: 7.w)
-                                          ],
-                                        ).paddingOnly(left: 8, right: 8),
-                                      ),
-                                    ),
-                                    //todo- vehicle list
-                                  ],
+                                            .paddingOnly(right: 12, left: 7.w)
+                                      ],
+                                    ).paddingOnly(left: 8, right: 8),
+                                  ),
                                 ),
-                              ).paddingOnly(top: 12),
+                                //todo- vehicle list
+                              ],
+                            ),
+                          ).paddingOnly(top: 12),
                         ),
                         StreamBuilder<bool>(
                           stream: controller.internetStatusStream(),
@@ -185,16 +168,20 @@ class TrackDeviceView extends StatelessWidget {
                             String message = "";
                             Color color = Colors.grey;
 
-                            if (snapshot.connectionState == ConnectionState.active || snapshot.connectionState == ConnectionState.done) {
+                            if (snapshot.connectionState ==
+                                    ConnectionState.active ||
+                                snapshot.connectionState ==
+                                    ConnectionState.done) {
                               if (snapshot.data == true) {
                                 message = "";
                                 color = Colors.green;
                               } else {
-                                message = "No Internet Connection - you're offline";
+                                message =
+                                    "No Internet Connection - you're offline";
                                 color = Colors.red;
                               }
                             }
-                            if(message.isEmpty){
+                            if (message.isEmpty) {
                               return SizedBox.shrink();
                             }
                             return IntrinsicWidth(
@@ -221,8 +208,6 @@ class TrackDeviceView extends StatelessWidget {
                             );
                           },
                         )
-
-
                       ],
                     ).paddingSymmetric(horizontal: 4.w * 0.9),
                   ),
@@ -245,7 +230,7 @@ class TrackDeviceView extends StatelessWidget {
                       ),
                       onPressed: () {
                         controller.isSatellite.value =
-                        !controller.isSatellite.value;
+                            !controller.isSatellite.value;
                       },
                     ),
                   ).paddingOnly(bottom: 16, right: 4.w * 0.9),
@@ -265,7 +250,7 @@ class TrackDeviceView extends StatelessWidget {
                       onPressed: () async {
                         // Fetch the current location
                         Position? position =
-                        await trackController.getCurrentLocation();
+                            await trackController.getCurrentLocation();
                         if (position != null) {
                           trackController.updateCameraPosition(
                               course: 0,
@@ -284,12 +269,12 @@ class TrackDeviceView extends StatelessWidget {
                         onTap: () {
                           if (isActive &&
                               (controller.deviceDetail.value?.mobileNo
-                                  ?.isNotEmpty ??
+                                      ?.isNotEmpty ??
                                   false)) {
                             Utils.makePhoneCall(
                                 '${controller.deviceDetail.value?.mobileNo}');
                           } else if (controller
-                              .deviceDetail.value?.mobileNo?.isNotEmpty ??
+                                  .deviceDetail.value?.mobileNo?.isNotEmpty ??
                               true) {
                             Get.snackbar("", "",
                                 snackStyle: SnackStyle.FLOATING,
@@ -316,7 +301,7 @@ class TrackDeviceView extends StatelessWidget {
                                   ? AppColors.selextedindexcolor
                                   : AppColors.grayLight,
                               border:
-                              Border.all(color: AppColors.black, width: 4)),
+                                  Border.all(color: AppColors.black, width: 4)),
                           child: Icon(Icons.call),
                         ).paddingOnly(top: 0.8.h, bottom: 0.8.h, left: 0.5.h),
                       ),
@@ -332,19 +317,19 @@ class TrackDeviceView extends StatelessWidget {
                             color: AppColors.white,
                           ),
                           backgroundColor:
-                          isActive ? AppColors.blue : AppColors.grayLight,
+                              isActive ? AppColors.blue : AppColors.grayLight,
                           shape: RoundedRectangleBorder(
                             borderRadius:
-                            BorderRadius.circular(AppSizes.radius_50),
+                                BorderRadius.circular(AppSizes.radius_50),
                           ),
                           onPressed: () {
                             if (isActive) {
                               LatLng vehiclePosition = LatLng(
                                 controller.deviceDetail.value?.trackingData
-                                    ?.location?.latitude ??
+                                        ?.location?.latitude ??
                                     0.0,
                                 controller.deviceDetail.value?.trackingData
-                                    ?.location?.longitude ??
+                                        ?.location?.longitude ??
                                     0.0,
                               );
                               trackController.openMaps(data: vehiclePosition);
@@ -360,7 +345,6 @@ class TrackDeviceView extends StatelessWidget {
                         "assets/images/svg/tracking_bg_widget.svg",
                         width: context.width,
                       ),
-
                     ],
                   )
                 ],
@@ -375,26 +359,27 @@ class TrackDeviceView extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           SizedBox(
-                            height:85,
+                            height: 85,
                             child: Column(
                               children: [
-                                Flexible(
-                                  child: ListView(
-                                    shrinkWrap: true,
-                                    scrollDirection: Axis.horizontal,
-                                    children: _buildVehicleItemsLeft(context),
-                                  ).paddingOnly(top: 10,bottom: 4+10),
+                                Container(
+                                  width:
+                                      0.304 * MediaQuery.of(context).size.width,
+                                  child: _buildVehicleItemsLeft(context)
+                                      .paddingOnly(top: 10, bottom: 4 + 10),
                                 ),
                                 Container(
                                   height: 30,
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         "Last Update",
                                         style: AppTextStyles(context)
                                             .display11W500
-                                            .copyWith(color: AppColors.grayLight),
+                                            .copyWith(
+                                                color: AppColors.grayLight),
                                       ).paddingOnly(bottom: 2),
                                       Text(
                                         date + " | " + time,
@@ -407,79 +392,77 @@ class TrackDeviceView extends StatelessWidget {
                                 ).paddingOnly(bottom: 4),
                               ],
                             ),
-                          ).paddingOnly(left: 14),
+                          ),
                           Spacer(),
                           SpeedometerWidget(
-                              color: (controller.deviceDetail.value
-                                  ?.trackingData?.currentSpeed ?? 0) == 0
-                                  ? AppColors.color_434345
-                                  : (controller.deviceDetail.value?.maxSpeed !=
-                                  null
-                                  ? ((controller
-                                  .deviceDetail
-                                  .value
-                                  ?.trackingData
-                                  ?.currentSpeed ??
-                                  0) >
-                                  (controller.deviceDetail.value?.maxSpeed ??
+                                  color: (controller.deviceDetail.value?.trackingData?.currentSpeed ?? 0) == 0
+                                      ? AppColors.color_434345
+                                      : (controller.deviceDetail.value?.maxSpeed != null
+                                          ? ((controller
+                                                          .deviceDetail
+                                                          .value
+                                                          ?.trackingData
+                                                          ?.currentSpeed ??
+                                                      0) >
+                                                  (controller.deviceDetail.value?.maxSpeed ??
+                                                      0)
+                                              ? AppColors.color_ED1C24
+                                              : AppColors.selextedindexcolor)
+                                          : AppColors.selextedindexcolor),
+                                  speed: ((controller
+                                                  .deviceDetail
+                                                  .value
+                                                  ?.trackingData
+                                                  ?.currentSpeed ??
+                                              0)
+                                          .toStringAsFixed(0) ??
+                                      "N/A"),
+                                  distance: controller.deviceDetail.value
+                                          ?.trackingData?.dailyDistance ??
                                       0)
-                                  ? AppColors.color_ED1C24
-                                  : AppColors.selextedindexcolor)
-                                  : AppColors.selextedindexcolor),
-                              speed: ((controller
-                                  .deviceDetail
-                                  .value
-                                  ?.trackingData
-                                  ?.currentSpeed ??
-                                  0)
-                                  .toStringAsFixed(0) ??
-                                  "N/A"),
-                              distance: controller.deviceDetail.value
-                                  ?.trackingData?.dailyDistance ??
-                                  0)
                               .paddingOnly(bottom: 6, left: 2.5.w, right: 2.w),
                           Spacer(),
                           SizedBox(
                             height: 85,
                             child: Column(
                               children: [
-                                Flexible(
-                                  child: ListView(
-                                    shrinkWrap: true,
-                                    scrollDirection: Axis.horizontal,
-                                    children: _buildVehicleItemsRight(context),
-                                  ).paddingOnly(top: 10, bottom: 4),
-                                ),
                                 Container(
-                                  margin: EdgeInsets.only(top: 10),
+                                    width: 0.304 *
+                                        MediaQuery.of(context).size.width,
+                                    child: _buildVehicleItemsRight(context)
+                                        .paddingOnly(top: 10, bottom: 4 + 10)),
+                                Container(
+                                  // margin: EdgeInsets.only(top: 10),
                                   height: 30,
                                   child: InkWell(
                                     onTap: () {
                                       controller.getDeviceByIMEITripSummary();
                                       Get.to(() => DeviceSelectPage(),
                                           transition: Transition.upToDown,
-                                          duration: const Duration(milliseconds: 300));
+                                          duration: const Duration(
+                                              milliseconds: 300));
                                     },
                                     child: Container(
                                       height: 26,
                                       width: 100,
-                                      constraints: BoxConstraints(maxHeight: 26, minHeight: 26),
+                                      constraints: BoxConstraints(
+                                          maxHeight: 26, minHeight: 26),
                                       decoration: BoxDecoration(
-
                                           color: AppColors.selextedindexcolor,
-                                          borderRadius: BorderRadius.circular(4)
-                                      ),
+                                          borderRadius:
+                                              BorderRadius.circular(4)),
                                       child: Center(
                                           child: Text(
-                                            "More Info",
-                                            style: AppTextStyles(context).display14W500,
-                                          )),
+                                        "More Info",
+                                        style: AppTextStyles(context)
+                                            .display14W500,
+                                      )),
                                     ),
                                   ),
                                 ).paddingOnly(bottom: 4)
                               ],
                             ),
-                          ).paddingOnly(right: 14),
+                          ),
                         ],
                       ),
                     ),
@@ -487,7 +470,9 @@ class TrackDeviceView extends StatelessWidget {
                       stream: controller.addressStream(),
                       builder: (context, snapshot) {
                         String address = "Fetching Address...";
-                        if (snapshot.connectionState == ConnectionState.active || snapshot.connectionState == ConnectionState.done) {
+                        if (snapshot.connectionState ==
+                                ConnectionState.active ||
+                            snapshot.connectionState == ConnectionState.done) {
                           if (snapshot.hasError) {
                             address = "Error Fetching Address";
                           } else {
@@ -497,15 +482,15 @@ class TrackDeviceView extends StatelessWidget {
 
                         return Text(
                           address,
-                          style: AppTextStyles(context).display11W500.copyWith(color: AppColors.white),
+                          style: AppTextStyles(context)
+                              .display11W500
+                              .copyWith(color: AppColors.white),
                         );
                       },
                     ),
-
                   ],
                 ),
               ),
-
               if (controller.isLoading.value)
                 Positioned.fill(
                   child: Container(
@@ -524,64 +509,68 @@ class TrackDeviceView extends StatelessWidget {
     );
   }
 
-  List<Widget> _buildVehicleItemsLeft(BuildContext context) {
+  Row _buildVehicleItemsLeft(BuildContext context) {
     DisplayParameters? displayParameters =
         controller.deviceDetail.value?.displayParameters;
-    return [
-      if (displayParameters?.network == true)
-        _buildVehicleItem(
-            context,
-            'Network',
-            controller.deviceDetail.value?.trackingData?.network == null
-                ? null
-                : controller.deviceDetail.value?.trackingData?.network ==
-                "Connected",
-            'assets/images/svg/ic_signal.svg').paddingOnly(right: 10),
-      if (displayParameters?.gps == true)
-        _buildVehicleItem(
-            context,
-            'GPS',
-            controller.deviceDetail.value?.trackingData?.gps,
-            'assets/images/svg/ic_gps_new.svg').paddingOnly(right: 10),
-      if (displayParameters?.engine == true)
-        _buildVehicleItem(
-            context,
-            'Engine',
-            controller.deviceDetail.value?.trackingData?.ignition?.status ??
-                false,
-            'assets/images/svg/ic_engine_icon.svg').paddingOnly(right: 10),
-
-    ];
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        if (displayParameters?.network == true)
+          _buildVehicleItem(
+              context,
+              'Network',
+              controller.deviceDetail.value?.trackingData?.network == null
+                  ? null
+                  : controller.deviceDetail.value?.trackingData?.network ==
+                      "Connected",
+              'assets/images/svg/ic_signal.svg'),
+        if (displayParameters?.gps == true)
+          _buildVehicleItem(
+              context,
+              'GPS',
+              controller.deviceDetail.value?.trackingData?.gps,
+              'assets/images/svg/ic_gps_new.svg'),
+        if (displayParameters?.engine == true)
+          _buildVehicleItem(
+              context,
+              'Engine',
+              controller.deviceDetail.value?.trackingData?.ignition?.status ??
+                  false,
+              'assets/images/svg/ic_engine_icon.svg'),
+      ],
+    );
   }
 
-  List<Widget> _buildVehicleItemsRight(BuildContext context) {
+  Row _buildVehicleItemsRight(BuildContext context) {
     DisplayParameters? displayParameters =
         controller.deviceDetail.value?.displayParameters;
-    return [
-      if (displayParameters?.ac == true)
-        _buildVehicleItem(
-            context,
-            'AC',
-            controller.deviceDetail.value?.trackingData?.ac,
-            'assets/images/svg/ic_ac.svg').paddingOnly(left: 10),
-      if (displayParameters?.geoFencing == true)
-        _buildVehicleItem(
-            context,
-            'Geofence',
-            controller.deviceDetail.value?.locationStatus ?? false,
-            'assets/images/svg/ic_geofence.svg').paddingOnly(left: 10),
-      if (displayParameters?.parking == true)
-        _buildVehicleItem(
-            context,
-            'Parking',
-            controller.deviceDetail.value?.parking,
-            'assets/images/svg/ic_parking_icon.svg').paddingOnly(left: 10),
-
-    ];
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        if (displayParameters?.ac == true)
+          _buildVehicleItem(
+              context,
+              'AC',
+              controller.deviceDetail.value?.trackingData?.ac,
+              'assets/images/svg/ic_ac.svg'),
+        if (displayParameters?.geoFencing == true)
+          _buildVehicleItem(
+              context,
+              'Geofence',
+              controller.deviceDetail.value?.locationStatus ?? false,
+              'assets/images/svg/ic_geofence.svg'),
+        if (displayParameters?.parking == true)
+          _buildVehicleItem(
+              context,
+              'Parking',
+              controller.deviceDetail.value?.parking,
+              'assets/images/svg/ic_parking_icon.svg'),
+      ],
+    );
   }
 
-  Widget _buildVehicleItem(BuildContext context, String title, bool? isActive,
-      String iconPath) {
+  Widget _buildVehicleItem(
+      BuildContext context, String title, bool? isActive, String iconPath) {
     return Row(
       children: [
         SvgPicture.asset(iconPath,
@@ -591,10 +580,9 @@ class TrackDeviceView extends StatelessWidget {
                 isActive == null
                     ? AppColors.color_f4f4f4
                     : (isActive
-                    ? AppColors.selextedindexcolor
-                    : AppColors.color_f4f4f4),
+                        ? AppColors.selextedindexcolor
+                        : AppColors.color_f4f4f4),
                 BlendMode.srcIn)),
-
       ],
     );
   }

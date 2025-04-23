@@ -379,21 +379,24 @@ class _RouteReplayViewState extends State<RouteReplayView> with TickerProviderSt
                             child: SvgPicture.asset("assets/images/svg/fast_icon.svg")
                                 .paddingOnly(right: 5),
                           ),
-                          Container(
-                            padding: EdgeInsets.all(6),
-                            decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: AppColors.white,
-                                border: Border.all(
-                                    color: AppColors.selextedindexcolor,
-                                    width: 1)),
-                            child: Text(
-                              '${locationController.playbackSpeed.value.toInt()}X',
-                              style: AppTextStyles(context)
-                                  .display20W600
-                                  .copyWith(color: Colors.black),
-                            ),
-                          ).paddingOnly(right: 3),
+                          InkWell(
+                            onTap: ()=> locationController.updateSpeed(),
+                            child: Container(
+                              padding: EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: AppColors.white,
+                                  border: Border.all(
+                                      color: AppColors.selextedindexcolor,
+                                      width: 1)),
+                              child: Text(
+                                '${locationController.playbackSpeed.value.toInt()}X',
+                                style: AppTextStyles(context)
+                                    .display20W600
+                                    .copyWith(color: Colors.black),
+                              ),
+                            ).paddingOnly(right: 3),
+                          ),
                         ],
                       ),
                     ).paddingOnly(bottom: 16)

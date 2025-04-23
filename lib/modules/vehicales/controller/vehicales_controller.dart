@@ -93,9 +93,9 @@ class VehicalesController extends GetxController {
     List<Data> finalFilteredList = filteredBySearch.where((vehicle) {
       switch (SelectedFilterIndex.value) {
         case 2: // Active
-          return vehicle.status == 'Active' &&
+          return vehicle.status?.toLowerCase() == 'active' &&
               (vehicle.subscriptionExp == null
-                  ? vehicle.status == 'Active'
+                  ? vehicle.status?.toLowerCase() == 'active'
                   : (DateFormat('yyyy-MM-dd')
                               .parse(vehicle.subscriptionExp!)
                               .difference(DateTime.now())
@@ -107,9 +107,9 @@ class VehicalesController extends GetxController {
         case 1: // Ignition Off
           return vehicle.trackingData?.ignition?.status == false;
         case 3: // inactive
-          return vehicle.status != "Active" ||
+          return vehicle.status?.toLowerCase() != "active" ||
               (vehicle.subscriptionExp == null
-                  ? vehicle.status != 'Active'
+                  ? vehicle.status?.toLowerCase() != 'active'
                   : (DateFormat('yyyy-MM-dd')
                               .parse(vehicle.subscriptionExp!)
                               .difference(DateTime.now())
@@ -149,9 +149,9 @@ class VehicalesController extends GetxController {
   // Function to filter Active Vehicles
   List<Data> filterActiveVehicles(List<Data> vehicleList) {
     return vehicleList.where((vehicle) {
-      return vehicle.status == 'Active' &&
+      return vehicle.status?.toLowerCase() == 'active' &&
           (vehicle.subscriptionExp == null
-              ? vehicle.status == 'Active'
+              ? vehicle.status?.toLowerCase() == 'active'
               : (DateFormat('yyyy-MM-dd')
                           .parse(vehicle.subscriptionExp!)
                           .difference(DateTime.now())
@@ -163,9 +163,9 @@ class VehicalesController extends GetxController {
 
   List<Data> filterInactiveVehicle(List<Data> vehicleList) {
     return vehicleList.where((vehicle) {
-      return vehicle.status != "Active" ||
+      return vehicle.status?.toLowerCase() != "active" ||
           (vehicle.subscriptionExp == null
-              ? vehicle.status != 'Active'
+              ? vehicle.status?.toLowerCase() != 'active'
               : (DateFormat('yyyy-MM-dd')
                           .parse(vehicle.subscriptionExp!)
                           .difference(DateTime.now())

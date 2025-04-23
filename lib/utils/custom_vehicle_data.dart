@@ -462,35 +462,31 @@ class VehicleDataWidget extends StatelessWidget {
                           'Today’s Trip Summary',
                           style: AppTextStyles(context).display14W700,
                         ),
-                        SizedBox(
-                          width: 10.w,
-                        ),
-                        Expanded(
-                          child: InkWell(
-                            onTap: () {
-                              Get.put(ReportsController()).setData();
-                              Get.to(
-                                  () => ReportsView(
-                                        imei: imei,
-                                      ),
-                                  transition: Transition.upToDown,
-                                  duration: const Duration(milliseconds: 300));
-                            },
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 9, horizontal: 8),
-                              decoration: BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.circular(AppSizes.radius_50),
-                                  color: AppColors.black),
-                              child: Center(
-                                child: Text(
-                                  'Download Reports',
-                                  style: AppTextStyles(context)
-                                      .display13W500
-                                      .copyWith(
-                                          color: AppColors.selextedindexcolor),
-                                ),
+
+                        InkWell(
+                          onTap: () {
+                            Get.put(ReportsController()).setData();
+                            Get.to(
+                                () => ReportsView(
+                                      imei: imei,
+                                    ),
+                                transition: Transition.upToDown,
+                                duration: const Duration(milliseconds: 300));
+                          },
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 9, horizontal: 8),
+                            decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.circular(AppSizes.radius_50),
+                                color: AppColors.black),
+                            child: Center(
+                              child: Text(
+                                'Download Reports',
+                                style: AppTextStyles(context)
+                                    .display13W500
+                                    .copyWith(
+                                        color: AppColors.selextedindexcolor),
                               ),
                             ),
                           ),

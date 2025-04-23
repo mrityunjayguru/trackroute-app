@@ -13,7 +13,7 @@ import '../../track_route_screen/controller/track_route_controller.dart';
 import 'common.dart';
 
 class LocationController extends GetxController {
-
+  int baseInterval = 2050;
   late AnimationController animationController;
   Animation<LatLng>? animation;
   LatLng? oldLatLng;
@@ -27,7 +27,7 @@ class LocationController extends GetxController {
   final RxInt currentIndex = 0.obs;
   final RxBool isPlaying = false.obs;
   final RxBool timerOn = false.obs;
-  var markers = <Marker>[].obs;
+  RxSet<Marker> markers = <Marker>{}.obs;
 
   final RxDouble playbackSpeed = 1.0.obs; // 1x, 2x, etc.
   // final Rx<Marker?> currentMarker = Rx<Marker?>(null);
@@ -65,7 +65,7 @@ class LocationController extends GetxController {
 
   void _startPlayback()  {
     _playbackTimer?.cancel();
-    int baseInterval = 2000;
+
     int interval = (baseInterval / playbackSpeed.value).round();
     _playbackTimer = Timer.periodic(Duration(milliseconds: interval), (timer) async {
       if (currentIndex.value < locations.length - 1) {
@@ -102,14 +102,14 @@ class LocationController extends GetxController {
     final lng = data.trackingData?.location?.longitude ?? 0;
 
     final position = LatLng(lat, lng);
-    final newMarker = Marker(
+    /*marker.value = {Marker(
         markerId: MarkerId("playback_marker"),
         position: position,
         icon: markerIcon ?? BitmapDescriptor.defaultMarker,
         flat: true,
-        rotation: Utils.parseDouble(data: data.trackingData?.course) ?? 0);
+        rotation: Utils.parseDouble(data: data.trackingData?.course) ?? 0)};
 
-    markers.value = [newMarker];
+    markers.value = [newMarker];*/
 
   }
 
@@ -130,15 +130,16 @@ class LocationController extends GetxController {
     animation = LatLngTween(begin: oldLatLng ?? newLatLng, end: newLatLng).animate(animationController)
       ..addListener(() {
         final position = animation!.value;
-        final newMarker = Marker(
-          markerId: const MarkerId("playback_marker"),
-          position: position,
-          icon: markerIcon ?? BitmapDescriptor.defaultMarker,
-          flat: true,
-          rotation: rotation,
-        );
+        markers.value = {
+          Marker(
+            markerId: const MarkerId("playback_marker"),
+            position: position,
+            icon: markerIcon ?? BitmapDescriptor.defaultMarker,
+            flat: true,
+            rotation: rotation,
+          )
+        };
 
-        markers.value = [newMarker];
 
         final timeDiff = DateTime.now().difference(timeStamp).inMilliseconds;
         if(timeDiff > 1000){
@@ -166,6 +167,7 @@ class LocationController extends GetxController {
     // Get the map controller
 
   }
+
   void updateSpeed() {
     final List<double> speeds = [1, 2, 3, 4];
     int currentIndex = speeds.indexOf(playbackSpeed.value);
@@ -183,8 +185,7 @@ class LocationController extends GetxController {
   }
 
   int getDurationFromSpeed(double speedMultiplier) {
-    const baseDurationMs = 2000;
-    return (baseDurationMs / speedMultiplier).round();
+    return (baseInterval / speedMultiplier).round();
   }
 
   void togglePlay() async {
@@ -230,7 +231,6 @@ class LocationController extends GetxController {
         data: locations
             .value[currentIndex.value].trackingData?.distanceFromA).toStringAsFixed(2);
   }
-
 
   _setAddress() async{
     address.value = await Utils().getAddressFromLatLong(locations

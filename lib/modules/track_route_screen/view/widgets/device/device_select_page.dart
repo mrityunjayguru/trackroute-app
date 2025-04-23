@@ -87,12 +87,10 @@ class DeviceSelectPage extends StatelessWidget {
                       lastUpdate: date + " " + time,
                       odo: (vehicleInfo.trackingData?.totalDistanceCovered ?? "")
                           .toString(),
-                      fuel: vehicleInfo.fuelStatus != "Off"
-                          ? (vehicleInfo.fuelLevel ?? "N/A").toString()
-                          : "N/A",
+                      fuel: controller.fuelValue.value,
                       speed:
                           (vehicleInfo.trackingData?.currentSpeed ?? "").toString(),
-                      deviceId: vehicleInfo.deviceId ?? '',
+                      deviceId: vehicleInfo.deviceId.toString() ?? '',
                       doorIsActive: vehicleInfo.trackingData?.door,
                       doorSubTitle: vehicleInfo.trackingData?.door == null
                           ? "N/A"

@@ -241,7 +241,6 @@ class Location {
   }
 }
 
-
 class TrackingData {
   String? sId;
   String? deviceID;
@@ -323,7 +322,7 @@ class TrackingData {
     deviceIMEI = json['deviceIMEI'];
     vehicleNo = json['vehicleNo'];
     simIMEI = json['simIMEI'];
-    posID = json['posID'];
+    // posID = json['posID'];
     simMobileNumber = json['simMobileNumber'];
     location = json['location'] != null
         ? new Location.fromJson(json['location'])
@@ -356,12 +355,11 @@ class TrackingData {
     temperature = double.tryParse(json['temperature'].toString()) ?? 0.0;
     createdAt = json['createdAt'];
     iV = json['__v'];
-    adc1 = json['adc1'];
+    // adc1 = json['adc1'];
     humidity0 = json['humidity0'];
     immobilizer = json['Immobilizer'];
     motion = json['Motion'];
     rssi = json['rssi'];
-
   }
 
   Map<String, dynamic> toJson() {

@@ -87,7 +87,7 @@ class VehicalDetailCard extends StatelessWidget {
                 .toString(),
             fuel:vehicleInfo.fuelStatus != "Off" ? (vehicleInfo.fuelLevel ?? "N/A").toString() : "N/A",
             speed: (vehicleInfo.trackingData?.currentSpeed ?? "").toString(),
-            deviceId: vehicleInfo.deviceId ?? '',
+            deviceId: vehicleInfo.deviceId.toString() ?? '',
             doorIsActive: vehicleInfo.trackingData?.door,
             doorSubTitle: vehicleInfo.trackingData?.door == null
                 ? "N/A"

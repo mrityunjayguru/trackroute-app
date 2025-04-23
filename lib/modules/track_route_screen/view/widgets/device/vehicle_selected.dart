@@ -15,6 +15,7 @@ import 'package:track_route_pro/utils/common_import.dart';
 
 import '../../../../../utils/utils.dart';
 import '../../../../bottom_screen/controller/bottom_bar_controller.dart';
+import '../../../../bottom_screen/view/bottom_bar_view.dart';
 import 'edit_text_field.dart';
 
 class VehicleSelected extends StatelessWidget {
@@ -713,24 +714,25 @@ class VehicleSelected extends StatelessWidget {
           )),
           Expanded(
               child: InkWell(
-            onTap: () {
-              Get.put(BottomBarController()).updateIndexForRenewal(
-                  controller.deviceDetail.value?.imei ?? "");
-            },
-            child: Container(
-              height: 6.h,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(AppSizes.radius_10),
-                  color: AppColors.black),
-              child: Center(
-                child: Text(
-                  'Renew Subscription',
-                  style: AppTextStyles(context)
-                      .display16W500
-                      .copyWith(color: AppColors.selextedindexcolor),
+                onTap: () {
+                  Get.offAll(() => BottomBarView());
+                  Get.put(BottomBarController()).updateIndexForRenewal(
+                      controller.deviceDetail.value?.imei ?? "");
+                },
+                child: Container(
+                height: 6.h,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(AppSizes.radius_10),
+                    color: AppColors.black),
+                child: Center(
+                  child: Text(
+                    'Renew Subscription',
+                    style: AppTextStyles(context)
+                        .display16W500
+                        .copyWith(color: AppColors.selextedindexcolor),
+                  ),
                 ),
               ),
-            ),
           )),
         ],
       ),

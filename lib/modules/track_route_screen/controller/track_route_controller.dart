@@ -179,7 +179,7 @@ class TrackRouteController extends GetxController {
               lat: lat,
               long: long,
               img: vehicle.vehicletype?.icons,
-              id: vehicle.deviceId,
+              id: vehicle.deviceId.toString(),
               vehicleNo: vehicle.vehicleNo,
               course: Utils.parseDouble(data: vehicle.trackingData?.course),
               isOffline: isOffline,
@@ -324,9 +324,9 @@ class TrackRouteController extends GetxController {
 
   List<Data> filterActiveVehicles(List<Data> vehicleList) {
     return vehicleList.where((vehicle) {
-      return vehicle.status == 'Active' &&
+      return vehicle.status?.toLowerCase() == 'active' &&
           (vehicle.subscriptionExp == null
-              ? vehicle.status == 'Active'
+              ? vehicle.status?.toLowerCase() == 'active'
               : (DateFormat('yyyy-MM-dd')
                           .parse(vehicle.subscriptionExp!)
                           .difference(DateTime.now())
@@ -338,9 +338,9 @@ class TrackRouteController extends GetxController {
 
   List<Data> filterInactive(List<Data> vehicleList) {
     return vehicleList.where((vehicle) {
-      return vehicle.status != "Active" ||
+      return vehicle.status?.toLowerCase() != "active" ||
           (vehicle.subscriptionExp == null
-              ? vehicle.status != 'Active'
+              ? vehicle.status?.toLowerCase() != 'active'
               : (DateFormat('yyyy-MM-dd')
                           .parse(vehicle.subscriptionExp!)
                           .difference(DateTime.now())
@@ -359,9 +359,9 @@ class TrackRouteController extends GetxController {
 
   bool checkIfInactive({Data? vehicle}) {
     if (vehicle != null) {
-      return vehicle.status != "Active" ||
+      return vehicle.status?.toLowerCase() != "active" ||
           (vehicle.subscriptionExp == null
-              ? vehicle.status != 'Active'
+              ? vehicle.status?.toLowerCase() != 'active'
               : (DateFormat('yyyy-MM-dd')
                           .parse(vehicle.subscriptionExp!)
                           .difference(DateTime.now())
@@ -434,7 +434,7 @@ class TrackRouteController extends GetxController {
           long = vehicle.lastLocation?.longitude;
         }
         Marker marker = await createMarker(
-            id: vehicle.deviceId,
+            id: vehicle.deviceId.toString(),
             img: vehicle.vehicletype?.icons,
             long: long,
             lat: lat,
