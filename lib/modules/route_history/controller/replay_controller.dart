@@ -25,7 +25,7 @@ class ReplayController extends GetxController {
   late GoogleMapController mapController;
   var polylines = <Polyline>[].obs;
   RxBool showLoader = false.obs;
-  late final locController;
+  late final LocationController locController;
   RxInt selectStopIndex = (-1).obs;
   @override
   void onInit() {
@@ -102,7 +102,7 @@ class ReplayController extends GetxController {
     try {
       BitmapDescriptor arrowIcon = await svgAssetToBitmapDescriptor(
           "assets/images/svg/arrow-up.svg",
-          size: Size(15, 15));
+          size: Size(12, 12));
       for (int i = 0; i < vehicleListReplay.length - 1; i += step) {
         final p1 = vehicleListReplay[i];
         /*  final p2 = polylineCoordinates[i + 1];

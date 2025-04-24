@@ -66,8 +66,8 @@ class _RouteReplayViewState extends State<RouteReplayView> with TickerProviderSt
                   },
                   initialCameraPosition: CameraPosition(
                     target: LatLng(28.6139, 77.2090),
-                    // Latitude and Longitude of Delhi
-                    zoom: 5,
+                    // Latitude and Longitude of Delhi,
+
                   ),
                   onTap: (val) {
                     // controller.showDetails.value = false;

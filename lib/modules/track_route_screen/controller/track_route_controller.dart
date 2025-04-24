@@ -21,13 +21,11 @@ import 'package:track_route_pro/utils/enums.dart';
 import 'package:track_route_pro/utils/utils.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../config/theme/app_colors.dart';
 import '../../../constants/project_urls.dart';
 import '../../../service/model/presentation/vehicle_type/Data.dart';
 import '../../../utils/common_map_helper.dart';
 import '../../route_history/controller/common.dart';
 import '../view/widgets/device/track_device.dart';
-import '../view/widgets/device/vehicle_dialog.dart';
 
 class TrackRouteController extends GetxController {
   Rx<TrackRouteVehicleList> vehicleList = Rx(TrackRouteVehicleList());
@@ -51,6 +49,7 @@ class TrackRouteController extends GetxController {
   RxBool isFilterSelected = false.obs;
   RxInt isFilterSelectedindex = RxInt(-1);
   RxBool showLoader = false.obs;
+
   // RxInt stackIndex = RxInt(0);
   RxBool isSatellite = false.obs;
   double height = 848;
@@ -96,7 +95,6 @@ class TrackRouteController extends GetxController {
 
   ///API SERVICE FOR ALL DEVICE
   Future<void> getAllDevices() async {
-
     bool isLogIn =
         await AppPreference.getBoolFromSF(Constants.isLogIn) ?? false;
     if (isLogIn) {
@@ -124,7 +122,6 @@ class TrackRouteController extends GetxController {
       }
     }
   }
-
 
   void storeVehicleData() async {
     final allVehiclesRes = vehicleList.value.data ?? [];
@@ -212,40 +209,41 @@ class TrackRouteController extends GetxController {
     }
   }
 
-
   Future<void> isShowVehicleDetails(String imei) async {
     ///init socket & store data in deviceDetails for one device
-    final controller = Get.isRegistered<DeviceController>()
-        ? Get.find<DeviceController>() // Find if already registered
-        : Get.put(DeviceController());
-    controller.getDeviceByIMEI(zoom: true, showDialog: true);
-    controller.selectedVehicleIMEI.value = imei;
-    Get.to(() => TrackDeviceView(),
-        transition: Transition.upToDown,
-        duration: const Duration(milliseconds: 300));
+    try{
+      developer.log("EXCEPTION");
+      final controller = Get.isRegistered<DeviceController>()
+          ? Get.find<DeviceController>() // Find if already registered
+          : Get.put(DeviceController());
+      controller.getDeviceByIMEI(zoom: true, showDialog: true);
+      controller.selectedVehicleIMEI.value = imei;
+      Get.to(() => TrackDeviceView(),
+          transition: Transition.upToDown,
+          duration: const Duration(milliseconds: 300));
+    }
+    catch(e,s){
+      developer.log(" EXCEPTION $e $s");
+    }
 
   }
 
-
-  void showEditView()  {
+  void showEditView() {
     ///store data in deviceDetails for one device and edit data
     final controller = Get.isRegistered<DeviceController>()
         ? Get.find<DeviceController>() // Find if already registered
         : Get.put(DeviceController());
     controller.getDeviceByIMEI(zoom: true, showDialog: true, initialize: false);
+    controller.manageScreen = true;
     Get.to(() => VehicleSelected(),
         transition: Transition.upToDown,
         duration: const Duration(milliseconds: 300));
-    controller.isedit
-        .value = false;
-
-    controller.editGeofence
-        .value = false;
-    controller.editSpeed
-    .value = false;
+    controller.isedit.value = false;
+    controller.editGeofence.value = false;
+    controller.editSpeed.value = false;
   }
 
-  void removeFilter(){
+  void removeFilter() {
     isExpanded.value = false;
     isFilterSelected.value = false;
     isFilterSelectedindex.value = -1;
@@ -448,7 +446,6 @@ class TrackRouteController extends GetxController {
     }
   }
 
-
   /// Location tracking methods
 
   Future<Position?> getCurrentLocation() async {
@@ -571,7 +568,7 @@ class TrackRouteController extends GetxController {
           CameraUpdate.newCameraPosition(
             CameraPosition(
               bearing: course,
-              target: LatLng(latitude, longitude), //todo
+              target: LatLng(latitude, longitude),
               zoom: 17,
             ),
           ),

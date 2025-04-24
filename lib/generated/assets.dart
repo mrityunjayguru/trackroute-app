@@ -127,6 +127,15 @@ class Assets {
   static const String svgMaxSpeedIcon = 'assets/images/svg/max_speed_icon.svg';
   static const String svgMaxSpeedMarker = 'assets/images/svg/max_speed_marker.svg';
   static const String svgNavigation1 = 'assets/images/svg/navigation1.svg';
+  static const String svgNewAc = 'assets/images/svg/new_ac.svg';
+  static const String svgNewCallIcon = 'assets/images/svg/new_call_icon.svg';
+  static const String svgNewCharging = 'assets/images/svg/new_charging.svg';
+  static const String svgNewEngineIcon = 'assets/images/svg/new_engine_icon.svg';
+  static const String svgNewGeofence = 'assets/images/svg/new_geofence.svg';
+  static const String svgNewInternet = 'assets/images/svg/new_internet.svg';
+  static const String svgNewManageIcon = 'assets/images/svg/new_manage_icon.svg';
+  static const String svgNewParking = 'assets/images/svg/new_parking.svg';
+  static const String svgNewRelay = 'assets/images/svg/new_relay.svg';
   static const String svgNoInternet = 'assets/images/svg/no_internet.svg';
   static const String svgNotchedDown = 'assets/images/svg/notched_down.svg';
   static const String svgNotchedUp = 'assets/images/svg/notched_up.svg';
@@ -146,7 +155,7 @@ class Assets {
   static const String svgSpeedIcon = 'assets/images/svg/speed_icon.svg';
   static const String svgTarckRoutePro = 'assets/images/svg/tarck_route_pro.svg';
   static const String svgTempIcon = 'assets/images/svg/temp_icon.svg';
-  static const String svgTrackingWidget = 'assets/images/svg/tracking_bg_widget.svg';
+  static const String svgTrackingBgWidget = 'assets/images/svg/tracking_bg_widget.svg';
   static const String svgUnselectedMarker = 'assets/images/svg/unselected_marker.svg';
   static const String svgUserIcon = 'assets/images/svg/user_icon.svg';
   static const String svgVibrationAlertIcon = 'assets/images/svg/vibration_alert_icon.svg';

@@ -58,6 +58,7 @@ class TrackDeviceView extends StatelessWidget {
             alignment: Alignment.center,
             children: [
               GoogleMap(
+                buildingsEnabled: false,
                 zoomControlsEnabled: false,
                 mapType: controller.isSatellite.value
                     ? MapType.satellite
@@ -104,9 +105,6 @@ class TrackDeviceView extends StatelessWidget {
                                   onTap: () {
                                     controller.closeSocket();
                                     Get.back();
-                                    /* controller.isExpanded.value =
-                                      !controller.isExpanded.value;*/
-                                    // controller.searchController.clear(); //todo
                                   },
                                   child: Container(
                                     height:
@@ -148,16 +146,12 @@ class TrackDeviceView extends StatelessWidget {
                                           ),
                                         ),
                                         SvgPicture.asset(
-                                                /* !controller.isExpanded.value
-                                  ? Assets.images.svg.icArrowDown
-                                  :*/ //todo
                                                 'assets/images/svg/ic_arrow_left.svg')
                                             .paddingOnly(right: 12, left: 7.w)
                                       ],
                                     ).paddingOnly(left: 8, right: 8),
                                   ),
                                 ),
-                                //todo- vehicle list
                               ],
                             ),
                           ).paddingOnly(top: 12),
@@ -234,36 +228,66 @@ class TrackDeviceView extends StatelessWidget {
                       },
                     ),
                   ).paddingOnly(bottom: 16, right: 4.w * 0.9),
-                  SizedBox(
-                    width: 45,
-                    height: 45,
-                    child: FloatingActionButton(
-                      heroTag: 'nav1',
-                      child: SvgPicture.asset(
-                        Assets.images.svg.navigation1,
-                        fit: BoxFit.fill,
-                      ),
-                      backgroundColor: AppColors.selextedindexcolor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(AppSizes.radius_50),
-                      ),
-                      onPressed: () async {
-                        // Fetch the current location
-                        Position? position =
-                            await trackController.getCurrentLocation();
-                        if (position != null) {
-                          trackController.updateCameraPosition(
-                              course: 0,
-                              latitude: position.latitude - 1,
-                              longitude: position.longitude);
-                        } else {
-                          Utils.getSnackbar(
-                              "Error", "Current location not available");
-                        }
-                      },
-                    ),
-                  ).paddingOnly(bottom: 16, right: 4.w * 0.9),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          if (isActive) {
+                            trackController.showEditView();
+                          }
+                        },
+                        child: Container(
+                          width: 40,
+                          height: 40,
+                          padding: EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: isActive
+                                ? AppColors.selextedindexcolor
+                                : AppColors.grayLight,
+                          ),
+                          child: SvgPicture.asset(
+                            "assets/images/svg/new_manage_icon.svg",
+                            colorFilter:
+                                ColorFilter.mode(Colors.black, BlendMode.srcIn),
+                          ),
+                        ).paddingOnly(top: 0.8.h, bottom: 0.8.h, left: 0.5.h),
+                      ).paddingOnly(left: 4.w * 0.9),
+                      SizedBox(
+                        width: 45,
+                        height: 45,
+                        child: FloatingActionButton(
+                          heroTag: 'nav1',
+                          child: SvgPicture.asset(
+                            Assets.images.svg.navigation1,
+                            fit: BoxFit.fill,
+                          ),
+                          backgroundColor: AppColors.selextedindexcolor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(AppSizes.radius_50),
+                          ),
+                          onPressed: () async {
+                            // Fetch the current location
+                            Position? position =
+                                await trackController.getCurrentLocation();
+                            if (position != null) {
+                              controller.updateCameraPosition(
+                                  course: 0,
+                                  latitude: position.latitude - 1,
+                                  longitude: position.longitude);
+                            } else {
+                              Utils.getSnackbar(
+                                  "Error", "Current location not available");
+                            }
+                          },
+                        ),
+                      ).paddingOnly(bottom: 16, right: 4.w * 0.9),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       InkWell(
                         onTap: () {
@@ -297,15 +321,19 @@ class TrackDeviceView extends StatelessWidget {
                           height: 40,
                           decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: isActive
-                                  ? AppColors.selextedindexcolor
-                                  : AppColors.grayLight,
+                              color: Colors.black,
                               border:
                                   Border.all(color: AppColors.black, width: 4)),
-                          child: Icon(Icons.call),
+                          child: SvgPicture.asset(
+                            "assets/images/svg/new_call_icon.svg",
+                            colorFilter: ColorFilter.mode(
+                                isActive
+                                    ? AppColors.selextedindexcolor
+                                    : AppColors.grayLight,
+                                BlendMode.srcIn),
+                          ),
                         ).paddingOnly(top: 0.8.h, bottom: 0.8.h, left: 0.5.h),
                       ),
-                      Spacer(),
                       SizedBox(
                         width: 45,
                         height: 45,
@@ -363,8 +391,8 @@ class TrackDeviceView extends StatelessWidget {
                             child: Column(
                               children: [
                                 Container(
-                                  width:
-                                      0.304 * MediaQuery.of(context).size.width,
+                                  // width:
+                                  //     0.304 * MediaQuery.of(context).size.width,
                                   child: _buildVehicleItemsLeft(context)
                                       .paddingOnly(top: 10, bottom: 4 + 10),
                                 ),
@@ -427,8 +455,8 @@ class TrackDeviceView extends StatelessWidget {
                             child: Column(
                               children: [
                                 Container(
-                                    width: 0.304 *
-                                        MediaQuery.of(context).size.width,
+                                    // width: 0.304 *
+                                    //     MediaQuery.of(context).size.width,
                                     child: _buildVehicleItemsRight(context)
                                         .paddingOnly(top: 10, bottom: 4 + 10)),
                                 Container(
@@ -448,14 +476,20 @@ class TrackDeviceView extends StatelessWidget {
                                       constraints: BoxConstraints(
                                           maxHeight: 26, minHeight: 26),
                                       decoration: BoxDecoration(
-                                          color: AppColors.selextedindexcolor,
+                                          color: Colors.black,
+                                          border: Border.all(
+                                              color:
+                                                  AppColors.selextedindexcolor),
                                           borderRadius:
                                               BorderRadius.circular(4)),
                                       child: Center(
                                           child: Text(
                                         "More Info",
                                         style: AppTextStyles(context)
-                                            .display14W500,
+                                            .display14W500
+                                            .copyWith(
+                                                color: AppColors
+                                                    .selextedindexcolor),
                                       )),
                                     ),
                                   ),
@@ -513,30 +547,40 @@ class TrackDeviceView extends StatelessWidget {
     DisplayParameters? displayParameters =
         controller.deviceDetail.value?.displayParameters;
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
+        SizedBox(
+          width: 0.304 * MediaQuery.of(context).size.width / 8,
+        ),
         if (displayParameters?.network == true)
           _buildVehicleItem(
-              context,
-              'Network',
-              controller.deviceDetail.value?.trackingData?.network == null
-                  ? null
-                  : controller.deviceDetail.value?.trackingData?.network ==
-                      "Connected",
-              'assets/images/svg/ic_signal.svg'),
+                  context,
+                  'Network',
+                  controller.deviceDetail.value?.trackingData?.network == null
+                      ? null
+                      : controller.deviceDetail.value?.trackingData?.network ==
+                          "Connected",
+                  'assets/images/svg/ic_signal.svg')
+              .paddingOnly(
+                  right: 0.304 * MediaQuery.of(context).size.width / 8),
         if (displayParameters?.gps == true)
           _buildVehicleItem(
-              context,
-              'GPS',
-              controller.deviceDetail.value?.trackingData?.gps,
-              'assets/images/svg/ic_gps_new.svg'),
+                  context,
+                  'GPS',
+                  controller.deviceDetail.value?.trackingData?.gps,
+                  'assets/images/svg/new_internet.svg')
+              .paddingOnly(
+                  right: 0.304 * MediaQuery.of(context).size.width / 8),
         if (displayParameters?.engine == true)
           _buildVehicleItem(
-              context,
-              'Engine',
-              controller.deviceDetail.value?.trackingData?.ignition?.status ??
-                  false,
-              'assets/images/svg/ic_engine_icon.svg'),
+                  context,
+                  'Engine',
+                  controller
+                          .deviceDetail.value?.trackingData?.ignition?.status ??
+                      false,
+                  'assets/images/svg/new_engine_icon.svg')
+              .paddingOnly(
+                  right: 0.304 * MediaQuery.of(context).size.width / 8),
       ],
     );
   }
@@ -545,26 +589,32 @@ class TrackDeviceView extends StatelessWidget {
     DisplayParameters? displayParameters =
         controller.deviceDetail.value?.displayParameters;
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisAlignment: MainAxisAlignment.end,
       children: [
         if (displayParameters?.ac == true)
           _buildVehicleItem(
-              context,
-              'AC',
-              controller.deviceDetail.value?.trackingData?.ac,
-              'assets/images/svg/ic_ac.svg'),
+                  context,
+                  'AC',
+                  controller.deviceDetail.value?.trackingData?.ac,
+                  'assets/images/svg/new_ac.svg')
+              .paddingOnly(left: 0.304 * MediaQuery.of(context).size.width / 8),
         if (displayParameters?.geoFencing == true)
           _buildVehicleItem(
-              context,
-              'Geofence',
-              controller.deviceDetail.value?.locationStatus ?? false,
-              'assets/images/svg/ic_geofence.svg'),
+                  context,
+                  'Geofence',
+                  controller.deviceDetail.value?.locationStatus ?? false,
+                  'assets/images/svg/new_geofence.svg')
+              .paddingOnly(left: 0.304 * MediaQuery.of(context).size.width / 8),
         if (displayParameters?.parking == true)
           _buildVehicleItem(
-              context,
-              'Parking',
-              controller.deviceDetail.value?.parking,
-              'assets/images/svg/ic_parking_icon.svg'),
+                  context,
+                  'Parking',
+                  controller.deviceDetail.value?.parking,
+                  'assets/images/svg/new_parking.svg')
+              .paddingOnly(left: 0.304 * MediaQuery.of(context).size.width / 8),
+        SizedBox(
+          width: 0.304 * MediaQuery.of(context).size.width / 8,
+        ),
       ],
     );
   }
@@ -578,10 +628,10 @@ class TrackDeviceView extends StatelessWidget {
             height: 20,
             colorFilter: ColorFilter.mode(
                 isActive == null
-                    ? AppColors.color_f4f4f4
+                    ? AppColors.color_6A6B6D
                     : (isActive
                         ? AppColors.selextedindexcolor
-                        : AppColors.color_f4f4f4),
+                        : AppColors.color_6A6B6D),
                 BlendMode.srcIn)),
       ],
     );

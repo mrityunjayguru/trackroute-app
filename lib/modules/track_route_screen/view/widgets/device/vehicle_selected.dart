@@ -69,6 +69,7 @@ class VehicleSelected extends StatelessWidget {
                             controller.editGeofence.value = false;
                             controller.editSpeed.value = false;
                             controller.resetGeneralInfo();
+                            controller.manageScreen = false;
                           },
                           name: 'Edit General Info')
                     else

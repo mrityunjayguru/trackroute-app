@@ -96,8 +96,9 @@ class VehiclesList extends StatelessWidget {
                                                   vehicle: vehicle);
                                           return InkWell(
                                             onTap: () {
-                                              controller.isShowVehicleDetails(vehicle.imei ?? "");
                                               controller.removeFilter();
+                                              controller.isShowVehicleDetails(vehicle.imei ?? "");
+
                                               controller.searchController
                                                   .clear();
                                             },

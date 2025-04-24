@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer' as developer;
-import 'package:connectivity_plus/connectivity_plus.dart';
+import 'dart:io';
+
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
@@ -8,7 +9,7 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:track_route_pro/modules/track_route_screen/controller/track_route_controller.dart';
 import 'package:track_route_pro/service/model/presentation/track_route/Summary.dart';
 import 'package:track_route_pro/service/model/presentation/track_route/track_route_vehicle_list.dart';
-import 'dart:io';
+
 import '../../../config/theme/app_colors.dart';
 import '../../../constants/constant.dart';
 import '../../../constants/project_urls.dart';
@@ -35,6 +36,7 @@ class DeviceController extends GetxController {
   RxBool isOffline = false.obs;
   RxBool isExpanded = false.obs;
   bool dialogOpen = false;
+  bool manageScreen = false;
   var currentLocation = LatLng(20.5937, 78.9629).obs;
   var isLoading = false.obs;
   RxBool isSatellite = false.obs;
@@ -51,7 +53,6 @@ class DeviceController extends GetxController {
     super.onInit();
     isLoading.value = true;
     loadUser();
-
   }
 
   @override
@@ -68,6 +69,7 @@ class DeviceController extends GetxController {
 
   ///SOCKET
   void initSocket() async {
+    manageScreen = false;
     if (devicesOwnerID.value.isEmpty) {
       await loadUser();
     }
@@ -85,7 +87,7 @@ class DeviceController extends GetxController {
       developer.log('✅ Connected to socket server: ${socket!.id}');
 
       socket!.emit('registerUser', {
-        'userImei': [selectedVehicleIMEI.value],
+        'userImei': selectedVehicleIMEI.value,
         'socketId': socket!.id,
       });
     });
@@ -96,7 +98,7 @@ class DeviceController extends GetxController {
         final List<Data> vehicleListData = (data as List<dynamic>)
             .map((item) => Data.fromJson(item as Map<String, dynamic>))
             .toList();
-        if (!isedit.value && vehicleListData.isNotEmpty) {
+        if (!manageScreen && vehicleListData.isNotEmpty) {
           deviceDetail.value = vehicleListData.first;
           devicesByDetails();
         }
@@ -130,9 +132,9 @@ class DeviceController extends GetxController {
 
   Future<void> getDeviceByIMEI(
       {bool initialize = true,
-      bool updateCamera = true,
-      bool showDialog = false,
-      bool zoom = false}) async {
+        bool updateCamera = true,
+        bool showDialog = false,
+        bool zoom = false}) async {
     try {
       final body = {"deviceId": "${selectedVehicleIMEI.value}"};
       networkStatus.value = NetworkStatus.LOADING;
@@ -158,8 +160,8 @@ class DeviceController extends GetxController {
 
   Future<void> devicesByDetails(
       {bool updateCamera = true,
-      bool showDialog = false,
-      bool zoom = false}) async {
+        bool showDialog = false,
+        bool zoom = false}) async {
     try {
       /*   deviceDetail.value = vehicleList.value.data
           ?.where(
@@ -186,7 +188,7 @@ class DeviceController extends GetxController {
                 CameraUpdate.newCameraPosition(
                   CameraPosition(
                     bearing:
-                        Utils.parseDouble(data: data?.trackingData?.course),
+                    Utils.parseDouble(data: data?.trackingData?.course),
                     // Keep map aligned with vehicle movement
                     target: LatLng(
                         (data?.trackingData?.location?.latitude ?? 0),
@@ -278,10 +280,10 @@ class DeviceController extends GetxController {
       developer.log("EXCEPTION $e $s");
     }
   }
-  Future<void> getDeviceByIMEITripSummary(
-  ) async {
+
+  Future<void> getDeviceByIMEITripSummary() async {
     try {
-      summaryTrip.value=null;
+      summaryTrip.value = null;
       final body = {"deviceId": "${selectedVehicleIMEI.value}"};
       networkStatus.value = NetworkStatus.LOADING;
 
@@ -291,7 +293,9 @@ class DeviceController extends GetxController {
         if (response.data?.isNotEmpty ?? false) {
           // developer.log("SUMARY TRIP ${response.data?.first.summary}");
           summaryTrip.value = response.data?.first.summary;
-          fuelValue.value = response.data?.first.fuelStatus != "Off" ? (response.data?.first.fuelLevel ?? "N/A").toString() : "N/A";
+          fuelValue.value = response.data?.first.fuelStatus != "Off"
+              ? (response.data?.first.fuelLevel ?? "N/A").toString()
+              : "N/A";
         }
       } else if (response.status == 400) {
         networkStatus.value = NetworkStatus.ERROR;
@@ -331,9 +335,9 @@ class DeviceController extends GetxController {
 
   Future<void> editDevicesByDetails(
       {bool editGeofence = false,
-      bool editSpeed = false,
-      bool editGeneral = false,
-      required BuildContext context}) async {
+        bool editSpeed = false,
+        bool editGeneral = false,
+        required BuildContext context}) async {
     try {
       double? lat;
       double? long;
@@ -363,19 +367,19 @@ class DeviceController extends GetxController {
         "mobileNo": driverMobileNo.text,
         "insuranceExpiryDate": insuranceExpiryDate.text.isNotEmpty
             ? DateFormat('yyyy-MM-dd').format(
-                DateFormat('dd-MM-yyyy').parse(insuranceExpiryDate.text))
+            DateFormat('dd-MM-yyyy').parse(insuranceExpiryDate.text))
             : "",
         "pollutionExpiryDate": pollutionExpiryDate.text.isNotEmpty
             ? DateFormat('yyyy-MM-dd').format(
-                DateFormat('dd-MM-yyyy').parse(pollutionExpiryDate.text))
+            DateFormat('dd-MM-yyyy').parse(pollutionExpiryDate.text))
             : "",
         "fitnessExpiryDate": fitnessExpiryDate.text.isNotEmpty
             ? DateFormat('yyyy-MM-dd')
-                .format(DateFormat('dd-MM-yyyy').parse(fitnessExpiryDate.text))
+            .format(DateFormat('dd-MM-yyyy').parse(fitnessExpiryDate.text))
             : "",
         "nationalPermitExpiryDate": nationalPermitExpiryDate.text.isNotEmpty
             ? DateFormat('yyyy-MM-dd').format(
-                DateFormat('dd-MM-yyyy').parse(nationalPermitExpiryDate.text))
+            DateFormat('dd-MM-yyyy').parse(nationalPermitExpiryDate.text))
             : "",
         "_id": deviceDetail.value?.sId ?? '',
         "maxSpeed": maxSpeedUpdate.text.trim(),
@@ -388,7 +392,7 @@ class DeviceController extends GetxController {
       networkStatus.value = NetworkStatus.LOADING;
 
       await apiService.editDevicesByOwnerID(body);
-      getDeviceByIMEI(initialize: false,updateCamera: false);
+      getDeviceByIMEI(initialize: false, updateCamera: false);
       Utils.getSnackbar('Success', 'Your detail is updated');
     } catch (e) {
       networkStatus.value = NetworkStatus.ERROR;
@@ -408,7 +412,7 @@ class DeviceController extends GetxController {
       networkStatus.value = NetworkStatus.LOADING;
 
       await apiService.editDevicesByOwnerID(body);
-      getDeviceByIMEI(initialize: false,updateCamera: false);
+      getDeviceByIMEI(initialize: false, updateCamera: false);
       Utils.getSnackbar('Success', 'Your detail is updated');
     } catch (e) {
       networkStatus.value = NetworkStatus.ERROR;
@@ -484,7 +488,7 @@ class DeviceController extends GetxController {
       }
 
       if (response.message == "success") {
-        getDeviceByIMEI(initialize: false,updateCamera: false);
+        getDeviceByIMEI(initialize: false, updateCamera: false);
         // checkRelayStatus(imei);
         networkStatus.value = NetworkStatus.SUCCESS;
       }
@@ -506,7 +510,7 @@ class DeviceController extends GetxController {
         Utils.getSnackbar("Engine", response.data.message);
       }
       if (response.message == "success") {
-        getDeviceByIMEI(initialize: false,updateCamera: false);
+        getDeviceByIMEI(initialize: false, updateCamera: false);
         // checkRelayStatus(imei);
         networkStatus.value = NetworkStatus.SUCCESS;
       }
@@ -536,25 +540,29 @@ class DeviceController extends GetxController {
     longitudeUpdate.text = (data?.longitude ?? "").toString();
   }
 
-  Stream<String> addressStream() async* {
-    while (true) {
-      await Future.delayed(Duration(seconds: 10));
+  DateTime timeStampAddress = DateTime.now();
 
+  Stream<String> addressStream() async* {
+    yield* Stream.periodic(Duration(seconds: 1), (_) async {
       final lat = deviceDetail.value?.trackingData?.location?.latitude;
       final lon = deviceDetail.value?.trackingData?.location?.longitude;
 
-      if (lat != null && lon != null) {
-        try {
-          final address = await Utils().getAddressFromLatLong(lat, lon);
-          yield address;
-        } catch (e) {
-          yield "Error Fetching Address";
+      if (DateTime.now().difference(timeStampAddress) >= Duration(seconds: 12)) {
+        timeStampAddress = DateTime.now();
+        if (lat != null && lon != null) {
+          try {
+            return await Utils().getAddressFromLatLong(lat, lon);
+          } catch (e) {
+            return "Error Fetching Address";
+          }
+        } else {
+          return "Address Unavailable";
         }
-      } else {
-        yield "Address Unavailable";
       }
-    }
+      return null;
+    }).asyncMap((event) async => event).where((event) => event != null).cast<String>();
   }
+
 
   void updateCameraPositionWithZoom(
       {required double latitude,
@@ -564,13 +572,26 @@ class DeviceController extends GetxController {
       CameraUpdate.newCameraPosition(
         CameraPosition(
           bearing: course,
-          target: LatLng(latitude, longitude), //todo
-          zoom: 17,
+          target: LatLng(latitude, longitude),
+          zoom: 16.5,
         ),
       ),
     );
   }
 
+  void updateCameraPosition(
+      {required double latitude,
+        required double longitude,
+        required double course}) {
+    mapController.animateCamera(
+      CameraUpdate.newCameraPosition(
+        CameraPosition(
+          // bearing: course,
+            target: LatLng(latitude, longitude),
+            zoom: 7),
+      ),
+    );
+  }
 
   Future<bool> checkNetwork() async {
     bool isConnected = false;
@@ -584,6 +605,7 @@ class DeviceController extends GetxController {
     }
     return isConnected;
   }
+
   Stream<bool> internetStatusStream() async* {
     while (true) {
       await Future.delayed(Duration(seconds: 30));

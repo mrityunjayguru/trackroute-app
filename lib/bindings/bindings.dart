@@ -12,6 +12,8 @@ import 'package:track_route_pro/modules/route_history/controller/replay_controll
 import 'package:track_route_pro/modules/settig_screen/controller/setting_controller.dart';
 import 'package:track_route_pro/modules/splash_screen/controller/splash_controller.dart';
 import 'package:track_route_pro/modules/support/controller/support_controller.dart';
+import 'package:track_route_pro/modules/track_route_screen/controller/track_device_controller.dart';
+import 'package:track_route_pro/modules/track_route_screen/controller/track_device_controller.dart';
 import 'package:track_route_pro/modules/track_route_screen/controller/track_route_controller.dart';
 import 'package:track_route_pro/modules/vehicales/controller/vehicales_controller.dart';
 
@@ -80,6 +82,9 @@ class TrackRouteBindings extends Bindings {
   void dependencies() {
     Get.lazyPut<TrackRouteController>(
       () => TrackRouteController(),
+    );
+    Get.lazyPut<DeviceController>(
+          () => DeviceController(),
     );
   }
 }

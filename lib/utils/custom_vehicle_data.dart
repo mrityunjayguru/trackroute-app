@@ -139,7 +139,7 @@ class VehicleDataWidget extends StatelessWidget {
                       .copyWith(color: AppColors.color_e23226),
                 ),
               Spacer(),
-              GestureDetector(
+              if(!isBottomSheet)GestureDetector(
                 behavior: HitTestBehavior.deferToChild,
                 onTap: () {
                   final bottomController = Get.isRegistered<
@@ -978,28 +978,28 @@ class VehicleDataWidget extends StatelessWidget {
             'assets/images/svg/ic_door.svg'),
       if (displayParameters?.engine == true)
         _buildVehicleItem(context, 'Engine', engineIsActive, engineSubTitle,
-            'assets/images/svg/ic_engine_icon.svg'),
+            'assets/images/svg/new_engine_icon.svg'),
       if (displayParameters?.parking == true)
         _buildVehicleItem(context, 'Parking', parkingIsActive, parkingSubTitle,
-            'assets/images/svg/ic_parking_icon.svg'),
+            'assets/images/svg/new_parking.svg'),
       if (displayParameters?.relay == true)
         _buildVehicleItem(context, 'Relay', immobilizerIsActive,
-            immobilizerSubTitle, 'assets/images/svg/ic_relay_icon.svg'),
+            immobilizerSubTitle, 'assets/images/svg/new_relay.svg'),
       if (displayParameters?.geoFencing == true)
         _buildVehicleItem(context, 'Geofence', geofenceIsActive,
-            geofenceSubTitle, 'assets/images/svg/ic_geofence.svg'),
+            geofenceSubTitle, 'assets/images/svg/new_geofence.svg'),
       if (displayParameters?.gps == true)
-        _buildVehicleItem(context, 'GPS', gpsIsActive, gpsSubTitle,
-            'assets/images/svg/ic_gps_new.svg'),
+        _buildVehicleItem(context, 'Internet', gpsIsActive, gpsSubTitle,
+            'assets/images/svg/new_internet.svg'),
       if (displayParameters?.network == true)
         _buildVehicleItem(context, 'Network', networkIsActive, networkSubTitle,
             'assets/images/svg/ic_signal.svg'),
       if (displayParameters?.ac == true)
         _buildVehicleItem(context, 'AC', acIsActive, acSubTitle,
-            'assets/images/svg/ic_ac.svg'),
+            'assets/images/svg/new_ac.svg'),
       if (displayParameters?.charging == true)
         _buildVehicleItem(context, 'Charging', chargingIsActive,
-            chargingSubTitle, 'assets/images/svg/ic_charging_icon.svg')
+            chargingSubTitle, 'assets/images/svg/new_charging.svg')
     ];
   }
 

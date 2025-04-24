@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -60,10 +61,20 @@ class LocationController extends GetxController {
     markerIcon = await svgToBitmapDescriptor(
         '${ProjectUrls.imgBaseUrl}${controller.deviceDetail.value?.vehicletype?.icons ?? ""}',
         size: Size(30, 30));
-    _updateMap();
+    markers.value = {
+      Marker(
+        markerId: const MarkerId("playback_marker"),
+        position: LatLng(controller.deviceDetail.value?.trackingData?.location?.latitude ??0, controller.deviceDetail.value?.trackingData?.location?.longitude ??0),
+        icon: markerIcon ?? BitmapDescriptor.defaultMarker,
+        flat: true,
+        rotation: Utils.parseDouble(data: controller.deviceDetail.value?.trackingData?.course ?? "0"),
+      )
+    };
+    // _updateMap();
   }
 
   void _startPlayback()  {
+
     _playbackTimer?.cancel();
 
     int interval = (baseInterval / playbackSpeed.value).round();
@@ -78,6 +89,27 @@ class LocationController extends GetxController {
         isPlaying.value = false;
         currentIndex.value = 0;
         timer.cancel();
+      }
+
+      if(currentIndex.value == 1){
+        log("CURR INDEX ${currentIndex.value}");
+        var replayCon = Get.isRegistered<ReplayController>()
+            ? Get.find<
+            ReplayController>() // Find if already registered
+            : Get.put(ReplayController());
+        final data = locations[currentIndex.value];
+        final lat = data.trackingData?.location?.latitude ?? 0;
+        final lng = data.trackingData?.location?.longitude ?? 0;
+
+        final position = LatLng(lat, lng);
+        replayCon.mapController?.animateCamera(
+          CameraUpdate.newCameraPosition(
+            CameraPosition(
+              target: position,
+              zoom: 16,
+            ),
+          ),
+        );
       }
       _updateMap();
 
@@ -113,7 +145,11 @@ class LocationController extends GetxController {
 
   }
 
-  void _updateMap({bool zoom = true}) {
+  void _updateMap() {
+    var replayCon = Get.isRegistered<ReplayController>()
+        ? Get.find<
+        ReplayController>() // Find if already registered
+        : Get.put(ReplayController());
     final data = locations[currentIndex.value];
     final lat = data.trackingData?.location?.latitude ?? 0;
     final lng = data.trackingData?.location?.longitude ?? 0;
@@ -122,10 +158,7 @@ class LocationController extends GetxController {
     if (oldLatLng == null) {
       oldLatLng = newLatLng;
     }
-    var replayCon = Get.isRegistered<ReplayController>()
-        ? Get.find<
-        ReplayController>() // Find if already registered
-        : Get.put(ReplayController());
+
     super.onInit();
     animation = LatLngTween(begin: oldLatLng ?? newLatLng, end: newLatLng).animate(animationController)
       ..addListener(() {
@@ -144,14 +177,17 @@ class LocationController extends GetxController {
         final timeDiff = DateTime.now().difference(timeStamp).inMilliseconds;
         if(timeDiff > 1000){
           replayCon.mapController.getZoomLevel().then((currentZoom) async {
-            replayCon.mapController?.animateCamera(
-              CameraUpdate.newCameraPosition(
-                CameraPosition(
-                  target: position,
-                  zoom: currentZoom,
+            if(currentIndex.value!=1){
+              replayCon.mapController?.animateCamera(
+                CameraUpdate.newCameraPosition(
+                  CameraPosition(
+                    target: position,
+                    zoom: currentZoom,
+                  ),
                 ),
-              ),
-            );
+              );
+            }
+
             timeStamp = DateTime.now();
           });
 
