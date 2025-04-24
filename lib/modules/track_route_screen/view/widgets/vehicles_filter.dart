@@ -71,8 +71,8 @@ class VehiclesList extends StatelessWidget {
                                   child: Column(
                                     children: [
                                       searchApptextfield(
-                                        color: AppColors.selextedindexcolor,
-
+                                        color: AppColors.white,
+                                        borderRadius: AppSizes.radius_4,
                                         prefixIcon:
                                             'assets/images/svg/search.svg',
                                         hintText: 'Search Vehicle',
@@ -97,7 +97,8 @@ class VehiclesList extends StatelessWidget {
                                           return InkWell(
                                             onTap: () {
                                               controller.removeFilter();
-                                              controller.isShowVehicleDetails(vehicle.imei ?? "");
+                                              controller.isShowVehicleDetails(
+                                                  vehicle.imei ?? "");
 
                                               controller.searchController
                                                   .clear();
@@ -149,27 +150,45 @@ class VehiclesList extends StatelessWidget {
                                                       controller.removeFilter();
                                                       if (isInactive) {
                                                         controller
-                                                            .isShowVehicleDetails(vehicle.imei ?? "");
+                                                            .isShowVehicleDetails(
+                                                                vehicle.imei ??
+                                                                    "");
                                                       } else {
-                                                        controller.showEditView();
+                                                        controller.showEditView(
+                                                            vehicle.imei ?? "");
                                                       }
                                                       controller
                                                           .searchController
                                                           .clear();
                                                     },
-                                                    child: Text(
-                                                      'Manage',
-                                                      style: AppTextStyles(
-                                                              context)
-                                                          .display12W500
-                                                          .copyWith(
-                                                              color: isInactive
-                                                                  ? AppColors
-                                                                      .grayLight
-                                                                  : AppColors
-                                                                      .blue),
-                                                    ).paddingSymmetric(
-                                                        vertical: 4),
+                                                    child: Container(
+                                                      decoration: BoxDecoration(
+                                                        border: Border.all(
+                                                            color: isInactive
+                                                                ? AppColors
+                                                                    .grayLight
+                                                                : AppColors
+                                                                    .blue),
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                                AppSizes
+                                                                    .radius_4),
+                                                      ),
+                                                      child: Text(
+                                                        'Manage',
+                                                        style: AppTextStyles(
+                                                                context)
+                                                            .display12W500
+                                                            .copyWith(
+                                                                color: isInactive
+                                                                    ? AppColors
+                                                                        .grayLight
+                                                                    : AppColors
+                                                                        .blue),
+                                                      ).paddingSymmetric(
+                                                          vertical: 4,
+                                                          horizontal: 4),
+                                                    ),
                                                   )
                                                 ],
                                               ),

@@ -117,7 +117,7 @@ class DeviceSelectPage extends StatelessWidget {
                   return InkWell(
                     onTap: () {
                       if (isActive) {
-                          trackController.showEditView();
+                          trackController.showEditView(controller.deviceDetail.value?.imei ?? "");
                       }
                     },
                     child: Container(
@@ -238,7 +238,7 @@ class DeviceSelectPage extends StatelessWidget {
                         geofenceIsActive: vehicleInfo.locationStatus ?? false,
                         geofenceSubTitle:
                             vehicleInfo.area != null ? "ON" : "OFF",
-                        gpsIsActive: vehicleInfo.trackingData?.gps,
+                        gpsIsActive: trackController.checkIfOffline(vehicle: controller.deviceDetail.value),
                         gpsSubTitle: vehicleInfo.trackingData?.gps == null
                             ? "N/A"
                             : ((vehicleInfo.trackingData!.gps!) ? "ON" : "OFF"),

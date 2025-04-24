@@ -32,7 +32,7 @@ class searchApptextfield extends StatelessWidget {
     this.maxLines = 1,
     this.minLine,
     this.textInputAction,
-    this.contentPadding,
+    this.contentPadding, this.borderColor, this.borderRadius,
   });
   final TextEditingController controller;
   final String? title;
@@ -50,9 +50,9 @@ class searchApptextfield extends StatelessWidget {
   final GestureTapCallback? onTap;
   final List<TextInputFormatter>? inputFormatters;
   final String? Function(String?)? validator;
-  final double? height;
+  final double? height, borderRadius;
   final List<BoxShadow>? boxShadow;
-  final Color? color;
+  final Color? color, borderColor;
   final Decoration? decoration;
   final int? maxLines;
   final int? minLine;
@@ -81,13 +81,13 @@ class searchApptextfield extends StatelessWidget {
               decoration: decoration ??
                   BoxDecoration(
                     border: Border.all(
-                      color: color ??
+                      color: borderColor ??
                           ((errorText.isNotEmpty)
                               ? AppColors.dangerDark
                               : AppColors.grayLight),
                     ),
                     color: color ?? AppColors.whiteOff.withOpacity(0.05),
-                    borderRadius: BorderRadius.circular(AppSizes.radius_50),
+                    borderRadius: BorderRadius.circular(borderRadius ?? AppSizes.radius_50),
                     boxShadow: boxShadow,
                   ),
               child: Row(

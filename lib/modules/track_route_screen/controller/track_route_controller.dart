@@ -216,8 +216,9 @@ class TrackRouteController extends GetxController {
       final controller = Get.isRegistered<DeviceController>()
           ? Get.find<DeviceController>() // Find if already registered
           : Get.put(DeviceController());
-      controller.getDeviceByIMEI(zoom: true, showDialog: true);
+      controller.deviceDetail.value=null;
       controller.selectedVehicleIMEI.value = imei;
+      controller.getDeviceByIMEI(zoom: true, showDialog: true);
       Get.to(() => TrackDeviceView(),
           transition: Transition.upToDown,
           duration: const Duration(milliseconds: 300));
@@ -228,11 +229,12 @@ class TrackRouteController extends GetxController {
 
   }
 
-  void showEditView() {
+  void showEditView(String imei) {
     ///store data in deviceDetails for one device and edit data
     final controller = Get.isRegistered<DeviceController>()
         ? Get.find<DeviceController>() // Find if already registered
         : Get.put(DeviceController());
+    controller.selectedVehicleIMEI.value = imei;
     controller.getDeviceByIMEI(zoom: true, showDialog: true, initialize: false);
     controller.manageScreen = true;
     Get.to(() => VehicleSelected(),

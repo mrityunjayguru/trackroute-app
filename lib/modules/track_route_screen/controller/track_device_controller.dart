@@ -100,7 +100,7 @@ class DeviceController extends GetxController {
             .toList();
         if (!manageScreen && vehicleListData.isNotEmpty) {
           deviceDetail.value = vehicleListData.first;
-          devicesByDetails();
+          devicesByDetails(showDialog:false);
         }
         for (var vehicle in vehicleListData ?? []) {
           developer.log(

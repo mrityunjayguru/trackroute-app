@@ -103,6 +103,7 @@ class TrackDeviceView extends StatelessWidget {
                                 GestureDetector(
                                   behavior: HitTestBehavior.deferToChild,
                                   onTap: () {
+                                    controller.selectedVehicleIMEI.value="";
                                     controller.closeSocket();
                                     Get.back();
                                   },
@@ -234,7 +235,7 @@ class TrackDeviceView extends StatelessWidget {
                       InkWell(
                         onTap: () {
                           if (isActive) {
-                            trackController.showEditView();
+                            trackController.showEditView(controller.deviceDetail.value?.imei ?? "");
                           }
                         },
                         child: Container(
@@ -389,6 +390,7 @@ class TrackDeviceView extends StatelessWidget {
                           SizedBox(
                             height: 85,
                             child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Container(
                                   // width:
@@ -417,7 +419,7 @@ class TrackDeviceView extends StatelessWidget {
                                       )
                                     ],
                                   ),
-                                ).paddingOnly(bottom: 4),
+                                ).paddingOnly(bottom: 4).paddingOnly(left:0.304 * MediaQuery.of(context).size.width / 8 ),
                               ],
                             ),
                           ),
@@ -453,6 +455,7 @@ class TrackDeviceView extends StatelessWidget {
                           SizedBox(
                             height: 85,
                             child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 Container(
                                     // width: 0.304 *
@@ -493,7 +496,7 @@ class TrackDeviceView extends StatelessWidget {
                                       )),
                                     ),
                                   ),
-                                ).paddingOnly(bottom: 4)
+                                ).paddingOnly(bottom: 4).paddingOnly(right: 0.304 * MediaQuery.of(context).size.width / 8 )
                               ],
                             ),
                           ),

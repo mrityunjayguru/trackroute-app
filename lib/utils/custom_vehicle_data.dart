@@ -148,7 +148,7 @@ class VehicleDataWidget extends StatelessWidget {
                           BottomBarController>() // Find if already registered
                       : Get.put(BottomBarController());
                   bottomController.updateIndex(2);
-                  controller.showEditView();
+                  controller.showEditView(imei);
                 },
                 child: Text(
                   'Manage Vehicle',
