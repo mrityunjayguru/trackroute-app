@@ -619,6 +619,7 @@ class TrackDeviceView extends StatelessWidget {
             },
           ).paddingOnly(bottom: 10),
           Align(
+
             alignment: Alignment.centerLeft,
             child: SizedBox(
               height: 65,
