@@ -975,33 +975,32 @@ class VehicleDataWidget extends StatelessWidget {
 
   List<Widget> _buildVehicleItems(BuildContext context) {
     return [
-      if (displayParameters?.door == true)
-        _buildVehicleItem(context, 'Door', doorIsActive, doorSubTitle,
-            'assets/images/svg/ic_door.svg'),
-      if (displayParameters?.engine == true)
-        _buildVehicleItem(context, 'Engine', engineIsActive, engineSubTitle,
-            'assets/images/svg/new_engine_icon.svg'),
-      if (displayParameters?.parking == true)
-        _buildVehicleItem(context, 'Parking', parkingIsActive, parkingSubTitle,
-            'assets/images/svg/new_parking.svg'),
-      if (displayParameters?.relay == true)
-        _buildVehicleItem(context, 'Relay', immobilizerIsActive,
-            immobilizerSubTitle, 'assets/images/svg/new_relay.svg'),
-      if (displayParameters?.geoFencing == true)
-        _buildVehicleItem(context, 'Geofence', geofenceIsActive,
-            geofenceSubTitle, 'assets/images/svg/new_geofence.svg'),
-      if (displayParameters?.gps == true)
-        _buildVehicleItem(context, 'Internet', gpsIsActive, gpsSubTitle,
-            'assets/images/svg/new_internet.svg'),
       if (displayParameters?.network == true)
         _buildVehicleItem(context, 'Network', networkIsActive, networkSubTitle,
             'assets/images/svg/ic_signal.svg'),
+      if (displayParameters?.gps == true)
+        _buildVehicleItem(context, 'Internet', gpsIsActive, gpsSubTitle,
+            'assets/images/svg/new_internet.svg'),
+      if (displayParameters?.engine == true)
+        _buildVehicleItem(context, 'Engine', engineIsActive, engineSubTitle,
+            'assets/images/svg/new_engine_icon.svg'),
+
       if (displayParameters?.ac == true)
         _buildVehicleItem(context, 'AC', acIsActive, acSubTitle,
             'assets/images/svg/new_ac.svg'),
-     /* if (displayParameters?.charging == true)
-        _buildVehicleItem(context, 'Charging', chargingIsActive,
-            chargingSubTitle, 'assets/images/svg/new_charging.svg')*/
+      if (displayParameters?.geoFencing == true)
+        _buildVehicleItem(context, 'Geofence', geofenceIsActive,
+            geofenceSubTitle, 'assets/images/svg/new_geofence.svg'),
+
+      if (displayParameters?.parking == true)
+        _buildVehicleItem(context, 'Parking', parkingIsActive, parkingSubTitle,
+            'assets/images/svg/new_parking.svg'),
+      if (displayParameters?.door == true)
+        _buildVehicleItem(context, 'Door', doorIsActive, doorSubTitle,
+            'assets/images/svg/new_door.svg'),
+      if (displayParameters?.relay == true)
+        _buildVehicleItem(context, 'Relay', immobilizerIsActive,
+            immobilizerSubTitle, 'assets/images/svg/new_relay.svg'),
     ];
   }
 

@@ -69,6 +69,7 @@ class Assets {
   static const String svgDeactivated = 'assets/images/svg/deactivated.svg';
   static const String svgDeactivatedIcon = 'assets/images/svg/deactivated-icon.svg';
   static const String svgDestinationIcon = 'assets/images/svg/destination_icon.svg';
+  static const String svgDownArrowButton = 'assets/images/svg/down_arrow_button.svg';
   static const String svgEngineIcon = 'assets/images/svg/engine_icon.svg';
   static const String svgExtBatteryIcon = 'assets/images/svg/ext_battery_icon.svg';
   static const String svgEyeClose = 'assets/images/svg/eye_close.svg';
@@ -131,8 +132,10 @@ class Assets {
   static const String svgNewAc = 'assets/images/svg/new_ac.svg';
   static const String svgNewCallIcon = 'assets/images/svg/new_call_icon.svg';
   static const String svgNewCharging = 'assets/images/svg/new_charging.svg';
+  static const String svgNewDoor = 'assets/images/svg/new_door.svg';
   static const String svgNewEngineIcon = 'assets/images/svg/new_engine_icon.svg';
   static const String svgNewGeofence = 'assets/images/svg/new_geofence.svg';
+  static const String svgNewGps = 'assets/images/svg/new_gps.svg';
   static const String svgNewInternet = 'assets/images/svg/new_internet.svg';
   static const String svgNewManageIcon = 'assets/images/svg/new_manage_icon.svg';
   static const String svgNewParking = 'assets/images/svg/new_parking.svg';
@@ -158,6 +161,7 @@ class Assets {
   static const String svgTempIcon = 'assets/images/svg/temp_icon.svg';
   static const String svgTrackingBgWidget = 'assets/images/svg/tracking_bg_widget.svg';
   static const String svgUnselectedMarker = 'assets/images/svg/unselected_marker.svg';
+  static const String svgUpArrowButton = 'assets/images/svg/up_arrow_button.svg';
   static const String svgUserIcon = 'assets/images/svg/user_icon.svg';
   static const String svgVibrationAlertIcon = 'assets/images/svg/vibration_alert_icon.svg';
   static const String svgWarningIcon = 'assets/images/svg/warning_icon.svg';
