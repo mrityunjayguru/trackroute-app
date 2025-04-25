@@ -106,7 +106,7 @@ class VehicalDetailCard extends StatelessWidget {
                 : ((vehicleInfo.immobiliser! == "Stop") ? "ON" : "OFF"),
             geofenceIsActive: vehicleInfo.locationStatus ?? false,
             geofenceSubTitle: vehicleInfo.area != null ? "ON" : "OFF",
-            gpsIsActive: trackController.checkIfOffline(vehicle: vehicleInfo),
+            gpsIsActive: !trackController.checkIfOffline(vehicle: vehicleInfo),
             gpsSubTitle: vehicleInfo.trackingData?.gps == null
                 ? "N/A"
                 : ((vehicleInfo.trackingData!.gps!) ? "ON" : "OFF"),

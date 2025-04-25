@@ -86,6 +86,7 @@ class Assets {
   static const String svgIcAc = 'assets/images/svg/ic_ac.svg';
   static const String svgIcAlert = 'assets/images/svg/ic_alert.svg';
   static const String svgIcArrowDown = 'assets/images/svg/ic_arrow_down.svg';
+  static const String svgIcArrowDownButton = 'assets/images/svg/ic_arrow_down_button.svg';
   static const String svgIcArrowLeft = 'assets/images/svg/ic_arrow_left.svg';
   static const String svgIcArrowUp = 'assets/images/svg/ic_arrow_up.svg';
   static const String svgIcChargingIcon = 'assets/images/svg/ic_charging_icon.svg';

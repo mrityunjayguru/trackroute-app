@@ -35,6 +35,7 @@ class DeviceController extends GetxController {
   RxBool isedit = false.obs;
   RxBool isOffline = false.obs;
   RxBool isExpanded = false.obs;
+  RxBool expandInfo = false.obs;
   bool dialogOpen = false;
   bool manageScreen = false;
   var currentLocation = LatLng(20.5937, 78.9629).obs;
@@ -136,6 +137,7 @@ class DeviceController extends GetxController {
         bool showDialog = false,
         bool zoom = false}) async {
     try {
+      expandInfo.value = false;
       final body = {"deviceId": "${selectedVehicleIMEI.value}"};
       networkStatus.value = NetworkStatus.LOADING;
 
@@ -163,12 +165,6 @@ class DeviceController extends GetxController {
         bool showDialog = false,
         bool zoom = false}) async {
     try {
-      /*   deviceDetail.value = vehicleList.value.data
-          ?.where(
-            (element) => element.imei == imei,
-          )
-          .firstOrNull;*/
-
       deviceDetail.refresh();
       if (deviceDetail.value != null) {
         final data = deviceDetail.value;
@@ -283,6 +279,7 @@ class DeviceController extends GetxController {
 
   Future<void> getDeviceByIMEITripSummary() async {
     try {
+      isLoading.value = true;
       summaryTrip.value = null;
       final body = {"deviceId": "${selectedVehicleIMEI.value}"};
       networkStatus.value = NetworkStatus.LOADING;
@@ -304,6 +301,7 @@ class DeviceController extends GetxController {
       developer.log("exception ==> $e $s");
       networkStatus.value = NetworkStatus.ERROR;
     }
+    isLoading.value = false;
   }
 
   /// EDIT VEHICLE DETAILS

@@ -21,11 +21,19 @@ class SpeedometerWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(5),
-      width: 124,
-      height: 124,
+      width: MediaQuery.of(context).size.height * 0.15,
+      height: MediaQuery.of(context).size.height * 0.15,
       decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              blurRadius: 1,
+              spreadRadius: 0,
+              color: const Color(0xff000000).withOpacity(0.25),
+              offset: Offset(0, 0),
+            ),
+          ],
         color: Colors.black,
-        border: Border.all(color: AppColors.grayLight),
+        border: Border.all(color: AppColors.white, width: 5),
         shape: BoxShape.circle
 
       ),
@@ -39,7 +47,7 @@ class SpeedometerWidget extends StatelessWidget {
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SizedBox(height: 20,),
+              SizedBox(height: 10,),
               Text(
                 speed,
                 style: AppTextStyles(context).display32W600.copyWith(color: color),
@@ -49,14 +57,6 @@ class SpeedometerWidget extends StatelessWidget {
                 style:  AppTextStyles(context).display8W600.copyWith(color: AppColors.white),
               ),
               const SizedBox(height: 8),
-              Text(
-                distance.toStringAsFixed(0),
-                style:AppTextStyles(context).display12W600.copyWith(color: AppColors.white),
-              ),
-               Text(
-                "KM",
-                style: AppTextStyles(context).display8W600.copyWith(color: AppColors.white),
-              ),
             ],
           )
         ],

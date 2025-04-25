@@ -139,6 +139,7 @@ class Data {
     ownerID = json['ownerID'];
     isDeleted = json['isDeleted'];
     status = json['status'];
+
     createdAt = json['createdAt'];
     dateAdded = json['dateAdded'];
     updatedAt = json['updatedAt'];
@@ -328,8 +329,8 @@ class TrackingData {
         ? new Location.fromJson(json['location'])
         : null;
     course = json['course'];
-    // course = "90";
     status = json['status'];
+    log("TRACKING STATUS ===== >   ${status}");
     lastUpdateTime = json['lastUpdateTime'];
     vehicleType = json['vehicleType'];
     deviceFixTime = json['deviceFixTime'];
@@ -360,6 +361,43 @@ class TrackingData {
     immobilizer = json['Immobilizer'];
     motion = json['Motion'];
     rssi = json['rssi'];
+    log("TRACKING DATA ======> {"
+        "\n  sId: $sId,"
+        "\n  deviceID: $deviceID,"
+        "\n  deviceIMEI: $deviceIMEI,"
+        "\n  vehicleNo: $vehicleNo,"
+        "\n  simIMEI: $simIMEI,"
+        "\n  simMobileNumber: $simMobileNumber,"
+        "\n  location: ${location?.toJson()},"
+        "\n  course: $course,"
+        "\n  status: $status,"
+        "\n  lastUpdateTime: $lastUpdateTime,"
+        "\n  vehicleType: $vehicleType,"
+        "\n  deviceFixTime: $deviceFixTime,"
+        "\n  currentSpeed: $currentSpeed,"
+        "\n  totalDistanceCovered: $totalDistanceCovered,"
+        "\n  fuelGauge: ${fuelGauge?.toJson()},"
+        "\n  ignition: ${ignition?.toJson()},"
+        "\n  ac: $ac,"
+        "\n  door: $door,"
+        "\n  gps: $gps,"
+        "\n  expiryDate: $expiryDate,"
+        "\n  dailyDistance: $dailyDistance,"
+        "\n  tripDistance: $tripDistance,"
+        "\n  lastIgnitionTime: $lastIgnitionTime,"
+        "\n  externalBattery: $externalBattery,"
+        "\n  internalBattery: $internalBattery,"
+        "\n  fuel: $fuel,"
+        "\n  network: $network,"
+        "\n  temperature: $temperature,"
+        "\n  createdAt: $createdAt,"
+        "\n  iV: $iV,"
+        "\n  humidity0: $humidity0,"
+        "\n  immobilizer: $immobilizer,"
+        "\n  motion: $motion,"
+        "\n  rssi: $rssi"
+        "\n}");
+
   }
 
   Map<String, dynamic> toJson() {
