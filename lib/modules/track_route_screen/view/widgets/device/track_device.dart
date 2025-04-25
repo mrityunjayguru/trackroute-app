@@ -618,12 +618,15 @@ class TrackDeviceView extends StatelessWidget {
               );
             },
           ).paddingOnly(bottom: 10),
-          SizedBox(
-            height: 65,
-            child: ListView(
-              shrinkWrap: true,
-              scrollDirection: Axis.horizontal,
-              children: _buildVehicleItems(context),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: SizedBox(
+              height: 65,
+              child: ListView(
+                shrinkWrap: true,
+                scrollDirection: Axis.horizontal,
+                children: _buildVehicleItems(context),
+              ),
             ),
           ),
 
