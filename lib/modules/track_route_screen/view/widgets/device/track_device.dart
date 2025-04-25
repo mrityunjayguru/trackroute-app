@@ -269,7 +269,7 @@ class TrackDeviceView extends StatelessWidget {
               if (!controller.expandInfo.value)...[
                 Positioned(
                     bottom:
-                    MediaQuery.of(context).size.height * ((205 / 812) - 0.07),
+                    MediaQuery.of(context).size.height * ((205 / 812) -0.023),
                     child: SpeedometerWidget(
                         color: (controller.deviceDetail.value?.trackingData?.currentSpeed ?? 0) == 0
                             ? AppColors.color_434345
@@ -293,7 +293,7 @@ class TrackDeviceView extends StatelessWidget {
                             "N/A"),
                         distance: controller.deviceDetail.value?.trackingData?.dailyDistance ?? 0)),
                 Positioned(
-                  bottom: (MediaQuery.of(context).size.height * ((205 / 812)))-22,
+                  bottom: (MediaQuery.of(context).size.height * ((205 / 812)))+18,
                   child: Container(
                     width: context.width,
                     child: Row(
@@ -480,7 +480,6 @@ class TrackDeviceView extends StatelessWidget {
       children: [
         SizedBox(
           width: 55,
-          height: 55,
           child: Column(
             children: [
               CircleAvatar(
@@ -492,6 +491,18 @@ class TrackDeviceView extends StatelessWidget {
                 child: SvgPicture.asset(iconPath,
                     colorFilter:
                         ColorFilter.mode(AppColors.black, BlendMode.srcIn)),
+              ),
+              SizedBox(height: 1.h),
+              FittedBox(
+                fit: BoxFit.contain,
+                child: Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyles(context)
+                      .display11W500
+                      .copyWith(color: AppColors.black),
+                ),
               ),
             ],
           ),
@@ -513,7 +524,7 @@ class TrackDeviceView extends StatelessWidget {
           '${DateFormat("HH:mm").format(DateTime.parse(controller.deviceDetail.value?.trackingData?.lastUpdateTime ?? "").toLocal()) ?? ''}';
     }
     return Container(
-      height: MediaQuery.of(context).size.height * (0.32 - 0.06),
+      height: MediaQuery.of(context).size.height * (0.32 - 0.023),
       padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.038),
       decoration: BoxDecoration(
           color: AppColors.white,
@@ -532,6 +543,7 @@ class TrackDeviceView extends StatelessWidget {
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Container(
                 height: 30,
@@ -565,7 +577,7 @@ class TrackDeviceView extends StatelessWidget {
                       borderRadius: BorderRadius.circular(4)),
                   child: Text(
                     "Manage Vehicle",
-                    style: AppTextStyles(context).display12W500.copyWith(
+                    style: AppTextStyles(context).display14W500.copyWith(
                           color: isActive
                               ? AppColors.selextedindexcolor
                               : AppColors.grayLight,
@@ -622,7 +634,7 @@ class TrackDeviceView extends StatelessWidget {
 
             alignment: Alignment.centerLeft,
             child: SizedBox(
-              height: 65,
+              height: 9.h,
               child: ListView(
                 shrinkWrap: true,
                 scrollDirection: Axis.horizontal,
@@ -630,7 +642,6 @@ class TrackDeviceView extends StatelessWidget {
               ),
             ),
           ),
-
           Spacer(),
           Container(
             // margin: EdgeInsets.only(top: 10),
@@ -656,7 +667,7 @@ class TrackDeviceView extends StatelessWidget {
                 )),
               ),
             ),
-          ).paddingOnly(bottom: 4)
+          ).paddingOnly(bottom: 20)
         ],
       ).paddingSymmetric(horizontal: 4.w * 0.9),
     );
