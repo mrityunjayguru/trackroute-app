@@ -59,7 +59,7 @@ class VehicleDataWidget extends StatelessWidget {
   final String motion;
   final String bluetooth;
   final String? expiryDate;
-  final bool? isLoading;
+  final RxBool? isLoading;
   final Rx<Summary?>? summary;
 
   VehicleDataWidget({
@@ -504,7 +504,7 @@ class VehicleDataWidget extends StatelessWidget {
                         children: [
                           Expanded(
                             child: Skeletonizer(
-                              enabled: isLoading ?? false,
+                              enabled: isLoading?.value ?? false,
                               child: Container(
                                   // height: 6.h,
                                   // constraints: BoxConstraints(maxHeight: 9.h),
@@ -560,7 +560,7 @@ class VehicleDataWidget extends StatelessWidget {
                           SizedBox(
                             width: 8,
                           ),
-                          if(!(isLoading ?? false))Expanded(
+                          if(!(isLoading?.value ?? false))Expanded(
                             child: Container(
                                 padding: EdgeInsets.symmetric(
                                     vertical: 6, horizontal: 10),
@@ -624,7 +624,7 @@ class VehicleDataWidget extends StatelessWidget {
                       child: Row(
                         children: [
                           Skeletonizer(
-                            enabled: isLoading ?? false,
+                            enabled: isLoading?.value ?? false,
                             child: Container(
                                 width: 52.w,
                                 padding: EdgeInsets.symmetric(
@@ -733,7 +733,7 @@ class VehicleDataWidget extends StatelessWidget {
                           ),
                           Expanded(
                               child: Skeletonizer(
-                                enabled: isLoading ?? false,
+                                enabled: isLoading?.value ?? false,
                                 child: Container(
                                     padding: EdgeInsets.symmetric(
                                         vertical: 6, horizontal: 10),

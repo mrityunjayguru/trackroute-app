@@ -223,4 +223,8 @@ abstract class ApiService {
   @POST(ProjectUrls.newVehicleByUser)
   Future<CommonResponseModel> newVehicleByUser(
       @Body(nullToAbsent: true) NewVehicleByUserRequest request);
+
+  @POST(ProjectUrls.tripSummary)
+  Future<TrackRouteVehicleList> tripSummary(
+      @Body() Map<String, dynamic> body);
 }

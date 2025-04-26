@@ -253,11 +253,11 @@ class DeviceController extends GetxController {
           markers.value = [];
           markers.add(m);
         }
-        circles.value = [];
+        // circles.value = [];
         if ((data?.locationStatus ?? false) &&
             (data?.location?.latitude != null &&
                 data?.location?.longitude != null)) {
-          circles.value.add(Circle(
+        /*  circles.value.add(Circle(
             circleId: CircleId("GEOFENCE${data?.imei}"),
             fillColor: AppColors.selextedindexcolor.withOpacity(0.4),
             strokeWidth: 2,
@@ -266,7 +266,7 @@ class DeviceController extends GetxController {
                 data?.location?.latitude ?? 0, data?.location?.longitude ?? 0),
             radius: Utils.parseDouble(data: data?.area),
           ));
-          circles.value = List.from(circles);
+          circles.value = List.from(circles);*/
         }
       } else {
         selectedVehicleIMEI.value = "";
@@ -284,7 +284,7 @@ class DeviceController extends GetxController {
       final body = {"deviceId": "${selectedVehicleIMEI.value}"};
       networkStatus.value = NetworkStatus.LOADING;
 
-      final response = await apiService.devicesByOwnerID(body);
+      final response = await apiService.tripSummary(body);
       if (response.status == 200) {
         networkStatus.value = NetworkStatus.SUCCESS;
         if (response.data?.isNotEmpty ?? false) {
@@ -293,6 +293,8 @@ class DeviceController extends GetxController {
           fuelValue.value = response.data?.first.fuelStatus != "Off"
               ? (response.data?.first.fuelLevel ?? "N/A").toString()
               : "N/A";
+          developer.log("DONE WITH LOADING");
+          isLoading.value = false;
         }
       } else if (response.status == 400) {
         networkStatus.value = NetworkStatus.ERROR;

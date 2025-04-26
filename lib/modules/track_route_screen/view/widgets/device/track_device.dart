@@ -159,7 +159,7 @@ class TrackDeviceView extends StatelessWidget {
                             ),
                           ).paddingOnly(top: 12),
                         ),
-                        StreamBuilder<bool>(
+                        /*StreamBuilder<bool>(
                           stream: controller.internetStatusStream(),
                           builder: (context, snapshot) {
                             String message = "";
@@ -204,7 +204,7 @@ class TrackDeviceView extends StatelessWidget {
                               ).paddingSymmetric(horizontal: 16, vertical: 10),
                             );
                           },
-                        )
+                        )*/
                       ],
                     ).paddingSymmetric(horizontal: 4.w * 0.9),
                   ),
@@ -623,7 +623,7 @@ class TrackDeviceView extends StatelessWidget {
                 ),
               ),
               Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
                     "Last Update",
@@ -892,7 +892,7 @@ class TrackDeviceView extends StatelessWidget {
                             '${DateFormat("HH:mm").format(DateTime.parse(vehicleInfo.trackingData?.lastUpdateTime ?? "").toLocal()) ?? ''}';
                       }
                       return VehicleDataWidget(
-                        isLoading: controller.isLoading.value,
+                        isLoading: controller.isLoading,
                         summary: controller.summaryTrip,
                         expiryDate: vehicleInfo.subscriptionExp,
                         isActive: vehicleInfo.status?.toLowerCase() == "active",
