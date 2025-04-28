@@ -67,7 +67,7 @@ class searchApptextfield extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
+            if(title?.isNotEmpty ?? false)Padding(
               padding: const EdgeInsets.only(bottom: 6, left: 2),
               child: Text(
                 title ?? '',
@@ -75,7 +75,7 @@ class searchApptextfield extends StatelessWidget {
                     .display15W500
                     .copyWith(color: AppColors.black),
               ),
-            ),
+            ) else SizedBox(height: 8,),
             Container(
               height: height ?? 40,
               decoration: decoration ??

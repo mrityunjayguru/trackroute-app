@@ -69,7 +69,6 @@ class VehicleSelected extends StatelessWidget {
                             controller.editGeofence.value = false;
                             controller.editSpeed.value = false;
                             controller.resetGeneralInfo();
-                            controller.manageScreen = false;
                           },
                           name: 'Edit General Info')
                     else
@@ -78,6 +77,8 @@ class VehicleSelected extends StatelessWidget {
                           rightIcon: 'assets/images/svg/ic_arrow_left.svg',
                           onTap: () {
                            Get.back();
+                           controller.getDeviceByIMEI(zoom: true);
+                           controller.manageScreen = false;
                           },
                           name:
                               'Manage ${controller.deviceDetail.value?.vehicleNo != null ? "-" : ""}${controller.deviceDetail.value?.vehicleNo ?? ''}'),

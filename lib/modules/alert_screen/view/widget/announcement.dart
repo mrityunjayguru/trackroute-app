@@ -37,10 +37,15 @@ class AnnouncementTab extends StatelessWidget {
     String date = 'Update unavailable';
     String time = "";
     if (data.createdAt?.isNotEmpty ?? false) {
-      date =
-          '${DateFormat("dd MMM yyyy").format(DateTime.parse(data.createdAt ?? "").toLocal()) ?? ''}';
-      time =
-          '${DateFormat("HH:mm").format(DateTime.parse(data.createdAt ?? "").toLocal()) ?? ''}';
+      try {
+        final createdAt = DateTime.parse(data.createdAt ?? "").toLocal();
+        date = DateFormat("dd MMM yyyy").format(createdAt);
+        time = DateFormat("HH:mm").format(createdAt);
+      } catch (e) {
+        date = "NA";
+        time = "NA";
+      }
+
     }
 
     Color color;

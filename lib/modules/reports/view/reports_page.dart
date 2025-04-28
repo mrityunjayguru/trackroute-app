@@ -4,6 +4,7 @@ import 'package:track_route_pro/config/theme/app_colors.dart';
 import 'package:track_route_pro/config/theme/app_textstyle.dart';
 import 'package:track_route_pro/gen/assets.gen.dart';
 import 'package:track_route_pro/modules/reports/controller/reports_controller.dart';
+import 'package:track_route_pro/modules/track_route_screen/controller/track_device_controller.dart';
 import 'package:track_route_pro/modules/track_route_screen/controller/track_route_controller.dart';
 import 'package:track_route_pro/utils/common_import.dart';
 
@@ -29,84 +30,91 @@ class ReportsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Obx(
-          () => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Image.network(
-                          width: 25,
-                          height: 25,
-                          "${ProjectUrls.imgBaseUrl}${dataController.settings.value.logo}",
-                          errorBuilder: (context, error, stackTrace) =>
-                              SvgPicture.asset(
-                                Assets.images.svg.icIsolationMode,
-                                color: AppColors.black,
-                              )).paddingOnly(left: 6, right: 8),
-                      Text(
-                        "Reports",
-                        style: AppTextStyles(context).display20W500,
-                      ).paddingOnly(right: 5),
-                      Spacer(),
-                      InkWell(
-                          onTap: () {
-                            Get.back();
-                          },
-                          child: SvgPicture.asset(
-                            "assets/images/svg/ic_arrow_left.svg",
-                            width: 20,
-                            height: 20,
-                          )).paddingOnly(right: 6)
-                    ],
-                  ).paddingOnly(top: 12),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  header(context),
-                  selectReport(context).paddingOnly(bottom: 16),
-                  if ((controller.selectedDate.value != null &&
-                          !controller.openDay.value) ||
-                      controller.selectedReport.value.isNotEmpty)
-                    selectDay(context).paddingOnly(bottom: 16),
-                  if (controller.selectedReport.value.isNotEmpty &&
-                      controller.selectedDate.value != null)
-                    downloadReport(context),
-                ],
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: Obx(
+            () => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Image.network(
+                            width: 25,
+                            height: 25,
+                            "${ProjectUrls.imgBaseUrl}${dataController.settings.value.logo}",
+                            errorBuilder: (context, error, stackTrace) =>
+                                SvgPicture.asset(
+                                  Assets.images.svg.icIsolationMode,
+                                  color: AppColors.black,
+                                )).paddingOnly(left: 6, right: 8),
+                        Text(
+                          "Reports",
+                          style: AppTextStyles(context).display20W500,
+                        ).paddingOnly(right: 5),
+                        Spacer(),
+                        InkWell(
+                            onTap: () {
+                              Get.back();
+                              final deviceController = Get.isRegistered<DeviceController>()
+                                  ? Get.find<DeviceController>() // Find if already registered
+                                  : Get.put(DeviceController());
+                              deviceController.getDeviceByIMEI(zoom: true);
+                            },
+                            child: SvgPicture.asset(
+                              "assets/images/svg/ic_arrow_left.svg",
+                              width: 20,
+                              height: 20,
+                            )).paddingOnly(right: 6)
+                      ],
+                    ).paddingOnly(top: 12),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    header(context),
+                    selectReport(context).paddingOnly(bottom: 16),
+                    if ((controller.selectedDate.value != null &&
+                            !controller.openDay.value) ||
+                        controller.selectedReport.value.isNotEmpty)
+                      selectDay(context).paddingOnly(bottom: 16),
+                    if (controller.selectedReport.value.isNotEmpty &&
+                        controller.selectedDate.value != null)
+                      downloadReport(context),
+                  ],
+                ),
               ),
-            ),
-            Text.rich(
-              textAlign: TextAlign.center,
-              TextSpan(
-                children: [
-                  TextSpan(
-                    text: 'The',
-                    style: AppTextStyles(context)
-                        .display13W500
-                        .copyWith(color: AppColors.grayLight),
-                  ),
-                  TextSpan(
-                    text: ' Consolidated Trip/Events Report',
-                    style: AppTextStyles(context)
-                        .display13W600
-                        .copyWith(color: AppColors.grayLight),
-                  ),
-                  TextSpan(
-                    text:
-                        ' provides a detailed daily summary of vehicle activity. It includes key parameters such as geofence(entry/exit), ignition status (on/off), maximum and average speed, total distance traveled, duration of trips, motion time, and idle time.',
-                    style: AppTextStyles(context)
-                        .display13W500
-                        .copyWith(color: AppColors.grayLight),
-                  ),
-                ],
-              ),
-            ).paddingAll(16)
-          ]).paddingAll(16),
+              Text.rich(
+                textAlign: TextAlign.center,
+                TextSpan(
+                  children: [
+                    TextSpan(
+                      text: 'The',
+                      style: AppTextStyles(context)
+                          .display13W500
+                          .copyWith(color: AppColors.grayLight),
+                    ),
+                    TextSpan(
+                      text: ' Consolidated Trip/Events Report',
+                      style: AppTextStyles(context)
+                          .display13W600
+                          .copyWith(color: AppColors.grayLight),
+                    ),
+                    TextSpan(
+                      text:
+                          ' provides a detailed daily summary of vehicle activity. It includes key parameters such as geofence(entry/exit), ignition status (on/off), maximum and average speed, total distance traveled, duration of trips, motion time, and idle time.',
+                      style: AppTextStyles(context)
+                          .display13W500
+                          .copyWith(color: AppColors.grayLight),
+                    ),
+                  ],
+                ),
+              ).paddingAll(16)
+            ]).paddingAll(16),
+          ),
         ),
       ),
     );

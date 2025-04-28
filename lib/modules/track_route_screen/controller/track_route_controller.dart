@@ -218,6 +218,7 @@ class TrackRouteController extends GetxController {
           : Get.put(DeviceController());
       controller.deviceDetail.value=null;
       controller.selectedVehicleIMEI.value = imei;
+      controller.markerIcon=null;
       controller.getDeviceByIMEI(zoom: true, showDialog: true);
       Get.to(() => TrackDeviceView(),
           transition: Transition.upToDown,
@@ -584,13 +585,16 @@ class TrackRouteController extends GetxController {
     mapController = controller;
   }
 
-  void _onMarkerTapped(int index, String imei, String vehicleNo, double course,
+  void onMarkerTapped(int index, String imei, String vehicleNo, double course,
       {double? lat, double? long}) async {
-    isShowVehicleDetails(imei);
-    if (lat != null && long != null) {
-      updateCameraPositionWithZoom(
-          latitude: lat, longitude: long, course: course);
-    }
+
+      isShowVehicleDetails(imei);
+      if (lat != null && long != null) {
+        updateCameraPositionWithZoom(
+            latitude: lat, longitude: long, course: course);
+      }
+
+
   }
 
   void openMaps({LatLng? data}) async {
@@ -627,7 +631,7 @@ class TrackRouteController extends GetxController {
       Utils.getSnackbar("Error", e.toString());
     }
   }
-
+  BitmapDescriptor? inactiveIcon;
   Future<Marker> createMarker(
       {double? lat,
       double? long,
@@ -636,11 +640,15 @@ class TrackRouteController extends GetxController {
       required double course,
       required String imei,
       required bool isInactive,
+       bool change = true,
       required bool isOffline,
       String? vehicleNo}) async {
     BitmapDescriptor markerIcon = BitmapDescriptor.defaultMarker;
     if (isInactive) {
-      markerIcon = await svgToBitmapDescriptorInactiveIcon();
+      if(inactiveIcon==null){
+        inactiveIcon = await svgToBitmapDescriptorInactiveIcon();
+      }
+     markerIcon = inactiveIcon ?? BitmapDescriptor.defaultMarker;
     } else {
       markerIcon = await svgToBitmapDescriptor('${ProjectUrls.imgBaseUrl}$img');
     }
@@ -661,7 +669,7 @@ class TrackRouteController extends GetxController {
         icon: markerIcon,
         flat: true,
         anchor: Offset(0.5, 0.5),
-        onTap: () => _onMarkerTapped(-1, imei, vehicleNo ?? "-", course,
+        onTap: () => onMarkerTapped(-1, imei, vehicleNo ?? "-", course,
             lat: lat, long: long));
     return marker;
   }

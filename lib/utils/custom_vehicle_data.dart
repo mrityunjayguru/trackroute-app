@@ -19,6 +19,7 @@ import '../config/theme/app_textstyle.dart';
 import '../gen/assets.gen.dart';
 import '../modules/bottom_screen/controller/bottom_bar_controller.dart';
 import '../modules/reports/controller/reports_controller.dart';
+import '../modules/track_route_screen/controller/track_device_controller.dart';
 import '../modules/track_route_screen/controller/track_route_controller.dart';
 import '../service/model/presentation/track_route/Summary.dart';
 
@@ -281,16 +282,12 @@ class VehicleDataWidget extends StatelessWidget {
             InkWell(
               onTap: () {
                 if (isNotExpired) {
-                  // final bottomController = Get.isRegistered<
-                  //         BottomBarController>()
-                  //     ? Get.find<
-                  //         BottomBarController>() // Find if already registered
-                  //     : Get.put(BottomBarController());
-                  // bottomController.updateIndex(2);
-                  // controller.isShowvehicleDetail.value = false;
-                  // controller.selectedVehicleIndex.value = -1;
-                  // controller.showAllVehicles();
-                  // controller.stackIndex.value = 2;
+                  if(isBottomSheet){
+                    final deviceController = Get.isRegistered<DeviceController>()
+                        ? Get.find<DeviceController>() // Find if already registered
+                        : Get.put(DeviceController());
+                    deviceController.closeSocket();
+                  }
                   Get.to(() => RouteHistoryPage(),
                       transition: Transition.upToDown,
                       duration: const Duration(milliseconds: 300));
@@ -468,7 +465,12 @@ class VehicleDataWidget extends StatelessWidget {
 
                         InkWell(
                           onTap: () {
+                            final deviceController = Get.isRegistered<DeviceController>()
+                                ? Get.find<DeviceController>() // Find if already registered
+                                : Get.put(DeviceController());
+                            deviceController.closeSocket();
                             Get.put(ReportsController()).setData();
+
                             Get.to(
                                 () => ReportsView(
                                       imei: imei,
@@ -666,7 +668,7 @@ class VehicleDataWidget extends StatelessWidget {
                                                 ),
                                                 TextSpan(
                                                   text:
-                                                      '@ ${summary?.value?.maxSpeedTime != null ? DateFormat("HH:mm").format(DateTime.parse(summary?.value?.maxSpeedTime ?? "")) : "NA"}  ',
+                                                      '@ ${summary?.value?.maxSpeedTime != null ? formatMaxSpeedTime(summary?.value?.maxSpeedTime) : "NA"}  ',
                                                   style: AppTextStyles(context)
                                                       .display11W500,
                                                 ),
@@ -1051,4 +1053,18 @@ class VehicleDataWidget extends StatelessWidget {
       ],
     );
   }
+
+
+  String formatMaxSpeedTime(String? maxSpeedTime) {
+    try {
+      final dateTime = DateTime.tryParse(maxSpeedTime ?? "");
+      if (dateTime == null) {
+        return "NA";
+      }
+      return DateFormat("HH:mm").format(dateTime);
+    } catch (e) {
+      return "NA";
+    }
+  }
+
 }

@@ -20,9 +20,14 @@ import '../../../../../utils/custom_vehicle_data.dart';
 import '../../../../../utils/utils.dart';
 import '../../../../splash_screen/controller/data_controller.dart';
 
-class TrackDeviceView extends StatelessWidget {
+class TrackDeviceView extends StatefulWidget {
   TrackDeviceView({super.key});
 
+  @override
+  State<TrackDeviceView> createState() => _TrackDeviceViewState();
+}
+
+class _TrackDeviceViewState extends State<TrackDeviceView>  with SingleTickerProviderStateMixin {
   final controller = Get.isRegistered<DeviceController>()
       ? Get.find<DeviceController>() // Find if already registered
       : Get.put(DeviceController());
@@ -34,6 +39,11 @@ class TrackDeviceView extends StatelessWidget {
   final dataController = Get.isRegistered<DataController>()
       ? Get.find<DataController>() // Find if already registered
       : Get.put(DataController());
+  @override
+  void initState() {
+    super.initState();
+    controller.initAnimation(this);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +84,7 @@ class TrackDeviceView extends StatelessWidget {
                   target: controller.currentLocation.value,
                   zoom: 7,
                 ),
-                markers: Set<Marker>.of(controller.markers),
+                markers:controller.markers.value,
                 myLocationEnabled: true,
                 myLocationButtonEnabled: false,
                 mapToolbarEnabled: false,
@@ -418,6 +428,7 @@ class TrackDeviceView extends StatelessWidget {
                               if (isActive) {
                                 trackController.showEditView(
                                     controller.deviceDetail.value?.imei ?? "");
+                                controller.closeSocket();
                               }
                             },
                             child: Container(
@@ -559,10 +570,19 @@ class TrackDeviceView extends StatelessWidget {
     if (controller
             .deviceDetail.value?.trackingData?.lastUpdateTime?.isNotEmpty ??
         false) {
-      date =
-          '${DateFormat("dd MMM y").format(DateTime.parse(controller.deviceDetail.value?.trackingData?.lastUpdateTime ?? "").toLocal()) ?? ''}';
-      time =
-          '${DateFormat("HH:mm").format(DateTime.parse(controller.deviceDetail.value?.trackingData?.lastUpdateTime ?? "").toLocal()) ?? ''}';
+      try {
+        final lastUpdate = DateTime.tryParse(controller.deviceDetail.value?.trackingData?.lastUpdateTime ?? "");
+        if (lastUpdate != null) {
+          date = DateFormat("dd MMM y").format(lastUpdate.toLocal());
+          time = DateFormat("HH:mm").format(lastUpdate.toLocal());
+        } else {
+          date = "NA";
+          time = "NA";
+        }
+      } catch (e) {
+        date = "NA";
+        time = "NA";
+      }
     }
     return Container(
       height: MediaQuery.of(context).size.height * (0.32 - 0.067),
