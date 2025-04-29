@@ -523,6 +523,7 @@ class VehicleSelected extends StatelessWidget {
 
   Widget immobilizerWidget(BuildContext context) {
     bool active = true;
+    // todo vehicle batt < 12.4 then inactive
     if ((controller.deviceDetail.value?.displayParameters?.relay ==
             null) ||
         (controller.deviceDetail.value?.displayParameters?.relay ==

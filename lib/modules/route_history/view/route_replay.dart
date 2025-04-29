@@ -77,7 +77,7 @@ class _RouteReplayViewState extends State<RouteReplayView> with TickerProviderSt
                   myLocationEnabled: true,
                   myLocationButtonEnabled: false,
                   mapToolbarEnabled: false,
-                  minMaxZoomPreference: MinMaxZoomPreference(5, !locationController.isPlaying.value ? 19 : 16),
+                  minMaxZoomPreference: MinMaxZoomPreference(5, !locationController.isPlaying.value ? 19 : 16.5),
                 ),
               ),
               Obx(

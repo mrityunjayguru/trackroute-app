@@ -1,6 +1,7 @@
 class ProjectUrls {
   // static const String baseUrl = "https://app.trackroutepro.com";
-  static const String baseUrl = "http://3.108.26.115:3100";
+  // static const String baseUrl = "http://3.108.26.115:3100";
+  static const String baseUrl = "https://app.trackroutepro.com";
   static const String imgBaseUrl = "https://trackroute.s3.ap-south-1.amazonaws.com/";
   static const String login = "/Auth/login";
   static const String forgotPassword = "/Auth/send_otp";

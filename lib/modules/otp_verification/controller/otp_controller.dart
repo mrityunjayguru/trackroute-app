@@ -52,6 +52,8 @@ class OtpController extends GetxController {
       final response = await apiservice.verifyOTP(body);
 
       if (response.status == 200) {
+        Get.back();
+        Get.back();
         Get.to(()=> CreateNewPasswordView(fromLogin: fromLogin,), transition: Transition.upToDown, duration: const Duration(milliseconds: 300));
         networkStatus.value = NetworkStatus.SUCCESS;
       } else if (response.status == 400) {

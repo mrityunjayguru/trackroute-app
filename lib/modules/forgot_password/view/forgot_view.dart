@@ -36,6 +36,7 @@ class ForgotView extends StatelessWidget {
                   child:
                       Center(child: SvgPicture.asset(Assets.images.svg.logo)),
                 ),
+
               Container(
                 height: 6,
                 color: AppColors.selextedindexcolor,
@@ -57,11 +58,23 @@ class ForgotView extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Forgot password?',
-                      style: AppTextStyles(context)
-                          .display30W400
-                          .copyWith(fontWeight: FontWeight.w400),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Forgot password?',
+                          style: AppTextStyles(context)
+                              .display30W400
+                              .copyWith(fontWeight: FontWeight.w400),
+                        ),
+                        InkWell(
+                            onTap: () {
+                              Get.back();
+                            },
+                            child: SvgPicture.asset(
+                              "assets/images/svg/close_icon.svg", colorFilter: ColorFilter.mode(Colors.black, BlendMode.srcIn),
+                            )),
+                      ],
                     ).paddingOnly(bottom: 8, top: 8),
                     Text(
                       "We'll send you reset instructions.",

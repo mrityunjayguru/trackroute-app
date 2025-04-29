@@ -119,7 +119,26 @@ class CreateNewPasswordView extends StatelessWidget {
                         ),
                       ).paddingOnly(bottom: 20),
                     ),
-                    // forgotPasswordMethod(),
+                    InkWell(
+                      onTap: () {
+                        Get.back();
+                      },
+                      child: Container(
+                        height: 6.h,
+                        child: Center(
+                          child: Text(
+                            'Cancel',
+                            style: AppTextStyles(context)
+                                .display18W500
+                          ),
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(AppSizes.radius_50),
+                          color: AppColors.selextedindexcolor,
+                        ),
+                      ).paddingOnly(bottom: 20),
+                    ),
+
                   ],
                 ),
               ),

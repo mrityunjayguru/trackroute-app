@@ -106,7 +106,7 @@ class LocationController extends GetxController {
           CameraUpdate.newCameraPosition(
             CameraPosition(
               target: position,
-              zoom: 16,
+              zoom: 16.5,
             ),
           ),
         );

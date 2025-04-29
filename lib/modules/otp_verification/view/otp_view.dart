@@ -11,6 +11,7 @@ import 'package:track_route_pro/utils/common_import.dart';
 
 import '../../../config/app_sizer.dart';
 import '../../../constants/project_urls.dart';
+import '../../create_new_pass/view/create_new_password_view.dart';
 import '../../forgot_password/controller/forgot_pass_controller.dart';
 import '../../splash_screen/controller/data_controller.dart';
 
@@ -58,11 +59,26 @@ class OtpView extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Enter OTP',
-                      style: AppTextStyles(context)
-                          .display30W400
-                          .copyWith(fontWeight: FontWeight.w400),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Enter OTP',
+                          style: AppTextStyles(context)
+                              .display30W400
+                              .copyWith(fontWeight: FontWeight.w400),
+                        ),
+                        InkWell(
+                            onTap: () {
+
+                              Get.back();
+                              controller.otpErrorText.value="";
+                              controller.otpController.value.text="";
+                            },
+                            child: SvgPicture.asset(
+                              "assets/images/svg/close_icon.svg", colorFilter: ColorFilter.mode(Colors.black, BlendMode.srcIn),
+                            )),
+                      ],
                     ).paddingSymmetric(vertical: 8),
                     Text(
                       "Check Your Registered Email for OTP",
@@ -140,7 +156,7 @@ class OtpView extends StatelessWidget {
                     SizedBox(height: 3.h),
                     InkWell(
                       onTap: () {
-                        if (controller.formKey.value.currentState!.validate()) {
+                          if (controller.formKey.value.currentState!.validate()) {
                           // Handle OTP submission logic here
                           controller.verifyotp(fromLogin: fromLogin);
                         }

@@ -106,7 +106,7 @@ class DeviceController extends GetxController {
     });
 
     socket!.on('vehicleData', (data) {
-      developer.log('📡 vehicleData received: $data');
+      // developer.log('📡 vehicleData received: $data');
       try {
         final List<Data> vehicleListData = (data as List<dynamic>)
             .map((item) => Data.fromJson(item as Map<String, dynamic>))
@@ -279,7 +279,7 @@ class DeviceController extends GetxController {
             }
           }
 // Start animation
-          animation = LatLngTween(begin: oldLatLng!, end: newLatLng).animate(animationController)
+        /*  animation = LatLngTween(begin: oldLatLng!, end: newLatLng).animate(animationController)
             ..addListener(() async {
               final position = animation!.value;
               final m = await createMarker(
@@ -310,8 +310,33 @@ class DeviceController extends GetxController {
             });
 
           animationController.forward(from: 0.0);
-          oldLatLng = newLatLng;
+          oldLatLng = newLatLng;*/
 
+          final position = LatLng(lat ?? 0, long ?? 0);
+          final m = await createMarker(
+            course: rotation,
+            imei: data?.imei ?? "",
+            lat: position.latitude,
+            long: position.longitude,
+            img: data?.vehicletype?.icons,
+            id: data?.deviceId.toString(),
+            vehicleNo: data?.vehicleNo,
+            isOffline: isOffline,
+            isInactive: isInactive,
+          );
+          // markers.value = {};
+          //
+          if(markers.isEmpty){
+            markers.add(m);
+          }
+          else{
+            markers.value = Set<Marker>.of([
+              markers.first.copyWith(
+                positionParam: position,
+                rotationParam: rotation,
+              ),
+            ]);
+          }
         }
         circles.value = [];
         if ((data?.locationStatus ?? false) &&
