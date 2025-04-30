@@ -523,16 +523,15 @@ class VehicleSelected extends StatelessWidget {
 
   Widget immobilizerWidget(BuildContext context) {
     bool active = true;
-    // todo vehicle batt < 12.4 then inactive
-    if ((controller.deviceDetail.value?.displayParameters?.relay ==
-            null) ||
+    /// vehicle batt < 12.4 then inactive
+    if ((controller.deviceDetail.value?.displayParameters?.relay == null) ||
         (controller.deviceDetail.value?.displayParameters?.relay ==
             false) ||
         (controller
                 .deviceDetail.value?.trackingData?.ignition?.status ==
             true) ||
         (controller.deviceDetail.value?.trackingData?.motion ??
-            false) ||
+            false) || ((controller.deviceDetail.value?.trackingData?.externalBattery ?? 0) < 12.4)||
         Utils.parseDouble(
                 data: (controller.deviceDetail.value?.trackingData
                             ?.currentSpeed ??
@@ -674,6 +673,21 @@ class VehicleSelected extends StatelessWidget {
                     style: AppTextStyles(context).display14W400.copyWith(
                         decoration: TextDecoration.underline,
                         color: active ? AppColors.black : AppColors.grayLight)),
+                TextSpan(
+                  text: ' If the battery voltage drops ',
+                  style: AppTextStyles(context).display14W400.copyWith(
+                      color: active ? AppColors.black : AppColors.grayLight),
+                ),
+                TextSpan(
+                    text: 'below 12.4V',
+                    style: AppTextStyles(context).display14W400.copyWith(
+                        decoration: TextDecoration.underline,
+                        color: active ? AppColors.black : AppColors.grayLight)),
+                TextSpan(
+                  text: ', the relay will be disabled to protect the battery.',
+                  style: AppTextStyles(context).display14W400.copyWith(
+                      color: active ? AppColors.black : AppColors.grayLight),
+                ),
               ],
             ),
           ),

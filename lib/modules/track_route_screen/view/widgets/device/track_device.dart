@@ -932,8 +932,11 @@ class _TrackDeviceViewState extends State<TrackDeviceView>  with SingleTickerPro
                                 "")
                             .toString(),
                         fuel: controller.fuelValue.value,
-                        speed: (vehicleInfo.trackingData?.currentSpeed ?? "")
-                            .toString(),
+                        speed: ((controller.deviceDetail.value?.trackingData
+                            ?.currentSpeed ??
+                            0)
+                            .toStringAsFixed(0) ??
+                            "N/A"),
                         deviceId: vehicleInfo.deviceId.toString() ?? '',
                         doorIsActive: vehicleInfo.trackingData?.door,
                         doorSubTitle: vehicleInfo.trackingData?.door == null

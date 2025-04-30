@@ -10,7 +10,6 @@ import 'package:track_route_pro/modules/track_route_screen/controller/track_rout
 import 'package:track_route_pro/service/model/presentation/track_route/Summary.dart';
 import 'package:track_route_pro/service/model/presentation/track_route/track_route_vehicle_list.dart';
 
-import '../../../config/theme/app_colors.dart';
 import '../../../constants/constant.dart';
 import '../../../constants/project_urls.dart';
 import '../../../service/api_service/api_service.dart';
@@ -62,12 +61,14 @@ class DeviceController extends GetxController {
 
     loadUser();
   }
+
   void initAnimation(TickerProvider vsync) {
     animationController = AnimationController(
       duration: Duration(milliseconds: 1500),
       vsync: vsync,
     );
   }
+
   @override
   void onClose() {
     socket?.dispose();
@@ -105,19 +106,16 @@ class DeviceController extends GetxController {
       });
     });
 
-    socket!.on('vehicleData', (data) {
+    socket!.on('vehicleData', (data) async {
       // developer.log('📡 vehicleData received: $data');
+
       try {
         final List<Data> vehicleListData = (data as List<dynamic>)
             .map((item) => Data.fromJson(item as Map<String, dynamic>))
             .toList();
         if (!manageScreen && vehicleListData.isNotEmpty) {
           deviceDetail.value = vehicleListData.first;
-          devicesByDetails(showDialog:false);
-        }
-        for (var vehicle in vehicleListData ?? []) {
-          developer.log(
-              '🚗 Vehicle No: ${vehicle.vehicleNo}, Speed: ${vehicle.trackingData?.currentSpeed}');
+          devicesByDetails(showDialog: false);
         }
       } catch (e, stackTrace) {
         developer.log('❌ Error parsing vehicleData: $e\n$stackTrace');
@@ -145,9 +143,9 @@ class DeviceController extends GetxController {
 
   Future<void> getDeviceByIMEI(
       {bool initialize = true,
-        bool updateCamera = true,
-        bool showDialog = false,
-        bool zoom = false}) async {
+      bool updateCamera = true,
+      bool showDialog = false,
+      bool zoom = false}) async {
     try {
       expandInfo.value = false;
       final body = {"deviceId": "${selectedVehicleIMEI.value}"};
@@ -158,9 +156,8 @@ class DeviceController extends GetxController {
         networkStatus.value = NetworkStatus.SUCCESS;
         if (response.data?.isNotEmpty ?? false) {
           deviceDetail.value = response.data?.first;
-          devicesByDetails(zoom: zoom, showDialog: showDialog);
+          devicesByDetails(zoom: zoom, showDialog: showDialog, updateCamera: updateCamera);
           if (initialize) {
-
             initSocket();
           }
         }
@@ -172,17 +169,17 @@ class DeviceController extends GetxController {
       networkStatus.value = NetworkStatus.ERROR;
     }
   }
+
   LatLng? oldLatLng;
 
   Future<void> devicesByDetails(
       {bool updateCamera = true,
-        bool showDialog = false,
-        bool zoom = false}) async {
+      bool showDialog = false,
+      bool zoom = false}) async {
     try {
       deviceDetail.refresh();
       if (deviceDetail.value != null) {
         final data = deviceDetail.value;
-
 
         relayStatus.value = data?.immobiliser ?? "Stop";
         // vehicleRegistrationNumber.text = data?.vehicleRegistrationNo ?? '';
@@ -227,7 +224,7 @@ class DeviceController extends GetxController {
             lat = data?.lastLocation?.latitude;
             long = data?.lastLocation?.longitude;
           }
-       /*   Marker m = await trackController.createMarker(
+          /*   Marker m = await trackController.createMarker(
               course: Utils.parseDouble(data: data?.trackingData?.course),
               imei: data?.imei ?? "",
               lat: lat,
@@ -239,12 +236,6 @@ class DeviceController extends GetxController {
               isInactive: isInactive);
           markers.value = [];
           markers.add(m);*/
-        /*  double? lat = data?.trackingData?.location?.latitude;
-          double? long = data?.trackingData?.location?.longitude;*/
-        /*  if (isInactive) {
-            lat = data?.lastLocation?.latitude;
-            long = data?.lastLocation?.longitude;
-          }*/
 
           final newLatLng = LatLng(lat ?? 0, long ?? 0);
           double rotation = Utils.parseDouble(data: data?.trackingData?.course);
@@ -266,7 +257,7 @@ class DeviceController extends GetxController {
                   CameraUpdate.newCameraPosition(
                     CameraPosition(
                       bearing:
-                      Utils.parseDouble(data: data?.trackingData?.course),
+                          Utils.parseDouble(data: data?.trackingData?.course),
                       // Keep map aligned with vehicle movement
                       target: LatLng(
                           (data?.trackingData?.location?.latitude ?? 0),
@@ -279,80 +270,44 @@ class DeviceController extends GetxController {
             }
           }
 // Start animation
-        /*  animation = LatLngTween(begin: oldLatLng!, end: newLatLng).animate(animationController)
-            ..addListener(() async {
-              final position = animation!.value;
-              final m = await createMarker(
-                course: rotation,
-                imei: data?.imei ?? "",
-                lat: position.latitude,
-                long: position.longitude,
-                img: data?.vehicletype?.icons,
-                id: data?.deviceId.toString(),
-                vehicleNo: data?.vehicleNo,
-                isOffline: isOffline,
-                isInactive: isInactive,
-              );
-              // markers.value = {};
-              //
-            if(markers.isEmpty){
-              markers.add(m);
-            }
-            else{
-              markers.value = Set<Marker>.of([
-                markers.first.copyWith(
-                  positionParam: position,
-                  rotationParam: rotation,
-                ),
-              ]);
-            }
+         if(updateCamera){
+           animation = LatLngTween(begin: oldLatLng!, end: newLatLng)
+               .animate(animationController)
+             ..addListener(() async {
+               final position = animation!.value;
+               final m = await createMarker(
+                 course: rotation,
+                 imei: data?.imei ?? "",
+                 lat: position.latitude,
+                 long: position.longitude,
+                 img: data?.vehicletype?.icons,
+                 id: data?.deviceId.toString(),
+                 vehicleNo: data?.vehicleNo,
+                 isOffline: isOffline,
+                 isInactive: isInactive,
+               );
 
-            });
+               if (markers.isEmpty) {
+                 markers.add(m);
+               } else {
+                 markers.value = Set<Marker>.of([
+                   markers.first.copyWith(
+                     positionParam: position,
+                     rotationParam: rotation,
+                   ),
+                 ]);
+               }
+             });
 
-          animationController.forward(from: 0.0);
-          oldLatLng = newLatLng;*/
+           animationController.forward(from: 0.0);
+         }
 
-          final position = LatLng(lat ?? 0, long ?? 0);
-          final m = await createMarker(
-            course: rotation,
-            imei: data?.imei ?? "",
-            lat: position.latitude,
-            long: position.longitude,
-            img: data?.vehicletype?.icons,
-            id: data?.deviceId.toString(),
-            vehicleNo: data?.vehicleNo,
-            isOffline: isOffline,
-            isInactive: isInactive,
-          );
-          // markers.value = {};
-          //
-          if(markers.isEmpty){
-            markers.add(m);
-          }
-          else{
-            markers.value = Set<Marker>.of([
-              markers.first.copyWith(
-                positionParam: position,
-                rotationParam: rotation,
-              ),
-            ]);
-          }
+
+          oldLatLng = newLatLng;
+
+
         }
-        circles.value = [];
-        if ((data?.locationStatus ?? false) &&
-            (data?.location?.latitude != null &&
-                data?.location?.longitude != null)) {
-          circles.value.add(Circle(
-            circleId: CircleId("GEOFENCE${data?.imei}"),
-            fillColor: AppColors.selextedindexcolor.withOpacity(0.4),
-            strokeWidth: 2,
-            strokeColor: AppColors.selextedindexcolor.withOpacity(0.41),
-            center: LatLng(
-                data?.location?.latitude ?? 0, data?.location?.longitude ?? 0),
-            radius: Utils.parseDouble(data: data?.area),
-          ));
-          circles.value = List.from(circles);
-        }
+
       } else {
         selectedVehicleIMEI.value = "";
         // selectedVehicleIndex.value = -1;
@@ -361,8 +316,6 @@ class DeviceController extends GetxController {
       developer.log("EXCEPTION $e $s");
     }
   }
-
-
 
   Future<void> getDeviceByIMEITripSummary() async {
     try {
@@ -381,8 +334,7 @@ class DeviceController extends GetxController {
               : "N/A";
           isLoading.value = false;
         }
-      }
-      else if (response.status == 400) {
+      } else if (response.status == 400) {
         networkStatus.value = NetworkStatus.ERROR;
       }
     } catch (e, s) {
@@ -421,9 +373,9 @@ class DeviceController extends GetxController {
 
   Future<void> editDevicesByDetails(
       {bool editGeofence = false,
-        bool editSpeed = false,
-        bool editGeneral = false,
-        required BuildContext context}) async {
+      bool editSpeed = false,
+      bool editGeneral = false,
+      required BuildContext context}) async {
     try {
       double? lat;
       double? long;
@@ -453,19 +405,19 @@ class DeviceController extends GetxController {
         "mobileNo": driverMobileNo.text,
         "insuranceExpiryDate": insuranceExpiryDate.text.isNotEmpty
             ? DateFormat('yyyy-MM-dd').format(
-            DateFormat('dd-MM-yyyy').parse(insuranceExpiryDate.text))
+                DateFormat('dd-MM-yyyy').parse(insuranceExpiryDate.text))
             : "",
         "pollutionExpiryDate": pollutionExpiryDate.text.isNotEmpty
             ? DateFormat('yyyy-MM-dd').format(
-            DateFormat('dd-MM-yyyy').parse(pollutionExpiryDate.text))
+                DateFormat('dd-MM-yyyy').parse(pollutionExpiryDate.text))
             : "",
         "fitnessExpiryDate": fitnessExpiryDate.text.isNotEmpty
             ? DateFormat('yyyy-MM-dd')
-            .format(DateFormat('dd-MM-yyyy').parse(fitnessExpiryDate.text))
+                .format(DateFormat('dd-MM-yyyy').parse(fitnessExpiryDate.text))
             : "",
         "nationalPermitExpiryDate": nationalPermitExpiryDate.text.isNotEmpty
             ? DateFormat('yyyy-MM-dd').format(
-            DateFormat('dd-MM-yyyy').parse(nationalPermitExpiryDate.text))
+                DateFormat('dd-MM-yyyy').parse(nationalPermitExpiryDate.text))
             : "",
         "_id": deviceDetail.value?.sId ?? '',
         "maxSpeed": maxSpeedUpdate.text.trim(),
@@ -633,7 +585,8 @@ class DeviceController extends GetxController {
       final lat = deviceDetail.value?.trackingData?.location?.latitude;
       final lon = deviceDetail.value?.trackingData?.location?.longitude;
 
-      if (DateTime.now().difference(timeStampAddress) >= Duration(seconds: 15)) {
+      if (DateTime.now().difference(timeStampAddress) >=
+          Duration(seconds: 15)) {
         timeStampAddress = DateTime.now();
         if (lat != null && lon != null) {
           try {
@@ -646,14 +599,16 @@ class DeviceController extends GetxController {
         }
       }
       return null;
-    }).asyncMap((event) async => event).where((event) => event != null).cast<String>();
+    })
+        .asyncMap((event) async => event)
+        .where((event) => event != null)
+        .cast<String>();
   }
-
 
   void updateCameraPositionWithZoom(
       {required double latitude,
-        required double longitude,
-        required double course}) async {
+      required double longitude,
+      required double course}) async {
     mapController.animateCamera(
       CameraUpdate.newCameraPosition(
         CameraPosition(
@@ -667,12 +622,12 @@ class DeviceController extends GetxController {
 
   void updateCameraPosition(
       {required double latitude,
-        required double longitude,
-        required double course}) {
+      required double longitude,
+      required double course}) {
     mapController.animateCamera(
       CameraUpdate.newCameraPosition(
         CameraPosition(
-          // bearing: course,
+            // bearing: course,
             target: LatLng(latitude, longitude),
             zoom: 7),
       ),
@@ -701,49 +656,48 @@ class DeviceController extends GetxController {
 
   BitmapDescriptor? inactiveIcon;
   BitmapDescriptor? markerIcon;
+
   Future<Marker> createMarker(
       {double? lat,
-        double? long,
-        String? img,
-        String? id,
-        required double course,
-        required String imei,
-        required bool isInactive,
-        required bool isOffline,
-        String? vehicleNo}) async {
+      double? long,
+      String? img,
+      String? id,
+      required double course,
+      required String imei,
+      required bool isInactive,
+      required bool isOffline,
+      String? vehicleNo}) async {
     BitmapDescriptor markerIconImg = BitmapDescriptor.defaultMarker;
     if (isInactive) {
-      if(inactiveIcon==null){
+      if (inactiveIcon == null) {
         inactiveIcon = await svgToBitmapDescriptorInactiveIcon();
       }
       markerIconImg = inactiveIcon ?? BitmapDescriptor.defaultMarker;
     } else {
-      if(markerIcon==null){
-        markerIcon = await svgToBitmapDescriptor('${ProjectUrls.imgBaseUrl}$img');
+      if (markerIcon == null) {
+        markerIcon =
+            await svgToBitmapDescriptor('${ProjectUrls.imgBaseUrl}$img');
       }
       markerIconImg = markerIcon ?? BitmapDescriptor.defaultMarker;
-
     }
     final markerId = "${ProjectUrls.imgBaseUrl}$img$imei";
     final marker = Marker(
-        rotation: course,
-        markerId: MarkerId(markerId),
-        position: LatLng(
-          lat ?? 0,
-          long ?? 0,
-        ),
-        /* infoWindow: Platform.isAndroid
+      rotation: course,
+      markerId: MarkerId(markerId),
+      position: LatLng(
+        lat ?? 0,
+        long ?? 0,
+      ),
+      /* infoWindow: Platform.isAndroid
             ? InfoWindow(
                 title: 'Vehicle No: ${vehicleNo}',
                 snippet: 'IMEI: ${imei}',
               )
             : InfoWindow.noText,*/
-        icon: markerIconImg,
-        flat: true,
-        anchor: Offset(0.5, 0.5),
+      icon: markerIconImg,
+      flat: true,
+      anchor: Offset(0.5, 0.5),
     );
     return marker;
   }
-
-
 }
