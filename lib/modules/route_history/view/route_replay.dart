@@ -143,7 +143,7 @@ class _RouteReplayViewState extends State<RouteReplayView> with TickerProviderSt
                                       ),
                                     ),
                                     SizedBox(
-                                      width: 5,
+                                      width: 2.5,
                                     ),
                                     Expanded(
                                       child: Column(
@@ -195,7 +195,7 @@ class _RouteReplayViewState extends State<RouteReplayView> with TickerProviderSt
                                       ),
                                     ),
                                     SizedBox(
-                                      width: 5,
+                                      width: 2.5,
                                     ),
                                     Expanded(
                                       child: Column(
@@ -251,7 +251,7 @@ class _RouteReplayViewState extends State<RouteReplayView> with TickerProviderSt
                                           ).paddingOnly(left: 5),
                                         )
                                       ],
-                                    ).paddingOnly(left: 10, bottom: 7, top: 7),
+                                    ).paddingOnly(left: 10, bottom: 3, top: 7),
                                     if(controller.selectStopIndex.value!=-1)Row(
                                       mainAxisAlignment: MainAxisAlignment.start,
                                       children: [
@@ -261,7 +261,7 @@ class _RouteReplayViewState extends State<RouteReplayView> with TickerProviderSt
                                             "Stop Duration: ${locationController.stopDuration.value}",
                                             style: AppTextStyles(context)
                                                 .display13W500,
-                                          ).paddingOnly(left: 8),
+                                          ).paddingOnly(left: 10 ),
                                         )
                                       ],
                                     ).paddingOnly(left: 20, bottom: 7,),

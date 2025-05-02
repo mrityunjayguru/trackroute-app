@@ -156,6 +156,7 @@ class DeviceController extends GetxController {
         networkStatus.value = NetworkStatus.SUCCESS;
         if (response.data?.isNotEmpty ?? false) {
           deviceDetail.value = response.data?.first;
+          oldLatLng=null;
           devicesByDetails(zoom: zoom, showDialog: showDialog, updateCamera: updateCamera);
           if (initialize) {
             initSocket();
