@@ -137,7 +137,7 @@ class _VehicalesViewState extends State<VehicalesView> {
                           color: AppColors.black,
                         ),
                       ),
-                    ).paddingOnly(top: 24);
+                    ).paddingOnly(top: 8);
                   }
                   ),
                 ),

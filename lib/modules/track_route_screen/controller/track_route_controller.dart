@@ -170,18 +170,20 @@ class TrackRouteController extends GetxController {
             lat = vehicle.lastLocation?.latitude;
             long = vehicle.lastLocation?.longitude;
           }
+          else{
+            Marker m = await createMarker(
+                imei: vehicle.imei ?? "",
+                lat: lat,
+                long: long,
+                img: vehicle.vehicletype?.icons,
+                id: vehicle.deviceId.toString(),
+                vehicleNo: vehicle.vehicleNo,
+                course: Utils.parseDouble(data: vehicle.trackingData?.course),
+                isOffline: isOffline,
+                isInactive: isInactive);
+            markers.add(m);
+          }
 
-          Marker m = await createMarker(
-              imei: vehicle.imei ?? "",
-              lat: lat,
-              long: long,
-              img: vehicle.vehicletype?.icons,
-              id: vehicle.deviceId.toString(),
-              vehicleNo: vehicle.vehicleNo,
-              course: Utils.parseDouble(data: vehicle.trackingData?.course),
-              isOffline: isOffline,
-              isInactive: isInactive);
-          markers.add(m);
         }
       }
     } else {
@@ -434,17 +436,21 @@ class TrackRouteController extends GetxController {
           lat = vehicle.lastLocation?.latitude;
           long = vehicle.lastLocation?.longitude;
         }
-        Marker marker = await createMarker(
-            id: vehicle.deviceId.toString(),
-            img: vehicle.vehicletype?.icons,
-            long: long,
-            lat: lat,
-            vehicleNo: vehicle.vehicleNo,
-            imei: vehicle.imei ?? "",
-            course: Utils.parseDouble(data: vehicle.trackingData?.course),
-            isOffline: isOffline,
-            isInactive: isInactive);
-        markers.add(marker);
+        else{
+          Marker marker = await createMarker(
+              id: vehicle.deviceId.toString(),
+              img: vehicle.vehicletype?.icons,
+              long: long,
+              lat: lat,
+              vehicleNo: vehicle.vehicleNo,
+              imei: vehicle.imei ?? "",
+              course: Utils.parseDouble(data: vehicle.trackingData?.course),
+              isOffline: isOffline,
+              isInactive: isInactive);
+          markers.add(marker);
+        }
+
+
       }
     }
   }

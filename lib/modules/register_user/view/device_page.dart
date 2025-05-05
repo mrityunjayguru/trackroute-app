@@ -86,45 +86,98 @@ class DevicePage extends StatelessWidget {
                   SizedBox(
                     height: 20,
                   ),
-                  Obx(()=>
-                     Container(
-                      decoration: BoxDecoration(
-                          border: Border.all(
-                              width: 1,
-                              color: controller.vehicleTypeError.value.isNotEmpty
-                                  ? Colors.red
-                                  : Colors.transparent),
-                          borderRadius: BorderRadius.circular(16)),
-                      child: SearchDropDown<DataVehicleType>(
-                        dropDownFillColor: AppColors.white,
-                        containerColor: AppColors.white,
-                        showBorder: false,
-                        hintStyle: AppTextStyles(context)
-                            .display16W400
-                            .copyWith(color: AppColors.grayLight),
-                        height: 50,
-                        items: controller.vehicleTypeList.toList(),
-                        selectedItem: controller.vehicleCategory.value,
-                        onChanged: (value) {
-                          controller.vehicleCategory.value = value;
-                          controller.vehicleTypeError.value = "";
-                        },
-                        hint: "Vehicle Category",
-                        showSearch: false,
-                      ),
-                    ),
+                  Obx(() {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                                  width: 1,
+                                  color: controller
+                                          .vehicleTypeError.value.isNotEmpty
+                                      ? Colors.red
+                                      : Colors.transparent),
+                              borderRadius: BorderRadius.circular(16)),
+                          child: SearchDropDown<DataVehicleType>(
+                            dropDownFillColor: AppColors.white,
+                            containerColor: AppColors.white,
+                            showBorder: false,
+                            hintStyle: AppTextStyles(context)
+                                .display16W400
+                                .copyWith(color: AppColors.grayLight),
+                            height: 50,
+                            items: controller.vehicleTypeList.toList(),
+                            selectedItem: controller.vehicleCategory.value,
+                            onChanged: (value) {
+                              controller.vehicleCategory.value = value;
+                              controller.vehicleTypeError.value = "";
+                            },
+                            hint: "Vehicle Category",
+                            showSearch: false,
+                          ),
+                        ),
+                        if (controller.vehicleTypeError.value.isNotEmpty) ...[
+                          const SizedBox(height: 8),
+                          Text(
+                            controller.vehicleTypeError.value.tr,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTextStyles(context)
+                                .display14W400
+                                .copyWith(color: AppColors.dangerDark),
+                          ).paddingOnly(left: 5),
+                        ],
+                      ],
+                    );
+                  }),
+                  SizedBox(
+                    height: 20,
                   ),
-                  if (controller.vehicleTypeError.value.isNotEmpty) ...[
-                    const SizedBox(height: 8),
-                    Text(
-                      controller.vehicleTypeError.value.tr,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTextStyles(context)
-                          .display14W400
-                          .copyWith(color: AppColors.dangerDark),
-                    ).paddingOnly(left: 5),
-                  ],
+                  Obx(() {
+                    return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                                    width: 1,
+                                    color: controller
+                                            .deviceTypeError.value.isNotEmpty
+                                        ? Colors.red
+                                        : Colors.transparent),
+                                borderRadius: BorderRadius.circular(16)),
+                            child: SearchDropDown<SearchDropDownModel>(
+                              dropDownFillColor: AppColors.white,
+                              containerColor: AppColors.white,
+                              showBorder: false,
+                              hintStyle: AppTextStyles(context)
+                                  .display16W400
+                                  .copyWith(color: AppColors.grayLight),
+                              height: 50,
+                              items: controller.deviceTypeList.toList(),
+                              selectedItem: controller.deviceType.value,
+                              onChanged: (value) {
+                                controller.deviceType.value = value;
+                                controller.deviceTypeError.value = "";
+                              },
+                              hint: "Device Type",
+                              showSearch: false,
+                            ),
+                          ),
+                          if (controller.deviceTypeError.value.isNotEmpty) ...[
+                            const SizedBox(height: 8),
+                            Text(
+                              controller.deviceTypeError.value.tr,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: AppTextStyles(context)
+                                  .display14W400
+                                  .copyWith(color: AppColors.dangerDark),
+                            ).paddingOnly(left: 5),
+                          ],
+                        ]);
+                  }),
                   textfield(
                       controller: controller.dealerCodeController,
                       hint: "Dealer Code(Optional)",
@@ -171,8 +224,8 @@ class DevicePage extends StatelessWidget {
       int? maxLength,
       required RxString errorText,
       required String hint}) {
-    return Obx(()=>
-       AppTextFormField(
+    return Obx(
+      () => AppTextFormField(
         maxLength: maxLength,
         height: 50,
         readOnly: readOnly,

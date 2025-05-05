@@ -225,6 +225,76 @@ class DeviceController extends GetxController {
             lat = data?.lastLocation?.latitude;
             long = data?.lastLocation?.longitude;
           }
+          else{
+            final newLatLng = LatLng(lat ?? 0, long ?? 0);
+            double rotation = Utils.parseDouble(data: data?.trackingData?.course);
+
+            if (oldLatLng == null) {
+              oldLatLng = newLatLng;
+            }
+            if (updateCamera &&
+                data?.trackingData?.location?.latitude != null &&
+                data?.trackingData?.location?.longitude != null) {
+              if (zoom) {
+                updateCameraPositionWithZoom(
+                    course: Utils.parseDouble(data: data?.trackingData?.course),
+                    latitude: data?.trackingData?.location?.latitude ?? 0,
+                    longitude: data?.trackingData?.location?.longitude ?? 0);
+              } else {
+                mapController.getZoomLevel().then((currentZoom) async {
+                  mapController.animateCamera(
+                    CameraUpdate.newCameraPosition(
+                      CameraPosition(
+                        bearing:
+                        Utils.parseDouble(data: data?.trackingData?.course),
+                        // Keep map aligned with vehicle movement
+                        target: LatLng(
+                            (data?.trackingData?.location?.latitude ?? 0),
+                            (data?.trackingData?.location?.longitude ?? 0)),
+                        zoom: currentZoom,
+                      ),
+                    ),
+                  );
+                });
+              }
+            }
+// Start animation
+            if(updateCamera){
+              animation = LatLngTween(begin: oldLatLng!, end: newLatLng)
+                  .animate(animationController)
+                ..addListener(() async {
+                  final position = animation!.value;
+                  final m = await createMarker(
+                    course: rotation,
+                    imei: data?.imei ?? "",
+                    lat: position.latitude,
+                    long: position.longitude,
+                    img: data?.vehicletype?.icons,
+                    id: data?.deviceId.toString(),
+                    vehicleNo: data?.vehicleNo,
+                    isOffline: isOffline,
+                    isInactive: isInactive,
+                  );
+
+                  if (markers.isEmpty) {
+                    markers.add(m);
+                  } else {
+                    markers.value = Set<Marker>.of([
+                      markers.first.copyWith(
+                        positionParam: position,
+                        rotationParam: rotation,
+                      ),
+                    ]);
+                  }
+                });
+
+              animationController.forward(from: 0.0);
+            }
+
+
+            oldLatLng = newLatLng;
+
+          }
           /*   Marker m = await trackController.createMarker(
               course: Utils.parseDouble(data: data?.trackingData?.course),
               imei: data?.imei ?? "",
@@ -238,73 +308,7 @@ class DeviceController extends GetxController {
           markers.value = [];
           markers.add(m);*/
 
-          final newLatLng = LatLng(lat ?? 0, long ?? 0);
-          double rotation = Utils.parseDouble(data: data?.trackingData?.course);
 
-          if (oldLatLng == null) {
-            oldLatLng = newLatLng;
-          }
-          if (updateCamera &&
-              data?.trackingData?.location?.latitude != null &&
-              data?.trackingData?.location?.longitude != null) {
-            if (zoom) {
-              updateCameraPositionWithZoom(
-                  course: Utils.parseDouble(data: data?.trackingData?.course),
-                  latitude: data?.trackingData?.location?.latitude ?? 0,
-                  longitude: data?.trackingData?.location?.longitude ?? 0);
-            } else {
-              mapController.getZoomLevel().then((currentZoom) async {
-                mapController.animateCamera(
-                  CameraUpdate.newCameraPosition(
-                    CameraPosition(
-                      bearing:
-                          Utils.parseDouble(data: data?.trackingData?.course),
-                      // Keep map aligned with vehicle movement
-                      target: LatLng(
-                          (data?.trackingData?.location?.latitude ?? 0),
-                          (data?.trackingData?.location?.longitude ?? 0)),
-                      zoom: currentZoom,
-                    ),
-                  ),
-                );
-              });
-            }
-          }
-// Start animation
-         if(updateCamera){
-           animation = LatLngTween(begin: oldLatLng!, end: newLatLng)
-               .animate(animationController)
-             ..addListener(() async {
-               final position = animation!.value;
-               final m = await createMarker(
-                 course: rotation,
-                 imei: data?.imei ?? "",
-                 lat: position.latitude,
-                 long: position.longitude,
-                 img: data?.vehicletype?.icons,
-                 id: data?.deviceId.toString(),
-                 vehicleNo: data?.vehicleNo,
-                 isOffline: isOffline,
-                 isInactive: isInactive,
-               );
-
-               if (markers.isEmpty) {
-                 markers.add(m);
-               } else {
-                 markers.value = Set<Marker>.of([
-                   markers.first.copyWith(
-                     positionParam: position,
-                     rotationParam: rotation,
-                   ),
-                 ]);
-               }
-             });
-
-           animationController.forward(from: 0.0);
-         }
-
-
-          oldLatLng = newLatLng;
 
 
         }

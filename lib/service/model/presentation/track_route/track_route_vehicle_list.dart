@@ -56,7 +56,7 @@ class Data {
   String? updatedAt;
   int? iV;
   TrackingData? trackingData;
-  Location? lastLocation;
+  LastLocation? lastLocation;
   Vehicletype? vehicletype;
   String? driverName; // Driver's name
   String? immobiliser;
@@ -150,7 +150,7 @@ class Data {
         ? TrackingData.fromJson(json['trackingData'])
         : null;
     lastLocation = json['lastLocation'] != null
-        ? Location.fromJson(json['lastLocation'])
+        ? LastLocation.fromJson(json['lastLocation'])
         : null;
     vehicletype = json['vehicletype'] != null
         ? Vehicletype.fromJson(json['vehicletype'])
@@ -238,6 +238,28 @@ class Location {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['longitude'] = this.longitude;
     data['latitude'] = this.latitude;
+    return data;
+  }
+}
+
+class LastLocation {
+  double? longitude;
+  double? latitude;
+  String? lastTime;
+
+  LastLocation({this.longitude, this.latitude, this.lastTime});
+
+  LastLocation.fromJson(Map<String, dynamic> json) {
+    longitude = double.tryParse(json['longitude'].toString()) ?? 0;
+    latitude = double.tryParse(json['latitude'].toString()) ?? 0;
+    lastTime = json['lastTime'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['longitude'] = this.longitude;
+    data['latitude'] = this.latitude;
+    data['lastTime'] = this.lastTime;
     return data;
   }
 }

@@ -567,23 +567,45 @@ class _TrackDeviceViewState extends State<TrackDeviceView>  with SingleTickerPro
   Widget _infoWidget(BuildContext context, bool isNotExpired, bool isActive) {
     String date = 'Update unavailable';
     String time = "";
-    if (controller
-            .deviceDetail.value?.trackingData?.lastUpdateTime?.isNotEmpty ??
-        false) {
-      try {
-        final lastUpdate = DateTime.tryParse(controller.deviceDetail.value?.trackingData?.lastUpdateTime ?? "");
-        if (lastUpdate != null) {
-          date = DateFormat("dd MMM y").format(lastUpdate.toLocal());
-          time = DateFormat("HH:mm").format(lastUpdate.toLocal());
-        } else {
+    if(trackController.checkIfInactive(vehicle: controller.deviceDetail.value)){
+      if (controller
+          .deviceDetail.value?.lastLocation?.lastTime?.isNotEmpty ??
+          false) {
+        try {
+          final lastUpdate = DateTime.tryParse(controller.deviceDetail.value?.lastLocation?.lastTime ?? "");
+          if (lastUpdate != null) {
+            date = DateFormat("dd MMM y").format(lastUpdate.toLocal());
+            time = DateFormat("HH:mm").format(lastUpdate.toLocal());
+          } else {
+            date = "NA";
+            time = "NA";
+          }
+        } catch (e) {
           date = "NA";
           time = "NA";
         }
-      } catch (e) {
-        date = "NA";
-        time = "NA";
       }
     }
+    else{
+      if (controller
+          .deviceDetail.value?.trackingData?.lastUpdateTime?.isNotEmpty ??
+          false) {
+        try {
+          final lastUpdate = DateTime.tryParse(controller.deviceDetail.value?.trackingData?.lastUpdateTime ?? "");
+          if (lastUpdate != null) {
+            date = DateFormat("dd MMM y").format(lastUpdate.toLocal());
+            time = DateFormat("HH:mm").format(lastUpdate.toLocal());
+          } else {
+            date = "NA";
+            time = "NA";
+          }
+        } catch (e) {
+          date = "NA";
+          time = "NA";
+        }
+      }
+    }
+
     return Container(
       height: MediaQuery.of(context).size.height * (0.32 - 0.067),
       padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.04),
@@ -652,7 +674,7 @@ class _TrackDeviceViewState extends State<TrackDeviceView>  with SingleTickerPro
                         .copyWith(color: AppColors.grayLight),
                   ).paddingOnly(bottom: 3),
                   Text(
-                    date + " | " + time,
+                    date + "${time.isNotEmpty ? " | " : ""}" + time,
                     style: AppTextStyles(context).display11W500,
                   )
                 ],

@@ -30,11 +30,21 @@ class VehicalDetailCard extends StatelessWidget {
   Widget build(BuildContext context) {
     String date = 'Update unavailable';
     String time = "";
-    if (vehicleInfo.trackingData?.lastUpdateTime?.isNotEmpty ?? false) {
-      date =
-          '${DateFormat("dd MMM y").format(DateTime.parse(vehicleInfo.trackingData?.lastUpdateTime ?? "").toLocal()) ?? ''}';
-      time =
-          '${DateFormat("HH:mm").format(DateTime.parse(vehicleInfo.trackingData?.lastUpdateTime ?? "").toLocal()) ?? ''}';
+    if(trackController.checkIfInactive(vehicle: vehicleInfo)){
+      if (vehicleInfo.lastLocation?.lastTime?.isNotEmpty ?? false) {
+        date =
+        '${DateFormat("dd MMM y").format(DateTime.parse(vehicleInfo.lastLocation?.lastTime?? "").toLocal()) ?? ''}';
+        time =
+        '${DateFormat("HH:mm").format(DateTime.parse(vehicleInfo.lastLocation?.lastTime?? "").toLocal()) ?? ''}';
+      }
+    }
+    else{
+      if (vehicleInfo.trackingData?.lastUpdateTime?.isNotEmpty ?? false) {
+        date =
+        '${DateFormat("dd MMM y").format(DateTime.parse(vehicleInfo.trackingData?.lastUpdateTime ?? "").toLocal()) ?? ''}';
+        time =
+        '${DateFormat("HH:mm").format(DateTime.parse(vehicleInfo.trackingData?.lastUpdateTime ?? "").toLocal()) ?? ''}';
+      }
     }
 
     var trackingData = vehicleInfo.trackingData;
@@ -82,7 +92,7 @@ class VehicalDetailCard extends StatelessWidget {
             displayParameters: vehicleInfo.displayParameters,
             vehicleName: vehicleInfo.vehicleNo ?? '-',
             address: address,
-            lastUpdate: date + " " + time,
+            lastUpdate: date + "${time.isNotEmpty ? " " : ""}" + time,
             odo: (vehicleInfo.trackingData?.totalDistanceCovered ?? "")
                 .toString(),
             fuel:vehicleInfo.fuelStatus != "Off" ? (vehicleInfo.fuelLevel ?? "N/A").toString() : "N/A",

@@ -37,6 +37,7 @@ class RegisterController extends GetxController {
   var vehicleCategory = Rx<DataVehicleType?>(null); // Observable
 
   var idType = Rx<SearchDropDownModel?>(null);
+  var deviceType = Rx<SearchDropDownModel?>(null);
 
   // TextEditingControllers for Vehicle Form
   final imeiController = TextEditingController();
@@ -128,6 +129,11 @@ class RegisterController extends GetxController {
     SearchDropDownModel(name: "Driving License"),
   ];
 
+  List<SearchDropDownModel> deviceTypeList = [
+    SearchDropDownModel(name: "Wired"),
+    SearchDropDownModel(name: "Wireless"),
+  ];
+
   @override
   void onInit() {
     vehicleTypeList.listen((value) {
@@ -194,6 +200,7 @@ class RegisterController extends GetxController {
     vehicleCategory.value = null;
     idType.value = null;
     selectedFile.value = null;
+    deviceType.value = null;
     date = "";
     obscureText = true.obs;
     obscureTextCnf = true.obs;
@@ -219,6 +226,7 @@ class RegisterController extends GetxController {
       request.gender = gender.value?.name;
       request.vehicleType = vehicleCategory.value?.id;
       request.idDocument = idType.value?.name;
+      request.isWired = deviceType.value?.name == "Wired";
       request.imei = imeiController.text.trim();
       request.country = country.text.trim();
       request.pinCode = pincode.text.trim();
@@ -336,6 +344,7 @@ class RegisterController extends GetxController {
   var imeiError = ''.obs;
   var genderError = ''.obs;
   var idTypeError = ''.obs;
+  var deviceTypeError = ''.obs;
   var vehicleTypeError = ''.obs;
   var simError = ''.obs;
 
@@ -427,6 +436,7 @@ class RegisterController extends GetxController {
     } else {
       idTypeError.value = '';
     }
+
     if (idNumberController.text.trim().isEmpty) {
       idNumberError.value = 'ID Number is required';
     } else {
@@ -448,6 +458,11 @@ class RegisterController extends GetxController {
       vehicleTypeError.value = 'Vehicle Category is required';
     } else {
       vehicleTypeError.value = '';
+    }
+    if (deviceType.value == null) {
+      deviceTypeError.value = 'Device Type is required';
+    } else {
+      deviceTypeError.value = '';
     }
 
     if (simController.text.trim().isNotEmpty && simController.text.trim().length!=13) {
@@ -472,6 +487,7 @@ class RegisterController extends GetxController {
       genderError.value,
       stateError.value,
       idTypeError.value,
+      deviceTypeError.value,
       vehicleTypeError.value,
       simError.value
     ].any((error) => error.isNotEmpty)) {
@@ -497,6 +513,11 @@ class RegisterController extends GetxController {
     } else {
       vehicleTypeError.value = '';
     }
+    if (deviceType.value == null) {
+      deviceTypeError.value = 'Device Type is required';
+    } else {
+      deviceTypeError.value = '';
+    }
     if (simController.text.trim().isNotEmpty && simController.text.trim().length!=13) {
       simError.value = 'The sim number should be 13 digits';
     } else {
@@ -506,7 +527,8 @@ class RegisterController extends GetxController {
       vehicleTypeError.value,
       imeiError.value,
       vehicleNoError.value,
-      simError.value
+      simError.value,
+      deviceTypeError.value
     ].any((error) => error.isNotEmpty)) {
       throw ValidationException(errorMsg: 'All fields in the form are required');
     }
@@ -530,6 +552,7 @@ class RegisterController extends GetxController {
     imeiError.value = '';
     genderError.value = '';
     idTypeError.value = '';
+    deviceTypeError.value = '';
     vehicleTypeError.value = '';
     simError.value = '';
   }

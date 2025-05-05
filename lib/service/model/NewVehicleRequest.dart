@@ -64,6 +64,7 @@ class NewVehicleRequest {
     // this.isView,
     this.subscribeType,
     this.role,
+    this.isWired,
     this.isAppCreated,});
 
   NewVehicleRequest.fromJson(dynamic json) {
@@ -95,6 +96,7 @@ class NewVehicleRequest {
     role = json['role'];
     // document = json['Document'];
     isAppCreated = json['isAppCreated'];
+    isWired = json['isWired'];
   }
 
   String? imei;
@@ -128,6 +130,7 @@ class NewVehicleRequest {
 
   // String? document;
   bool? isAppCreated;
+  bool? isWired;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -159,6 +162,7 @@ class NewVehicleRequest {
     map['role'] = role;
     // map['Document'] = document;
     map['isAppCreated'] = isAppCreated;
+    map['isWired'] = isWired;
     return map;
   }
 
@@ -302,6 +306,9 @@ extension FormRequestValidator on NewVehicleRequest {
 
     if (vehicleType == null || vehicleType!.isEmpty) {
       throw ValidationException(errorMsg: "Please enter vehicle type");
+    }
+    if (isWired == null) {
+      throw ValidationException(errorMsg: "Please enter device type");
     }
   }
 
