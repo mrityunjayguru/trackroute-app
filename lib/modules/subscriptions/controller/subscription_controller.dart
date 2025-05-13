@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:track_route_pro/modules/subscriptions/model/subscription.dart';
+import 'package:track_route_pro/service/api_service/api_service.dart';
 
 class SubscriptionController extends GetxController {
   RxList<int> quantities = <int>[].obs;
@@ -36,11 +37,15 @@ class SubscriptionController extends GetxController {
   ];
 
   @override
-  void onInit() {
+  void onInit() async {
     super.onInit();
-    initializeControllers(2);
-    subscriptions.assignAll(_initialData());
-    expandedStates.value = List.generate(4, (_) => false);
+
+    final data = await _initialData();
+    subscriptions.assignAll(data);
+
+    initializeControllers(
+        data.length); // Initialize based on actual data length
+    expandedStates.value = List.generate(featuresList.length, (_) => false);
   }
 
   void initializeControllers(int count) {
@@ -73,7 +78,6 @@ class SubscriptionController extends GetxController {
     expandedStates.value = List.generate(expandedStates.length, (_) => false);
   }
 
-
   //this is for internal plans selection.
   void selectPlan(int cardIndex, int planIndex) {
     selectedPlanIndexes[cardIndex] = planIndex;
@@ -104,7 +108,7 @@ class SubscriptionController extends GetxController {
         antiTheftQuantities[index] = 0;
         antiTheftQuantityControllers[index].text = '0';
 
-        selectedPlanIndexes[index] = -1; 
+        selectedPlanIndexes[index] = -1;
         subscriptions[index].plan = null;
         subscriptions[index] = subscriptions[index].copyWith(
           selectedAntiTheftQuantity: 0,
@@ -140,40 +144,10 @@ class SubscriptionController extends GetxController {
   }
 
   //this is where u can add API call.
-  List<SubscriptionModel> _initialData() {
-    return [
-      SubscriptionModel(
-        name: "Sentinel",
-        price: 3499,
-        wireType: "Wired GPS Device",
-        image: "assets/images/png/sentinel.png",
-        features: [
-          "Direct Power Fee",
-          "Tamper Resistance",
-          "Lower Maintenance"
-        ],
-        quantityIndex: 0,
-        wireQuantity: "(4 Wires)",
-        hasAntiTheft: true,
-        selectedAntiTheftQuantity: 0,
-        plan: availablePlans[0],
-      ),
-      SubscriptionModel(
-          name: "MagTrack",
-          price: 5499,
-          wireType: "Wireless GPS Device",
-          image: "assets/images/png/magtrack.png",
-          features: [
-            "Direct Power Fee",
-            "Tamper Resistance",
-            "Lower Maintenance"
-          ],
-          quantityIndex: 1,
-          type: "Secure",
-          hasAntiTheft: false,
-          selectedAntiTheftQuantity: 0,
-          plan: availablePlans[0])
-    ];
+  Future<List<SubscriptionModel>> _initialData() async {
+    final apiService = ApiService.create();
+    final response = await apiService.getDevices({});
+    return response.data!;
   }
 
   final List<Map<String, String>> featuresList = [

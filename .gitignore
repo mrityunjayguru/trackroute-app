@@ -44,3 +44,4 @@ app.*.map.json
 
 # Keystore file (DO NOT COMMIT)
 android/key.properties
+android/app/.cxx

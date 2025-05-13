@@ -8,6 +8,7 @@ import 'package:track_route_pro/modules/login_screen/view/login_screen.dart';
 import 'package:track_route_pro/modules/profile/view/profile_view.dart';
 import 'package:track_route_pro/modules/settig_screen/view/setting_view.dart';
 import 'package:track_route_pro/modules/splash_screen/view/splash_screen.dart';
+import 'package:track_route_pro/modules/subscriptions/view/buy_screen.dart';
 import 'package:track_route_pro/modules/subscriptions/view/subscription_screen.dart';
 import 'package:track_route_pro/modules/support/view/support_view.dart';
 import 'package:track_route_pro/modules/track_route_screen/view/track_route_view.dart';
@@ -78,7 +79,7 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.SUBSCRIPTIONS,
-      page: () => SubscriptionView(),
+      page: () => BuyView(),
       binding: SubscriptionBindings(),
     ),
   ];

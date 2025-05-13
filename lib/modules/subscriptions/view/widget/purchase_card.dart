@@ -9,7 +9,6 @@ import 'package:track_route_pro/modules/subscriptions/controller/subscription_co
 class PurchaseCard extends StatelessWidget {
   final String name;
   final int price;
-  final String? type;
   final List<String> features;
   final String wireType;
   final String? wireQuantity;
@@ -20,7 +19,6 @@ class PurchaseCard extends StatelessWidget {
     required this.name,
     required this.index,
     required this.price,
-    this.type,
     required this.features,
     required this.wireType,
     required this.image,

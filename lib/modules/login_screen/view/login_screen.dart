@@ -11,6 +11,7 @@ import 'package:track_route_pro/modules/login_screen/controller/login_controller
 import 'package:track_route_pro/modules/privacy_policy/view/privacy_policy_page.dart';
 import 'package:track_route_pro/modules/privacy_policy/view/terms_cond_page.dart';
 import 'package:track_route_pro/modules/subscriptions/view/buy_screen.dart';
+import 'package:track_route_pro/routes/app_pages.dart';
 import 'package:track_route_pro/utils/common_import.dart';
 
 import '../../../config/app_sizer.dart';
@@ -226,9 +227,7 @@ class LoginView extends StatelessWidget {
                               ),
                               InkWell(
                                 onTap: () async {
-                                  Get.to(
-                                    () => BuyView(),
-                                  );
+                                  Get.toNamed(Routes.SUBSCRIPTIONS);
                                 },
                                 child: Container(
                                   height: 5.h,

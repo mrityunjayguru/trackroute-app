@@ -1,59 +1,65 @@
 class SubscriptionModel {
+  final String id;
   final String name;
   final int price;
-  final String? type;
   final List<String> features;
   final String wireType;
   final String? wireQuantity;
   final String image;
-  final int quantityIndex;
   int selectedQuantity;
   SubscriptionPlan? plan;
   final bool hasAntiTheft;
   int selectedAntiTheftQuantity;
+  final bool isGovtRelated;
+
   SubscriptionModel({
+    required this.id,
     required this.name,
     required this.price,
     required this.wireType,
     required this.image,
     required this.features,
-    required this.quantityIndex,
     this.wireQuantity,
-    this.type,
     this.selectedQuantity = 1,
     this.plan,
+    this.isGovtRelated = true,
     this.hasAntiTheft = false,
     this.selectedAntiTheftQuantity = 0,
   });
 
-  SubscriptionModel copyWith({
-    String? name,
-    int? price,
-    String? wireType,
-    String? image,
-    List<String>? features,
-    int? quantityIndex,
-    String? wireQuantity,
-    String? type,
-    int? selectedQuantity,
-    SubscriptionPlan? plan,
-    bool? hasAntiTheft,
-    int? selectedAntiTheftQuantity,
-  }) {
+  SubscriptionModel copyWith(
+      {SubscriptionPlan? plan, int? selectedAntiTheftQuantity}) {
     return SubscriptionModel(
-      name: name ?? this.name,
-      price: price ?? this.price,
-      wireType: wireType ?? this.wireType,
-      image: image ?? this.image,
-      features: features ?? this.features,
-      quantityIndex: quantityIndex ?? this.quantityIndex,
-      wireQuantity: wireQuantity ?? this.wireQuantity,
-      type: type ?? this.type,
-      selectedQuantity: selectedQuantity ?? this.selectedQuantity,
-      plan: plan ?? this.plan,
-      selectedAntiTheftQuantity:
-          selectedAntiTheftQuantity ?? this.selectedAntiTheftQuantity,
-      hasAntiTheft: hasAntiTheft ?? this.hasAntiTheft,
+        id: id,
+        name: name,
+        price: price,
+        wireType: wireType,
+        image: image,
+        features: features,
+        wireQuantity: wireQuantity,
+        selectedQuantity: selectedQuantity,
+        plan: plan,
+        hasAntiTheft: hasAntiTheft,
+        selectedAntiTheftQuantity: selectedAntiTheftQuantity ?? 0,
+        isGovtRelated: isGovtRelated);
+  }
+
+  factory SubscriptionModel.fromJson(Map<String, dynamic> json) {
+    return SubscriptionModel(
+      id: json['_id'],
+      name: json['deviceName'],
+      price: json['price'],
+      wireType: json['deviceType'] == true
+          ? 'Wired GPS Device'
+          : 'Wireless GPS Device',
+      image: json['deviceImage'],
+      features: [json['usp1'], json['usp2'], json['usp3']],
+      wireQuantity: json['deviceType'] == true ? '(4 Wires)' : null,
+      selectedQuantity: json['selectedQuantity'] ?? 1,
+      plan: null,
+      hasAntiTheft: json['deviceType'] == true ? true : false,
+      selectedAntiTheftQuantity:  0,
+      isGovtRelated: json['govtRelated'] ?? true,
     );
   }
 }

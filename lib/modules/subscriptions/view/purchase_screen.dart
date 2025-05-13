@@ -3,6 +3,7 @@ import 'package:sizer/sizer.dart';
 import 'package:track_route_pro/config/app_sizer.dart';
 import 'package:track_route_pro/config/theme/app_colors.dart';
 import 'package:track_route_pro/config/theme/app_textstyle.dart';
+import 'package:track_route_pro/constants/project_urls.dart';
 import 'package:track_route_pro/gen/assets.gen.dart';
 import 'package:track_route_pro/modules/subscriptions/controller/subscription_controller.dart';
 import 'package:track_route_pro/modules/subscriptions/view/widget/purchase_card.dart';
@@ -56,10 +57,10 @@ class PurchaseView extends GetView<SubscriptionController> {
                   features: subscriptionData[index].features,
                   name: subscriptionData[index].name,
                   price: subscriptionData[index].price,
-                  type: subscriptionData[index].type,
                   wireType: subscriptionData[index].wireType,
-                  image: subscriptionData[index].image,
-                  index: subscriptionData[index].quantityIndex,
+                  image:
+                      '${ProjectUrls.imgBaseUrl}${subscriptionData[index].image}',
+                  index: index,
                 ),
               ),
               Obx(() => _buildBill(context)),

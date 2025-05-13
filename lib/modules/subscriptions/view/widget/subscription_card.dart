@@ -11,7 +11,6 @@ class SubscriptionCard extends StatelessWidget {
     required this.name,
     required this.index,
     required this.price,
-    this.type,
     required this.features,
     required this.wireType,
     required this.image,
@@ -23,7 +22,6 @@ class SubscriptionCard extends StatelessWidget {
 
   final String name;
   final int price;
-  final String? type;
   final List<String> features;
   final String wireType;
   final String? wireQuantity;

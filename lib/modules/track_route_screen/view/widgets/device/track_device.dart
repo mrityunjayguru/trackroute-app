@@ -90,6 +90,7 @@ class _TrackDeviceViewState extends State<TrackDeviceView>  with SingleTickerPro
                 mapToolbarEnabled: false,
                 minMaxZoomPreference: MinMaxZoomPreference(0, 19),
               ),
+              
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [

@@ -4,6 +4,8 @@ import 'package:track_route_pro/config/app_sizer.dart';
 import 'package:track_route_pro/config/theme/app_colors.dart';
 import 'package:track_route_pro/config/theme/app_textstyle.dart';
 import 'package:track_route_pro/gen/assets.gen.dart';
+import 'package:track_route_pro/modules/subscriptions/controller/subscription_controller.dart';
+import 'package:track_route_pro/modules/subscriptions/view/subscription_screen.dart';
 import 'package:track_route_pro/routes/app_pages.dart';
 import 'package:track_route_pro/utils/common_import.dart';
 
@@ -16,6 +18,7 @@ class BuyView extends StatefulWidget {
 
 class _BuyViewState extends State<BuyView> {
   late final TextEditingController controller;
+  final SubscriptionController _controller = Get.put(SubscriptionController());
 
   @override
   void initState() {
@@ -101,7 +104,7 @@ class _BuyViewState extends State<BuyView> {
                         decoration: InputDecoration(
                           suffixIcon: InkWell(
                             onTap: () {
-                              Get.toNamed(Routes.SUBSCRIPTIONS);
+                              Get.to(() => SubscriptionView());
                             },
                             child: Padding(
                               padding: const EdgeInsets.only(
@@ -155,8 +158,7 @@ class _BuyViewState extends State<BuyView> {
               left: 40,
               right: 40,
               child: InkWell(
-                onTap: () {
-                },
+                onTap: () {},
                 child: Container(
                   height: 50,
                   decoration: BoxDecoration(

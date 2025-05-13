@@ -5,6 +5,7 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:track_route_pro/constants/project_urls.dart';
+import 'package:track_route_pro/modules/subscriptions/model/subscription.dart';
 import 'package:track_route_pro/service/model/CommonResponseModel.dart';
 import 'package:track_route_pro/service/model/ReportsRequest.dart';
 import 'package:track_route_pro/service/model/alerts/config/get_config/GetAlertsConfig.dart';
@@ -107,8 +108,7 @@ abstract class ApiService {
 
   @POST(ProjectUrls.sendTokenData)
   Future<FCMDataResponse> sendTokenData(
-      @Body(nullToAbsent: true) FirebaseUpdateRequest request
-  );
+      @Body(nullToAbsent: true) FirebaseUpdateRequest request);
 
   @POST(ProjectUrls.sendAlertsData)
   Future sendAlertsData(@Body() UpdateAlertsRequest request);
@@ -179,8 +179,7 @@ abstract class ApiService {
   Future<RelayResponse> relayStopEngine(@Body() Map<String, dynamic> body);
 
   @POST(ProjectUrls.routeHistory)
-  Future<RouteHistoryList> routeHistory(
-      @Body() Map<String, dynamic> body);
+  Future<RouteHistoryList> routeHistory(@Body() Map<String, dynamic> body);
 
   @POST(ProjectUrls.privacyPolicy)
   Future<ListingBaseResponse<PrivacyPolicyResponse>> privacyPolicy();
@@ -225,6 +224,9 @@ abstract class ApiService {
       @Body(nullToAbsent: true) NewVehicleByUserRequest request);
 
   @POST(ProjectUrls.tripSummary)
-  Future<TrackRouteVehicleList> tripSummary(
+  Future<TrackRouteVehicleList> tripSummary(@Body() Map<String, dynamic> body);
+
+  @POST(ProjectUrls.getDevices)
+  Future<ListingBaseResponse<SubscriptionModel>> getDevices(
       @Body() Map<String, dynamic> body);
 }

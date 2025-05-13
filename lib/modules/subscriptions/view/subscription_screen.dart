@@ -3,6 +3,7 @@ import 'package:sizer/sizer.dart';
 import 'package:track_route_pro/config/app_sizer.dart';
 import 'package:track_route_pro/config/theme/app_colors.dart';
 import 'package:track_route_pro/config/theme/app_textstyle.dart';
+import 'package:track_route_pro/constants/project_urls.dart';
 import 'package:track_route_pro/gen/assets.gen.dart';
 import 'package:track_route_pro/modules/subscriptions/controller/subscription_controller.dart';
 import 'package:track_route_pro/modules/subscriptions/model/subscription.dart';
@@ -174,12 +175,12 @@ class SubscriptionView extends GetView<SubscriptionController> {
                 (index) => SubscriptionCard(
                   name: subscriptionData[index].name,
                   price: subscriptionData[index].price,
-                  type: subscriptionData[index].type,
                   features: subscriptionData[index].features,
                   wireType: subscriptionData[index].wireType,
                   wireQuantity: subscriptionData[index].wireQuantity,
-                  image: subscriptionData[index].image,
-                  index: subscriptionData[index].quantityIndex,
+                  image:
+                      '${ProjectUrls.imgBaseUrl}${subscriptionData[index].image}',
+                  index: index,
                 ),
               ),
               Container(
