@@ -45,6 +45,7 @@ class AppTextStyles {
   late final TextStyle display10W400;
   late final TextStyle display9W400;
   late final TextStyle display10W500;
+  late final TextStyle display10W600;
   late final TextStyle display11W500;
   late final TextStyle display11W600;
   late final TextStyle display11W400;
@@ -93,6 +94,7 @@ class AppTextStyles {
   late final TextStyle display24W500;
   late final TextStyle display24W600;
   late final TextStyle display24W700;
+  late final TextStyle display28W600;
   late final TextStyle display30W400;
   late final TextStyle display30W700;
   late final TextStyle display32W600;
@@ -264,45 +266,50 @@ class AppTextStyles {
           fontWeight: FontWeight.w400,
         );
     display7W600 = Theme.of(context!).textTheme.displaySmall!.copyWith(
-      fontFamily: BaseFonts.SFPro,
-      fontSize: 7,
-      fontWeight: FontWeight.w600,
-    );
+          fontFamily: BaseFonts.SFPro,
+          fontSize: 7,
+          fontWeight: FontWeight.w600,
+        );
     display8W600 = Theme.of(context!).textTheme.displaySmall!.copyWith(
-      fontFamily: BaseFonts.SFPro,
-      fontSize: 8,
-      fontWeight: FontWeight.w600,
-    );
+          fontFamily: BaseFonts.SFPro,
+          fontSize: 8,
+          fontWeight: FontWeight.w600,
+        );
     display10W400 = Theme.of(context!).textTheme.displaySmall!.copyWith(
           fontFamily: BaseFonts.SFPro,
           fontSize: 10,
           fontWeight: FontWeight.w400,
         );
     display9W400 = Theme.of(context!).textTheme.displaySmall!.copyWith(
-      fontFamily: BaseFonts.SFPro,
-      fontSize: 9,
-      fontWeight: FontWeight.w400,
-    );
+          fontFamily: BaseFonts.SFPro,
+          fontSize: 9,
+          fontWeight: FontWeight.w400,
+        );
     display10W500 = Theme.of(context!).textTheme.displaySmall!.copyWith(
           fontFamily: BaseFonts.SFPro,
           fontSize: 10,
           fontWeight: FontWeight.w500,
         );
+    display10W600 = Theme.of(context!).textTheme.displaySmall!.copyWith(
+          fontFamily: BaseFonts.SFPro,
+          fontSize: 10,
+          fontWeight: FontWeight.w600,
+        );
     display11W600 = Theme.of(context!).textTheme.displaySmall!.copyWith(
-      fontFamily: BaseFonts.SFPro,
-      fontSize: 11,
-      fontWeight: FontWeight.w600,
-    );
+          fontFamily: BaseFonts.SFPro,
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+        );
     display11W400 = Theme.of(context!).textTheme.displaySmall!.copyWith(
           fontFamily: BaseFonts.SFPro,
           fontSize: 11,
           fontWeight: FontWeight.w400,
         );
     display11W300 = Theme.of(context!).textTheme.displaySmall!.copyWith(
-      fontFamily: BaseFonts.SFPro,
-      fontSize: 11,
-      fontWeight: FontWeight.w300,
-    );
+          fontFamily: BaseFonts.SFPro,
+          fontSize: 11,
+          fontWeight: FontWeight.w300,
+        );
     display11W800 = Theme.of(context!).textTheme.displaySmall!.copyWith(
           fontFamily: BaseFonts.SFPro,
           fontSize: 11,
@@ -466,10 +473,10 @@ class AppTextStyles {
           fontWeight: FontWeight.w500,
         );
     display18W400 = Theme.of(context!).textTheme.displayLarge!.copyWith(
-      fontFamily: BaseFonts.SFPro,
-      fontSize: 18,
-      fontWeight: FontWeight.w400,
-    );
+          fontFamily: BaseFonts.SFPro,
+          fontSize: 18,
+          fontWeight: FontWeight.w400,
+        );
     display18W700 = Theme.of(context!).textTheme.displayLarge!.copyWith(
           fontFamily: BaseFonts.SFPro,
           fontSize: 18,
@@ -496,20 +503,20 @@ class AppTextStyles {
           fontWeight: FontWeight.w700,
         );
     display21W600 = Theme.of(context!).textTheme.displayLarge!.copyWith(
-      fontFamily: BaseFonts.SFPro,
-      fontSize: 21,
-      fontWeight: FontWeight.w600,
-    );
+          fontFamily: BaseFonts.SFPro,
+          fontSize: 21,
+          fontWeight: FontWeight.w600,
+        );
     display22W400 = Theme.of(context!).textTheme.displayLarge!.copyWith(
           fontFamily: BaseFonts.SFPro,
           fontSize: 22,
           fontWeight: FontWeight.w400,
         );
     display22W600 = Theme.of(context!).textTheme.displayLarge!.copyWith(
-      fontFamily: BaseFonts.SFPro,
-      fontSize: 22,
-      fontWeight: FontWeight.w600,
-    );
+          fontFamily: BaseFonts.SFPro,
+          fontSize: 22,
+          fontWeight: FontWeight.w600,
+        );
     display22W700 = Theme.of(context!).textTheme.displayLarge!.copyWith(
           fontFamily: BaseFonts.SFPro,
           fontSize: 22,
@@ -522,10 +529,10 @@ class AppTextStyles {
           fontWeight: FontWeight.w400,
         );
     display24W500 = Theme.of(context!).textTheme.displayLarge!.copyWith(
-      fontFamily: BaseFonts.SFPro,
-      fontSize: 24,
-      fontWeight: FontWeight.w500,
-    );
+          fontFamily: BaseFonts.SFPro,
+          fontSize: 24,
+          fontWeight: FontWeight.w500,
+        );
     display24W600 = Theme.of(context!).textTheme.displayLarge!.copyWith(
           fontFamily: BaseFonts.SFPro,
           fontSize: 24,
@@ -535,6 +542,11 @@ class AppTextStyles {
           fontFamily: BaseFonts.SFPro,
           fontSize: 24,
           fontWeight: FontWeight.w700,
+        );
+    display28W600 = Theme.of(context!).textTheme.displayLarge!.copyWith(
+          fontFamily: BaseFonts.SFPro,
+          fontSize: 28,
+          fontWeight: FontWeight.w600,
         );
     display36W700 = Theme.of(context!).textTheme.displayLarge!.copyWith(
           fontFamily: BaseFonts.SFPro,
@@ -547,10 +559,10 @@ class AppTextStyles {
           fontWeight: FontWeight.w700,
         );
     display32W600 = Theme.of(context!).textTheme.displayLarge!.copyWith(
-      fontFamily: BaseFonts.SFPro,
-      fontSize: 32,
-      fontWeight: FontWeight.w600,
-    );
+          fontFamily: BaseFonts.SFPro,
+          fontSize: 32,
+          fontWeight: FontWeight.w600,
+        );
     display32W700 = Theme.of(context!).textTheme.displayLarge!.copyWith(
           fontFamily: BaseFonts.SFPro,
           fontSize: 32,

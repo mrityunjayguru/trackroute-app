@@ -69,6 +69,8 @@ class AppSizes {
   static final double radius_15 = ScreenUtil().isPhone() ? 15 : 15 * 1.2;
   static final double radius_20 = ScreenUtil().isPhone() ? 20 : 20 * 1.2;
   static final double radius_24 = ScreenUtil().isPhone() ? 24 : 24 * 1.2;
+  static final double radius_30 = ScreenUtil().isPhone() ? 30 : 30 * 1.2;
   static final double radius_34 = ScreenUtil().isPhone() ? 34 : 34 * 1.2;
   static final double radius_50 = ScreenUtil().isPhone() ? 50 : 50 * 1.2;
+
 }

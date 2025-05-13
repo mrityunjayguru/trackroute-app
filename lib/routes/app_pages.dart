@@ -1,13 +1,14 @@
 import 'package:get/get.dart';
 import 'package:track_route_pro/bindings/bindings.dart';
-import 'package:track_route_pro/modules/Login_Screen/view/login_screen.dart';
 import 'package:track_route_pro/modules/about_us/view/about_us.dart';
 import 'package:track_route_pro/modules/alert_screen/view/alert_view.dart';
 import 'package:track_route_pro/modules/bottom_screen/view/bottom_bar_view.dart';
 import 'package:track_route_pro/modules/faqs/view/faqs_view.dart';
+import 'package:track_route_pro/modules/login_screen/view/login_screen.dart';
 import 'package:track_route_pro/modules/profile/view/profile_view.dart';
 import 'package:track_route_pro/modules/settig_screen/view/setting_view.dart';
 import 'package:track_route_pro/modules/splash_screen/view/splash_screen.dart';
+import 'package:track_route_pro/modules/subscriptions/view/subscription_screen.dart';
 import 'package:track_route_pro/modules/support/view/support_view.dart';
 import 'package:track_route_pro/modules/track_route_screen/view/track_route_view.dart';
 import 'package:track_route_pro/modules/vehicales/view/vehicales_view.dart';
@@ -74,6 +75,11 @@ class AppPages {
       name: _Paths.SUPPORT,
       page: () => SupportView(),
       binding: SupportBindings(),
+    ),
+    GetPage(
+      name: _Paths.SUBSCRIPTIONS,
+      page: () => SubscriptionView(),
+      binding: SubscriptionBindings(),
     ),
   ];
 }

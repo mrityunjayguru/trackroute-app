@@ -9,7 +9,6 @@ import 'package:track_route_pro/gen/assets.gen.dart';
 import 'package:track_route_pro/utils/common_import.dart';
 
 import '../../../config/app_sizer.dart';
-import '../../Login_Screen/view/login_screen.dart';
 import '../controller/register_controller.dart';
 
 class SubmissionPage extends StatelessWidget {

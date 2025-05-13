@@ -10,6 +10,7 @@ import 'package:track_route_pro/modules/forgot_password/view/forgot_view.dart';
 import 'package:track_route_pro/modules/login_screen/controller/login_controller.dart';
 import 'package:track_route_pro/modules/privacy_policy/view/privacy_policy_page.dart';
 import 'package:track_route_pro/modules/privacy_policy/view/terms_cond_page.dart';
+import 'package:track_route_pro/modules/subscriptions/view/buy_screen.dart';
 import 'package:track_route_pro/utils/common_import.dart';
 
 import '../../../config/app_sizer.dart';
@@ -133,7 +134,9 @@ class LoginView extends StatelessWidget {
                                   : SizedBox.shrink();
                             },
                           ),
-                          Obx(()=> SizedBox(height: controller.isWrongUser.value ? 4.h :5.h)),
+                          Obx(() => SizedBox(
+                              height:
+                                  controller.isWrongUser.value ? 4.h : 5.h)),
                           InkWell(
                             onTap: () {
                               controller.checkCredentials(localizations);
@@ -159,58 +162,99 @@ class LoginView extends StatelessWidget {
                               localization: localizations, context: context),
                           SizedBox(height: 5.h),
                           Spacer(),
-                          InkWell(
-                            onTap: () async {
-                              if (!registerController.showLoader.value) {
-                                registerController.clearAllData();
-                                registerController.loginPage = true;
-                                registerController.showLoader.value = true;
-                                try {
-                                  await registerController.getVehicleTypeList();
-                                } catch (e) {}
+                          Spacer(),
+                          Center(
+                            child: Text(
+                              'New User? ',
+                              style: AppTextStyles(context)
+                                  .display16W500
+                                  .copyWith(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 2.h,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              InkWell(
+                                onTap: () async {
+                                  if (!registerController.showLoader.value) {
+                                    registerController.clearAllData();
+                                    registerController.loginPage = true;
+                                    registerController.showLoader.value = true;
+                                    try {
+                                      await registerController
+                                          .getVehicleTypeList();
+                                    } catch (e) {}
 
-                                registerController.showLoader.value = false;
-                                Get.to(() => RegisterDevicePage(),
-                                    transition: Transition.upToDown,
-                                    duration:
-                                        const Duration(milliseconds: 300));
-                              }
-                            },
-                            child: Container(
-                              height: 5.h,
-                              child: Center(
-                                child: registerController.showLoader.value
-                                    ? LoadingAnimationWidget.threeArchedCircle(
-                                        color: AppColors.black,
-                                        size: 16,
-                                      )
-                                    : RichText(
-                                        text: TextSpan(
-                                          text: 'New User? ',
-                                          style: AppTextStyles(context)
-                                              .display14W400
-                                              .copyWith(color: Colors.black),
-                                          children: [
-                                            TextSpan(
-                                              text: 'Register Device',
+                                    registerController.showLoader.value = false;
+                                    Get.to(() => RegisterDevicePage(),
+                                        transition: Transition.upToDown,
+                                        duration:
+                                            const Duration(milliseconds: 300));
+                                  }
+                                },
+                                child: Container(
+                                  height: 5.h,
+                                  width: 100.w / 2 - 30,
+                                  child: Center(
+                                      child: registerController.showLoader.value
+                                          ? LoadingAnimationWidget
+                                              .threeArchedCircle(
+                                              color: AppColors.black,
+                                              size: 16,
+                                            )
+                                          : Text(
+                                              'Register Device',
                                               style: AppTextStyles(context)
                                                   .display14W400
                                                   .copyWith(
-                                                    color: AppColors
-                                                        .black,
+                                                    color: AppColors.black,
                                                   ),
-                                            ),
-                                          ],
+                                            )),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(
+                                        AppSizes.radius_50),
+                                    color: AppColors.selextedindexcolor,
+                                  ),
+                                ),
+                              ).paddingOnly(
+                                bottom: 0.5.h,
+                              ),
+                              InkWell(
+                                onTap: () async {
+                                  Get.to(
+                                    () => BuyView(),
+                                  );
+                                },
+                                child: Container(
+                                  height: 5.h,
+                                  width: 100.w / 2 - 30,
+                                  child: Center(
+                                      child: Text(
+                                    'Buy Now',
+                                    style: AppTextStyles(context)
+                                        .display14W400
+                                        .copyWith(
+                                          color: AppColors.black,
                                         ),
-                                      ),
+                                  )),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(
+                                        AppSizes.radius_50),
+                                    color: AppColors.white,
+                                    border: Border.all(
+                                        width: 2, color: AppColors.black),
+                                  ),
+                                ),
+                              ).paddingOnly(
+                                bottom: 0.5.h,
                               ),
-                              decoration: BoxDecoration(
-                                borderRadius:
-                                    BorderRadius.circular(AppSizes.radius_50),
-                                color: AppColors.selextedindexcolor,
-                              ),
-                            ),
-                          ).paddingOnly(bottom: 0.5.h, left: 30, right: 30),
+                            ],
+                          ),
                           Spacer(),
                           RichText(
                             textAlign: TextAlign.center,

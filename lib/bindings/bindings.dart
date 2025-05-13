@@ -11,6 +11,7 @@ import 'package:track_route_pro/modules/route_history/controller/replay_controll
 import 'package:track_route_pro/modules/route_history/controller/replay_controller.dart';
 import 'package:track_route_pro/modules/settig_screen/controller/setting_controller.dart';
 import 'package:track_route_pro/modules/splash_screen/controller/splash_controller.dart';
+import 'package:track_route_pro/modules/subscriptions/controller/subscription_controller.dart';
 import 'package:track_route_pro/modules/support/controller/support_controller.dart';
 import 'package:track_route_pro/modules/track_route_screen/controller/track_device_controller.dart';
 import 'package:track_route_pro/modules/track_route_screen/controller/track_device_controller.dart';
@@ -172,6 +173,15 @@ class RegisterUserBindings extends Bindings {
   void dependencies() {
     Get.lazyPut<RegisterController>(
           () => RegisterController(),
+    );
+  }
+}
+
+class SubscriptionBindings extends Bindings {
+  @override
+  void dependencies() {
+    Get.lazyPut<SubscriptionController>(
+      () => SubscriptionController(),
     );
   }
 }
