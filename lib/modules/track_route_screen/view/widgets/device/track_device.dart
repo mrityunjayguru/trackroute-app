@@ -9,7 +9,7 @@ import 'package:track_route_pro/modules/track_route_screen/controller/track_rout
 import 'package:track_route_pro/modules/track_route_screen/view/widgets/device/speedometer.dart';
 import 'package:track_route_pro/service/model/presentation/track_route/DisplayParameters.dart';
 import 'package:track_route_pro/utils/common_import.dart';
-
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../../config/app_sizer.dart';
 import '../../../../../config/theme/app_colors.dart';
 import '../../../../../config/theme/app_textstyle.dart';
@@ -27,7 +27,8 @@ class TrackDeviceView extends StatefulWidget {
   State<TrackDeviceView> createState() => _TrackDeviceViewState();
 }
 
-class _TrackDeviceViewState extends State<TrackDeviceView>  with SingleTickerProviderStateMixin {
+class _TrackDeviceViewState extends State<TrackDeviceView>
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   final controller = Get.isRegistered<DeviceController>()
       ? Get.find<DeviceController>() // Find if already registered
       : Get.put(DeviceController());
@@ -42,8 +43,21 @@ class _TrackDeviceViewState extends State<TrackDeviceView>  with SingleTickerPro
   @override
   void initState() {
     super.initState();
+
+    WidgetsBinding.instance.addObserver(this);
     controller.initAnimation(this);
   }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {}
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -84,13 +98,12 @@ class _TrackDeviceViewState extends State<TrackDeviceView>  with SingleTickerPro
                   target: controller.currentLocation.value,
                   zoom: 7,
                 ),
-                markers:controller.markers.value,
+                markers: controller.markers.value,
                 myLocationEnabled: true,
                 myLocationButtonEnabled: false,
                 mapToolbarEnabled: false,
                 minMaxZoomPreference: MinMaxZoomPreference(0, 19),
               ),
-              
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
@@ -220,6 +233,179 @@ class _TrackDeviceViewState extends State<TrackDeviceView>  with SingleTickerPro
                     ).paddingSymmetric(horizontal: 4.w * 0.9),
                   ),
                   Spacer(),
+                  controller.showNearby.value
+                      ? Container(
+                          width: 40,
+                          height: 40,
+                          margin: EdgeInsets.only(right: 15, bottom: 180),
+                          decoration: BoxDecoration(
+                            color: Colors.black,
+                            shape: BoxShape.circle,
+                          ),
+                          child: IconButton(
+                            icon: Icon(Icons.menu, color: Colors.white),
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    contentPadding: EdgeInsets.all(10),
+                                    content: SizedBox(
+                                      width: 250,
+                                      child: GridView.count(
+                                        shrinkWrap: true,
+                                        crossAxisCount: 2,
+                                        crossAxisSpacing: 10,
+                                        mainAxisSpacing: 10,
+                                        children: [
+                                          _buildMenuItem(
+                                            icon: Icons.local_gas_station,
+                                            label: 'Petrol Pump',
+                                            onTap: () {
+                                              Navigator.pop(context);
+                                              _openPlace('petrol');
+                                            },
+                                          ),
+                                          _buildMenuItem(
+                                            icon: Icons.hotel,
+                                            label: 'Hotel',
+                                            onTap: () {
+                                              Navigator.pop(context);
+                                              _openPlace('hotel');
+                                            },
+                                          ),
+                                          _buildMenuItem(
+                                            icon: Icons.map,
+                                            label: 'Restaurant',
+                                            onTap: () {
+                                              Navigator.pop(context);
+                                              _openPlace('Restaurant');
+                                            },
+                                          ),
+                                          _buildMenuItem(
+                                            icon: Icons.build,
+                                            label: 'Mechanic',
+                                            onTap: () {
+                                              Navigator.pop(context);
+                                              _openPlace('Mechanic');
+                                            },
+                                          ),
+                                          _buildMenuItem(
+                                            icon: Icons.local_police,
+                                            label: 'Police',
+                                            onTap: () {
+                                              Navigator.pop(context);
+                                              _openPlace('Police Station');
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                        )
+                      : SizedBox.shrink(),
+                  Container(
+                    width: 40,
+                    height: 40,
+                    margin: EdgeInsets.only(right: 15, bottom: 180),
+                    decoration: BoxDecoration(
+                      color: Colors.black,
+                      shape: BoxShape.circle,
+                    ),
+                    child: PopupMenuButton<String>(
+                      icon: Icon(Icons.menu, color: Colors.white),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      onSelected: (value) async {
+                        LatLng vehiclePosition = LatLng(
+                          controller.deviceDetail.value?.trackingData?.location
+                                  ?.latitude ??
+                              0.0,
+                          controller.deviceDetail.value?.trackingData?.location
+                                  ?.longitude ??
+                              0.0,
+                        );
+                        if (value == 'petrol') {
+                          trackController.openMaps(
+                              data: vehiclePosition, placeType: 'petrol pump');
+                        } else if (value == 'hotel') {
+                          trackController.openMaps(
+                              data: vehiclePosition, placeType: 'hotel');
+                        } else if (value == 'Restaurant') {
+                          trackController.openMaps(
+                              data: vehiclePosition, placeType: 'Restaurant');
+                        } else if (value == 'Mechanic') {
+                          trackController.openMaps(
+                              data: vehiclePosition, placeType: 'Mechanic');
+                        } else if (value == 'Police Station') {
+                          trackController.openMaps(
+                              data: vehiclePosition,
+                              placeType: 'Police Station');
+                        }
+                      },
+                      itemBuilder: (context) => [
+                        PopupMenuItem(
+                          value: 'petrol',
+                          child: Row(
+                            children: [
+                              Icon(Icons.local_gas_station,
+                                  color: Colors.grey[700]),
+                              SizedBox(width: 10),
+                              Text('Nearby Petrol Pumps'),
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: 'hotel',
+                          child: Row(
+                            children: [
+                              Icon(Icons.hotel, color: Colors.grey[700]),
+                              SizedBox(width: 10),
+                              Text('Nearby Hotels'),
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: 'Restaurant',
+                          child: Row(
+                            children: [
+                              Icon(Icons.map, color: Colors.grey[700]),
+                              SizedBox(width: 10),
+                              Text('Nearby Restaurants'),
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: 'Mechanic',
+                          child: Row(
+                            children: [
+                              Icon(Icons.hotel, color: Colors.grey[700]),
+                              SizedBox(width: 10),
+                              Text('Nearby Mechanics'),
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: 'Police Station',
+                          child: Row(
+                            children: [
+                              Icon(Icons.local_police, color: Colors.grey[700]),
+                              SizedBox(width: 10),
+                              Text('Nearby Police Stations'),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                   if (!controller.expandInfo.value) ...[
                     SizedBox(
                       width: 45,
@@ -319,8 +505,8 @@ class _TrackDeviceViewState extends State<TrackDeviceView>  with SingleTickerPro
               ),
               if (!controller.expandInfo.value) ...[
                 Positioned(
-                    bottom: MediaQuery.of(context).size.height *
-                        ((205 / 812) - 0.067)+24,
+                    bottom: MediaQuery.of(context).size.height * ((205 / 812) - 0.067) +
+                        24,
                     child: SpeedometerWidget(
                         color: (controller.deviceDetail.value?.trackingData?.currentSpeed ?? 0) == 0
                             ? AppColors.color_434345
@@ -340,8 +526,7 @@ class _TrackDeviceViewState extends State<TrackDeviceView>  with SingleTickerPro
                             "N/A"),
                         distance: controller.deviceDetail.value?.trackingData?.dailyDistance ?? 0)),
                 Positioned(
-                  bottom:
-                      (MediaQuery.of(context).size.height * ((205 / 812))),
+                  bottom: (MediaQuery.of(context).size.height * ((205 / 812))),
                   child: Container(
                     width: context.width,
                     child: Row(
@@ -568,12 +753,13 @@ class _TrackDeviceViewState extends State<TrackDeviceView>  with SingleTickerPro
   Widget _infoWidget(BuildContext context, bool isNotExpired, bool isActive) {
     String date = 'Update unavailable';
     String time = "";
-    if(trackController.checkIfInactive(vehicle: controller.deviceDetail.value)){
-      if (controller
-          .deviceDetail.value?.lastLocation?.lastTime?.isNotEmpty ??
+    if (trackController.checkIfInactive(
+        vehicle: controller.deviceDetail.value)) {
+      if (controller.deviceDetail.value?.lastLocation?.lastTime?.isNotEmpty ??
           false) {
         try {
-          final lastUpdate = DateTime.tryParse(controller.deviceDetail.value?.lastLocation?.lastTime ?? "");
+          final lastUpdate = DateTime.tryParse(
+              controller.deviceDetail.value?.lastLocation?.lastTime ?? "");
           if (lastUpdate != null) {
             date = DateFormat("dd MMM y").format(lastUpdate.toLocal());
             time = DateFormat("HH:mm").format(lastUpdate.toLocal());
@@ -586,13 +772,14 @@ class _TrackDeviceViewState extends State<TrackDeviceView>  with SingleTickerPro
           time = "NA";
         }
       }
-    }
-    else{
+    } else {
       if (controller
-          .deviceDetail.value?.trackingData?.lastUpdateTime?.isNotEmpty ??
+              .deviceDetail.value?.trackingData?.lastUpdateTime?.isNotEmpty ??
           false) {
         try {
-          final lastUpdate = DateTime.tryParse(controller.deviceDetail.value?.trackingData?.lastUpdateTime ?? "");
+          final lastUpdate = DateTime.tryParse(
+              controller.deviceDetail.value?.trackingData?.lastUpdateTime ??
+                  "");
           if (lastUpdate != null) {
             date = DateFormat("dd MMM y").format(lastUpdate.toLocal());
             time = DateFormat("HH:mm").format(lastUpdate.toLocal());
@@ -745,8 +932,8 @@ class _TrackDeviceViewState extends State<TrackDeviceView>  with SingleTickerPro
             child: Center(
                 child: SvgPicture.asset(
               "assets/images/svg/up_arrow_button.svg",
-                  width: 24,
-                  height: 24,
+              width: 24,
+              height: 24,
             )),
           )
         ],
@@ -956,9 +1143,9 @@ class _TrackDeviceViewState extends State<TrackDeviceView>  with SingleTickerPro
                             .toString(),
                         fuel: controller.fuelValue.value,
                         speed: ((controller.deviceDetail.value?.trackingData
-                            ?.currentSpeed ??
-                            0)
-                            .toStringAsFixed(0) ??
+                                        ?.currentSpeed ??
+                                    0)
+                                .toStringAsFixed(0) ??
                             "N/A"),
                         deviceId: vehicleInfo.deviceId.toString() ?? '',
                         doorIsActive: vehicleInfo.trackingData?.door,
@@ -1022,6 +1209,35 @@ class _TrackDeviceViewState extends State<TrackDeviceView>  with SingleTickerPro
           ),
         ),
       ],
+    );
+  }
+    void _openPlace(String value) {
+    LatLng vehiclePosition = LatLng(
+      controller.deviceDetail.value?.trackingData?.location?.latitude ?? 0.0,
+      controller.deviceDetail.value?.trackingData?.location?.longitude ?? 0.0,
+    );
+
+    trackController.openMaps(data: vehiclePosition, placeType: value);
+  }
+
+  Widget _buildMenuItem(
+      {required IconData icon,
+      required String label,
+      required VoidCallback onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: Colors.grey[700], size: 30),
+          SizedBox(height: 5),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 12),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -57,8 +57,11 @@ class SubscriptionCard extends StatelessWidget {
                     children: [
                       SvgPicture.asset(
                         'assets/images/svg/wireless.svg',
-                        height: 20,
-                        width: 20,
+                        height: 15,
+                        width: 15,
+                      ),
+                      SizedBox(
+                        width: 1.w,
                       ),
                       Text('$wireType       ',
                           style: AppTextStyles(context).display10W500),
@@ -97,13 +100,12 @@ class SubscriptionCard extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Padding(
-                                padding: EdgeInsets.only(
-                                    top: 2), // Adjust to align with text
+                                padding: EdgeInsets.only(top: 2),
                                 child: SvgPicture.asset(
                                     'assets/images/svg/check.svg',
                                     height: 12),
                               ),
-                              SizedBox(width: 6), // Space between icon and text
+                              SizedBox(width: 6),
                               Expanded(
                                 child: Text(
                                   point,
@@ -118,7 +120,7 @@ class SubscriptionCard extends StatelessWidget {
                           ),
                         );
                       }).toList(),
-                      SizedBox(height: 1.h),
+                      SizedBox(height: 1.5.h),
                       RichText(
                         text: TextSpan(
                           text: "Price: ",
@@ -161,93 +163,82 @@ class SubscriptionCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Stack(
-                  alignment: Alignment.center,
+                  alignment: Alignment.topCenter,
                   children: [
                     Container(
                       height: 15.h,
                       width: 30.w,
+                      margin: EdgeInsets.only(top: 0.5.h),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(AppSizes.radius_24),
                         color: AppColors.selextedindexcolor,
                       ),
                     ),
-                    Transform.rotate(
-                      angle: 0.785398,
-                      child: AspectRatio(
-                        aspectRatio: 1,
-                        child: Image.asset(
-                          image,
-                          height: 15.h,
-                          width: 35.w,
-                          fit: BoxFit.contain,
-                        ),
-                      ),
+                    Image.network(
+                      image,
+                      height: 17.h,
+                      width: 32.w,
+                      fit: BoxFit.contain,
                     ),
                   ],
                 ),
-                SizedBox(height: 1.h),
-                Obx(() => Container(
-                      width: 28.w, // reduced total width
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 0.5.w,
-                        vertical: 0.5.h,
-                      ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(AppSizes.radius_30),
-                        color: AppColors.white,
-                        border: Border.all(
-                          color: AppColors.grayLighter,
-                          width: 1,
+                Container(
+                  width: 28.w, // reduced total width
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 0.5.w,
+                    vertical: 0.5.h,
+                  ),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(AppSizes.radius_30),
+                    color: AppColors.white,
+                    border: Border.all(
+                      color: AppColors.color_e5e7f3,
+                      width: 1,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      GestureDetector(
+                        onTap: () => controller.decrement(index),
+                        child: Icon(
+                          Icons.remove_circle_outline,
+                          color: AppColors.color_BCBCBD,
+                          size: 30,
                         ),
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          GestureDetector(
-                            onTap: () => controller.decrement(index),
-                            child: Icon(
-                              Icons.remove_circle_outline,
-                              color: AppColors.grayLighter,
-                              size: 30,
-                            ),
+                      SizedBox(
+                        width: 40,
+                        child: TextFormField(
+                          onTapOutside: (_) => FocusScope.of(context).unfocus(),
+                          onChanged: (value) {
+                            controller.quantities[index] =
+                                int.tryParse(value) ?? 0;
+                          },
+                          controller: controller.quantityControllers[index],
+                          style: AppTextStyles(context)
+                              .display22W600
+                              .copyWith(color: AppColors.black),
+                          textAlign: TextAlign.center,
+                          decoration: const InputDecoration(
+                            border: InputBorder.none,
+                            isDense: true,
+                            contentPadding: EdgeInsets.zero,
                           ),
-                          SizedBox(
-                            width: 40,
-                            child: TextFormField(
-                              onTapOutside: (_) =>
-                                  FocusScope.of(context).unfocus(),
-                              onChanged: (value) {
-                                controller.quantities[index] =
-                                    int.tryParse(value) ?? 0;
-                              },
-                              controller: controller.quantityControllers[index],
-                              style: controller.quantities[index] > 0
-                                  ? AppTextStyles(context)
-                                      .display22W400
-                                      .copyWith(color: AppColors.black)
-                                  : AppTextStyles(context)
-                                      .display22W400
-                                      .copyWith(color: AppColors.grayLight),
-                              textAlign: TextAlign.center,
-                              decoration: const InputDecoration(
-                                border: InputBorder.none,
-                                isDense: true,
-                                contentPadding: EdgeInsets.zero,
-                              ),
-                              keyboardType: TextInputType.number,
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () => controller.increment(index),
-                            child: Icon(
-                              Icons.add_circle_outline_outlined,
-                              color: AppColors.grayLighter,
-                              size: 30,
-                            ),
-                          ),
-                        ],
+                          keyboardType: TextInputType.number,
+                        ),
                       ),
-                    )),
+                      GestureDetector(
+                        onTap: () => controller.increment(index),
+                        child: Icon(
+                          Icons.add_circle_outline_outlined,
+                          color: AppColors.color_BCBCBD,
+                          size: 30,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),

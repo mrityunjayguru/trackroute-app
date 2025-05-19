@@ -6,6 +6,7 @@ import 'package:track_route_pro/config/theme/app_textstyle.dart';
 import 'package:track_route_pro/constants/project_urls.dart';
 import 'package:track_route_pro/gen/assets.gen.dart';
 import 'package:track_route_pro/modules/subscriptions/controller/subscription_controller.dart';
+import 'package:track_route_pro/modules/subscriptions/view/gateway_screen.dart';
 import 'package:track_route_pro/modules/subscriptions/view/widget/purchase_card.dart';
 import 'package:track_route_pro/utils/common_import.dart';
 
@@ -26,7 +27,7 @@ class PurchaseView extends GetView<SubscriptionController> {
             decoration: BoxDecoration(color: AppColors.white),
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
             child: InkWell(
-              onTap: () => Get.to(() => const PurchaseView()),
+              onTap: () => Get.to(() => GatewayScreen()),
               child: Container(
                 height: 6.h,
                 width: context.width - 40,
@@ -59,7 +60,7 @@ class PurchaseView extends GetView<SubscriptionController> {
                   price: subscriptionData[index].price,
                   wireType: subscriptionData[index].wireType,
                   image:
-                      '${ProjectUrls.imgBaseUrl}${subscriptionData[index].image}',
+                      '${ProjectUrls.imgBaseUrl}${Uri.encodeFull('${subscriptionData[index].image}')}',
                   index: index,
                 ),
               ),
@@ -130,7 +131,10 @@ class PurchaseView extends GetView<SubscriptionController> {
                                 .copyWith(color: AppColors.black)),
                       ],
                     ),
-                    SvgPicture.asset('assets/images/svg/touch.svg'),
+                    Padding(
+                      padding: EdgeInsets.only(right: 1.w),
+                      child: SvgPicture.asset('assets/images/svg/touch.svg'),
+                    ),
                   ],
                 ),
                 Row(
@@ -227,6 +231,10 @@ class PurchaseView extends GetView<SubscriptionController> {
                 context,
                 '${controller.subscriptions[1].plan?.year} Year Subscription (WL)',
                 totals['wirelessPlan']),
+          SizedBox(height: 1.h),
+          if (totals['discount']! > 0)
+            _buildBillDetails(
+                context, 'WELCOME10 Discount (-10%)', -totals['discount']!),
           const Divider(thickness: 1, height: 25),
           _buildBillDetails(context, 'GST (18%)', totals['gst']),
           const Divider(thickness: 1, height: 25),
@@ -242,18 +250,22 @@ class PurchaseView extends GetView<SubscriptionController> {
           ),
           SizedBox(height: 1.5.h),
           TextFormField(
-            keyboardType: TextInputType.number,
+            controller: controller.couponController,
             decoration: InputDecoration(
               suffixIcon: InkWell(
                 onTap: () {
-                  // TODO: Apply coupon
+                  controller.appliedCoupon.value =
+                      controller.couponController.text.trim().toUpperCase();
                 },
                 child: Padding(
                   padding:
                       const EdgeInsets.only(right: 10, top: 15, bottom: 15),
-                  child: Text('APPLY',
+                  child: Text(
+                      controller.appliedCoupon.value.isNotEmpty
+                          ? 'APPLIED!'
+                          : 'APPLY',
                       style: AppTextStyles(context)
-                          .display13W400
+                          .display13W500
                           .copyWith(color: AppColors.purpleColor)),
                 ),
               ),
@@ -271,7 +283,7 @@ class PurchaseView extends GetView<SubscriptionController> {
                 borderRadius: BorderRadius.circular(10),
                 borderSide: const BorderSide(color: AppColors.white, width: 1),
               ),
-              hintText: 'Enter Code',
+              hintText: 'Discount Code',
               hintStyle: AppTextStyles(context)
                   .display14W300
                   .copyWith(color: AppColors.grayLight),
@@ -286,17 +298,30 @@ class PurchaseView extends GetView<SubscriptionController> {
 
   Map<String, int> _calculateBillTotals(SubscriptionController controller) {
     final wired = controller.subscriptions[0].price * controller.quantities[0];
-    final antiTheft = controller.subscriptions[0].selectedAntiTheftQuantity > 0
-        ? 249 * controller.subscriptions[0].selectedAntiTheftQuantity
+    final antiTheft = controller.subscriptions[0].selectedAntiTheft == true
+        ? controller.subscriptions[0].selectedAntiTheftQuantity > 0
+            ? 259 * controller.subscriptions[0].selectedAntiTheftQuantity
+            : 0
         : 0;
-    final wiredPlan = controller.subscriptions[0].plan?.price ?? 0;
+    final wiredPlan = controller.quantities[0] > 0
+        ? controller.subscriptions[0].plan?.price ?? 0
+        : 0;
     final wireless =
         controller.subscriptions[1].price * controller.quantities[1];
-    final wirelessPlan = controller.subscriptions[1].plan?.price ?? 0;
+    final wirelessPlan = controller.quantities[1] > 0
+        ? controller.subscriptions[1].plan?.price ?? 0
+        : 0;
 
     final subtotal = wired + antiTheft + wiredPlan + wireless + wirelessPlan;
-    final gst = (subtotal * 0.18).round();
-    final total = subtotal + gst;
+
+    int discount = 0;
+    if (controller.appliedCoupon.value.isNotEmpty) {
+      discount = (subtotal * 0.10).round();
+    }
+
+    final discountedSubtotal = subtotal - discount;
+    final gst = (discountedSubtotal * 0.18).round();
+    final total = discountedSubtotal + gst;
 
     return {
       'wired': wired,
@@ -304,6 +329,7 @@ class PurchaseView extends GetView<SubscriptionController> {
       'wiredPlan': wiredPlan,
       'wireless': wireless,
       'wirelessPlan': wirelessPlan,
+      'discount': discount,
       'gst': gst,
       'total': total,
     };

@@ -23,18 +23,13 @@ class SubscriptionView extends GetView<SubscriptionController> {
         backgroundColor: AppColors.whiteOff,
         bottomNavigationBar: Container(
           decoration: BoxDecoration(color: AppColors.white),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30.0),
+          padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 3.h),
           child: InkWell(
-            onTap: () {
-              Get.to(
-                () => PurchaseView(),
-              );
-            },
+            onTap: () => Get.to(() => PurchaseView()),
             child: Container(
-              height: 6.h,
-              width: context.width - 40,
-              margin: const EdgeInsets.only(top: 0),
-              padding: const EdgeInsets.all(10),
+              height: 6.5.h,
+              width: 90.w,
+              padding: EdgeInsets.all(1.5.h),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(AppSizes.radius_8),
                 color: AppColors.black,
@@ -42,9 +37,9 @@ class SubscriptionView extends GetView<SubscriptionController> {
               child: Center(
                 child: Text(
                   "Continue Purchase",
-                  style: AppTextStyles(context)
-                      .display18W600
-                      .copyWith(color: const Color(0xffD9E821)),
+                  style: AppTextStyles(context).display18W400.copyWith(
+                        color: const Color(0xffD9E821),
+                      ),
                 ),
               ),
             ),
@@ -55,44 +50,39 @@ class SubscriptionView extends GetView<SubscriptionController> {
             children: [
               Stack(
                 children: [
-                  Container(height: 300),
+                  SizedBox(height: 33.h),
                   Container(
                     alignment: Alignment.topCenter,
-                    height: 236,
-                    decoration: BoxDecoration(
-                      color: AppColors.black,
-                    ),
-                    padding:
-                        const EdgeInsets.only(left: 20, right: 10, top: 20),
+                    height: 28.h,
+                    decoration: BoxDecoration(color: AppColors.black),
+                    padding: EdgeInsets.only(left: 5.w, right: 4.w, top: 2.h),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         SvgPicture.asset(
                           Assets.images.svg.logo,
-                          width: 200,
+                          width: 40.w,
                         ),
                         IconButton(
-                            onPressed: () {
-                              Get.back();
-                            },
-                            icon: Icon(Icons.arrow_back_ios,
-                                color: AppColors.selextedindexcolor))
+                          onPressed: () => Get.back(),
+                          icon: Icon(Icons.arrow_back_ios,
+                              color: AppColors.selextedindexcolor),
+                        ),
                       ],
                     ),
                   ),
                   Positioned(
-                    top: 84,
-                    left: 20,
-                    right: 20,
+                    top: 10.h,
+                    left: 5.w,
+                    right: 5.w,
                     child: Container(
-                      height: 200,
+                      height: 22.h,
                       decoration: BoxDecoration(
                         color: AppColors.color_f6f8fc,
                         borderRadius: BorderRadius.circular(AppSizes.radius_20),
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.black.withValues(alpha: 0.25),
+                            color: AppColors.black.withOpacity(0.25),
                             blurRadius: 6,
                             spreadRadius: 2,
                             offset: Offset(0, 1),
@@ -103,70 +93,74 @@ class SubscriptionView extends GetView<SubscriptionController> {
                   ),
                 ],
               ),
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 6.w,
+              Container(
+                decoration: BoxDecoration(
+                  color: AppColors.color_f6f8fc,
+                  borderRadius: BorderRadius.circular(AppSizes.radius_20),
                 ),
+                padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 0.h),
+                margin: EdgeInsets.symmetric(horizontal: 5.w, vertical: 1.h),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      'Offered Devices',
-                      style: AppTextStyles(context)
-                          .display18W600
-                          .copyWith(color: AppColors.black),
-                    ),
-                    const SizedBox(width: 10),
-                    Obx(
-                      () => GestureDetector(
-                        onTap: () {
-                          controller.setSelectedRadioValue(
-                            controller.selectedRadioValue.value == 'government'
-                                ? ''
-                                : 'government',
-                          );
-                        },
-                        child: Row(
-                          children: [
-                            Text(
-                              'Government Related',
-                              style: AppTextStyles(context)
-                                  .display14W400
-                                  .copyWith(
-                                    color:
-                                        controller.selectedRadioValue.value ==
-                                                'government'
-                                            ? AppColors.purpleColor
-                                            : AppColors.grayLight,
-                                  ),
-                            ),
-                            SizedBox(width: 6),
-                            Container(
-                              width: 18,
-                              height: 18,
-                              padding: EdgeInsets.all(2),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: controller.selectedRadioValue.value ==
-                                          'government'
-                                      ? AppColors.purpleColor
-                                      : AppColors.grayLight,
-                                  width: 2,
-                                ),
-                              ),
-                              child: controller.selectedRadioValue.value ==
-                                      'government'
-                                  ? SvgPicture.asset(
-                                      'assets/images/svg/check.svg',
-                                      height: 10,
-                                    )
-                                  : null,
-                            ),
-                          ],
-                        ),
-                      ),
+                    Text('Offered Devices',
+                        style: AppTextStyles(context).display18W600),
+                    Icon(
+                      Icons.keyboard_arrow_down_outlined,
+                      color: AppColors.selextedindexcolor,
+                      size: 30,
+                      weight: 900,
                     )
+                    // Obx(
+                    //   () => GestureDetector(
+                    //     onTap: () {
+                    //       controller.setSelectedRadioValue(
+                    //         controller.selectedRadioValue.value == 'government'
+                    //             ? ''
+                    //             : 'government',
+                    //       );
+                    //     },
+                    //     child: Row(
+                    //       children: [
+                    //         Text(
+                    //           'Government Related',
+                    //           style: AppTextStyles(context)
+                    //               .display14W400
+                    //               .copyWith(
+                    //                 color:
+                    //                     controller.selectedRadioValue.value ==
+                    //                             'government'
+                    //                         ? AppColors.purpleColor
+                    //                         : AppColors.grayLight,
+                    //               ),
+                    //         ),
+                    //         SizedBox(width: 2.w),
+                    //         Container(
+                    //           width: 4.w,
+                    //           height: 4.w,
+                    //           padding: EdgeInsets.all(0.5.w),
+                    //           decoration: BoxDecoration(
+                    //             shape: BoxShape.circle,
+                    //             border: Border.all(
+                    //               color: controller.selectedRadioValue.value ==
+                    //                       'government'
+                    //                   ? AppColors.purpleColor
+                    //                   : AppColors.grayLight,
+                    //               width: 0.4.w,
+                    //             ),
+                    //           ),
+                    //           child: controller.selectedRadioValue.value ==
+                    //                   'government'
+                    //               ? SvgPicture.asset(
+                    //                   'assets/images/svg/check.svg',
+                    //                   height: 3.w,
+                    //                 )
+                    //               : null,
+                    //         ),
+                    //       ],
+                    //     ),
+                    //   ),
+                    // )
                   ],
                 ),
               ),
@@ -179,14 +173,14 @@ class SubscriptionView extends GetView<SubscriptionController> {
                   wireType: subscriptionData[index].wireType,
                   wireQuantity: subscriptionData[index].wireQuantity,
                   image:
-                      '${ProjectUrls.imgBaseUrl}${subscriptionData[index].image}',
+                      '${ProjectUrls.imgBaseUrl}${Uri.encodeFull('${subscriptionData[index].image}')}',
                   index: index,
                 ),
               ),
               Container(
                 width: 100.w,
                 margin: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.5.h),
-                padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.5.h),
+                padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 2.h),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(AppSizes.radius_24),
                   color: AppColors.color_f6f8fc,
@@ -199,41 +193,36 @@ class SubscriptionView extends GetView<SubscriptionController> {
                           .display18W600
                           .copyWith(color: AppColors.black),
                     ),
-                    SizedBox(height: 0.2.h),
+                    SizedBox(height: 0.5.h),
                     Text(
-                      'Distinctive Features ',
+                      'Distinctive Features',
                       style: AppTextStyles(context)
                           .display14W600
                           .copyWith(color: AppColors.grayLight),
                     ),
-                    SizedBox(height: 1.h),
+                    SizedBox(height: 1.5.h),
                     Obx(() => Column(
                           children: List.generate(
-                              controller.featuresList.length, (index) {
-                            final item = controller.featuresList[index];
-                            final isExpanded = controller.expandedStates[index];
+                            controller.featuresList.length,
+                            (index) {
+                              final item = controller.featuresList[index];
+                              final isExpanded =
+                                  controller.expandedStates[index];
 
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 8),
-                              child: Stack(
-                                clipBehavior: Clip.none,
-                                children: [
-                                  // White container (expandable)
-                                  AnimatedContainer(
-                                    duration: const Duration(milliseconds: 300),
-                                    padding: EdgeInsets.only(
-                                        top: isExpanded ? 25 : 0),
-                                    child: AnimatedSize(
-                                      duration:
-                                          const Duration(milliseconds: 300),
-                                      curve: Curves.easeInOut,
+                              return Padding(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 3.w, vertical: 1.h),
+                                child: Stack(
+                                  clipBehavior: Clip.none,
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsets.only(
+                                          top: isExpanded ? 3.h : 0),
                                       child: isExpanded
                                           ? Container(
                                               width: double.infinity,
-                                              margin: const EdgeInsets.only(
-                                                  top: 20),
-                                              padding: const EdgeInsets.all(12),
+                                              margin: EdgeInsets.only(top: 2.h),
+                                              padding: EdgeInsets.all(5.w),
                                               decoration: BoxDecoration(
                                                 color: Colors.white,
                                                 borderRadius: BorderRadius.only(
@@ -245,54 +234,52 @@ class SubscriptionView extends GetView<SubscriptionController> {
                                               ),
                                               child: Text(
                                                 item['description']!,
-                                                style: TextStyle(
-                                                    color: AppColors.black),
+                                                style: AppTextStyles(context)
+                                                    .display12W400,
                                               ),
                                             )
                                           : const SizedBox.shrink(),
                                     ),
-                                  ),
-
-                                  // Yellow container (tap target, always on top)
-                                  GestureDetector(
-                                    onTap: () =>
-                                        controller.toggleExpanded(index),
-                                    child: Container(
-                                      padding: const EdgeInsets.all(10),
-                                      decoration: BoxDecoration(
-                                        color: AppColors.selextedindexcolor,
-                                        borderRadius: BorderRadius.circular(
-                                            AppSizes.radius_8),
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          SvgPicture.asset(
-                                            item['asset']!,
-                                            height: 25,
-                                            width: 25,
-                                          ),
-                                          SizedBox(width: 10),
-                                          Expanded(
-                                            child: Text(item['title']!,
-                                                style: AppTextStyles(context)
-                                                    .display12W600),
-                                          ),
-                                          Icon(
-                                            isExpanded
-                                                ? Icons.remove_circle_outline
-                                                : Icons
-                                                    .add_circle_outline_sharp,
-                                            color: Colors.black,
-                                            size: 20,
-                                          ),
-                                        ],
+                                    GestureDetector(
+                                      onTap: () =>
+                                          controller.toggleExpanded(index),
+                                      child: Container(
+                                        padding: EdgeInsets.all(2.w),
+                                        decoration: BoxDecoration(
+                                          color: AppColors.selextedindexcolor,
+                                          borderRadius: BorderRadius.circular(
+                                              AppSizes.radius_8),
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            SvgPicture.asset(
+                                              item['asset']!,
+                                              height: 4.h,
+                                              width: 4.h,
+                                            ),
+                                            SizedBox(width: 3.w),
+                                            Expanded(
+                                                child: Text(item['title']!,
+                                                    style:
+                                                        AppTextStyles(context)
+                                                            .display12W600)),
+                                            Icon(
+                                              isExpanded
+                                                  ? Icons.remove_circle_outline
+                                                  : Icons
+                                                      .add_circle_outline_sharp,
+                                              color: Colors.black,
+                                              size: 2.5.h,
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
                         ))
                   ],
                 ),

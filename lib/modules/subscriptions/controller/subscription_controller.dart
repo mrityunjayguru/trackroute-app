@@ -14,27 +14,10 @@ class SubscriptionController extends GetxController {
   RxMap<int, int> selectedPlanIndexes = <int, int>{}.obs;
 
   RxString selectedRadioValue = ''.obs;
-
-  final List<SubscriptionPlan> availablePlans = [
-    SubscriptionPlan(
-        name: 'Add 2nd Year',
-        price: 1499,
-        discount: 0,
-        bestValue: false,
-        year: 1),
-    SubscriptionPlan(
-        name: '3 Year Plan',
-        price: 3699,
-        discount: 20,
-        bestValue: true,
-        year: 3),
-    SubscriptionPlan(
-        name: '5 Year Plan',
-        price: 6999,
-        discount: 40,
-        bestValue: false,
-        year: 5),
-  ];
+  RxMap<int, List<SubscriptionPlan>> subscriptionPlans =
+      <int, List<SubscriptionPlan>>{}.obs;
+  final RxString appliedCoupon = ''.obs;
+  final TextEditingController couponController = TextEditingController();
 
   @override
   void onInit() async {
@@ -42,6 +25,9 @@ class SubscriptionController extends GetxController {
 
     final data = await _initialData();
     subscriptions.assignAll(data);
+    for (int i = 0; i < data.length; i++) {
+      subscriptionPlans[i] = data[i].plans ?? [];
+    }
 
     initializeControllers(
         data.length); // Initialize based on actual data length
@@ -78,13 +64,17 @@ class SubscriptionController extends GetxController {
     expandedStates.value = List.generate(expandedStates.length, (_) => false);
   }
 
-  //this is for internal plans selection.
   void selectPlan(int cardIndex, int planIndex) {
+    final plans = subscriptionPlans[cardIndex] ?? [];
+    final selectedPlan =
+        (planIndex >= 0 && planIndex < plans.length) ? plans[planIndex] : null;
+
     selectedPlanIndexes[cardIndex] = planIndex;
-    subscriptions[cardIndex].plan = availablePlans[planIndex];
+
     final updated = subscriptions[cardIndex].copyWith(
-      plan: availablePlans[planIndex],
+      plan: selectedPlan,
     );
+
     subscriptions[cardIndex] = updated;
   }
 

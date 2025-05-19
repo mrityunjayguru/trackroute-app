@@ -9,6 +9,7 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:track_route_pro/modules/track_route_screen/controller/track_route_controller.dart';
 import 'package:track_route_pro/service/model/presentation/track_route/Summary.dart';
 import 'package:track_route_pro/service/model/presentation/track_route/track_route_vehicle_list.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../constants/constant.dart';
 import '../../../constants/project_urls.dart';
@@ -42,6 +43,7 @@ class DeviceController extends GetxController {
   bool manageScreen = false;
   var currentLocation = LatLng(20.5937, 78.9629).obs;
   var isLoading = false.obs;
+  var showNearby = false.obs;
   RxBool isSatellite = false.obs;
 
   final ApiService apiService = ApiService.create();
@@ -156,8 +158,9 @@ class DeviceController extends GetxController {
         networkStatus.value = NetworkStatus.SUCCESS;
         if (response.data?.isNotEmpty ?? false) {
           deviceDetail.value = response.data?.first;
-          oldLatLng=null;
-          devicesByDetails(zoom: zoom, showDialog: showDialog, updateCamera: updateCamera);
+          oldLatLng = null;
+          devicesByDetails(
+              zoom: zoom, showDialog: showDialog, updateCamera: updateCamera);
           if (initialize) {
             initSocket();
           }
@@ -172,6 +175,40 @@ class DeviceController extends GetxController {
   }
 
   LatLng? oldLatLng;
+
+  void open({required String value}) async {
+    final coords = deviceDetail.value?.trackingData?.location;
+    if (value == 'petrol') {
+      openNearbyInGoogleMaps(
+        lat: coords!.latitude!,
+        lng: coords.longitude!,
+        placeType: 'petrol pump',
+      );
+    } else if (value == 'hotel') {
+      openNearbyInGoogleMaps(
+        lat: coords!.latitude!,
+        lng: coords.longitude!,
+        placeType: 'hotel',
+      );
+    }
+  }
+
+  Future<void> openNearbyInGoogleMaps({
+    required double lat,
+    required double lng,
+    required String placeType,
+  }) async {
+    final query = Uri.encodeComponent('$placeType near $lat,$lng');
+    final googleMapsUrl =
+        'https://www.google.com/maps/search/?api=1&query=$query';
+
+    if (await canLaunchUrl(Uri.parse(googleMapsUrl))) {
+      await launchUrl(Uri.parse(googleMapsUrl),
+          mode: LaunchMode.externalApplication);
+    } else {
+      throw 'Could not launch Google Maps';
+    }
+  }
 
   Future<void> devicesByDetails(
       {bool updateCamera = true,
@@ -224,10 +261,10 @@ class DeviceController extends GetxController {
           if (isInactive) {
             lat = data?.lastLocation?.latitude;
             long = data?.lastLocation?.longitude;
-          }
-          else{
+          } else {
             final newLatLng = LatLng(lat ?? 0, long ?? 0);
-            double rotation = Utils.parseDouble(data: data?.trackingData?.course);
+            double rotation =
+                Utils.parseDouble(data: data?.trackingData?.course);
 
             if (oldLatLng == null) {
               oldLatLng = newLatLng;
@@ -246,7 +283,7 @@ class DeviceController extends GetxController {
                     CameraUpdate.newCameraPosition(
                       CameraPosition(
                         bearing:
-                        Utils.parseDouble(data: data?.trackingData?.course),
+                            Utils.parseDouble(data: data?.trackingData?.course),
                         // Keep map aligned with vehicle movement
                         target: LatLng(
                             (data?.trackingData?.location?.latitude ?? 0),
@@ -259,7 +296,9 @@ class DeviceController extends GetxController {
               }
             }
 // Start animation
-            if(updateCamera){
+            if (updateCamera) {
+              final icon = await svgToBitmapDescriptor(
+                  '${ProjectUrls.imgBaseUrl}${data?.vehicletype?.icons}');
               animation = LatLngTween(begin: oldLatLng!, end: newLatLng)
                   .animate(animationController)
                 ..addListener(() async {
@@ -281,9 +320,9 @@ class DeviceController extends GetxController {
                   } else {
                     markers.value = Set<Marker>.of([
                       markers.first.copyWith(
-                        positionParam: position,
-                        rotationParam: rotation,
-                      ),
+                          positionParam: position,
+                          rotationParam: rotation,
+                          iconParam: icon),
                     ]);
                   }
                 });
@@ -291,9 +330,7 @@ class DeviceController extends GetxController {
               animationController.forward(from: 0.0);
             }
 
-
             oldLatLng = newLatLng;
-
           }
           /*   Marker m = await trackController.createMarker(
               course: Utils.parseDouble(data: data?.trackingData?.course),
@@ -307,12 +344,7 @@ class DeviceController extends GetxController {
               isInactive: isInactive);
           markers.value = [];
           markers.add(m);*/
-
-
-
-
         }
-
       } else {
         selectedVehicleIMEI.value = "";
         // selectedVehicleIndex.value = -1;

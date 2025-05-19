@@ -76,9 +76,9 @@ class VehicleSelected extends StatelessWidget {
                           context: context,
                           rightIcon: 'assets/images/svg/ic_arrow_left.svg',
                           onTap: () {
-                           Get.back();
-                           controller.getDeviceByIMEI(zoom: true);
-                           controller.manageScreen = false;
+                            Get.back();
+                            controller.getDeviceByIMEI(zoom: true);
+                            controller.manageScreen = false;
                           },
                           name:
                               'Manage ${controller.deviceDetail.value?.vehicleNo != null ? "-" : ""}${controller.deviceDetail.value?.vehicleNo ?? ''}'),
@@ -107,7 +107,8 @@ class VehicleSelected extends StatelessWidget {
                                       "${controller.deviceDetail.value?.imei ?? ""}",
                                       maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
-                                      style: AppTextStyles(context).display14W400)
+                                      style:
+                                          AppTextStyles(context).display14W400)
                                 ],
                               ),
                             ),
@@ -523,18 +524,15 @@ class VehicleSelected extends StatelessWidget {
 
   Widget immobilizerWidget(BuildContext context) {
     bool active = true;
+
     /// vehicle batt < 12.4 then inactive
     if ((controller.deviceDetail.value?.displayParameters?.relay == null) ||
-        (controller.deviceDetail.value?.displayParameters?.relay ==
-            false) ||
-        (controller
-                .deviceDetail.value?.trackingData?.ignition?.status ==
+        (controller.deviceDetail.value?.displayParameters?.relay == false) ||
+        (controller.deviceDetail.value?.trackingData?.ignition?.status ==
             true) ||
-        (controller.deviceDetail.value?.trackingData?.motion ??
-            false) || ((controller.deviceDetail.value?.trackingData?.externalBattery ?? 0) < 12.4)||
         Utils.parseDouble(
-                data: (controller.deviceDetail.value?.trackingData
-                            ?.currentSpeed ??
+                data: (controller
+                            .deviceDetail.value?.trackingData?.currentSpeed ??
                         "")
                     .toString()) >
             0) {
@@ -605,8 +603,7 @@ class VehicleSelected extends StatelessWidget {
                       if (controller.relayStatus == "Stop") {
                         Get.showOverlay(
                             asyncFunction: () => controller.startEngine(
-                                controller.deviceDetail.value?.imei ??
-                                    ""),
+                                controller.deviceDetail.value?.imei ?? ""),
                             loadingWidget: LoadingAnimationWidget.dotsTriangle(
                               color: AppColors.white,
                               size: 50,
@@ -731,25 +728,25 @@ class VehicleSelected extends StatelessWidget {
           )),
           Expanded(
               child: InkWell(
-                onTap: () {
-                  Get.offAll(() => BottomBarView());
-                  Get.put(BottomBarController()).updateIndexForRenewal(
-                      controller.deviceDetail.value?.imei ?? "");
-                },
-                child: Container(
-                height: 6.h,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(AppSizes.radius_10),
-                    color: AppColors.black),
-                child: Center(
-                  child: Text(
-                    'Renew Subscription',
-                    style: AppTextStyles(context)
-                        .display16W500
-                        .copyWith(color: AppColors.selextedindexcolor),
-                  ),
+            onTap: () {
+              Get.offAll(() => BottomBarView());
+              Get.put(BottomBarController()).updateIndexForRenewal(
+                  controller.deviceDetail.value?.imei ?? "");
+            },
+            child: Container(
+              height: 6.h,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(AppSizes.radius_10),
+                  color: AppColors.black),
+              child: Center(
+                child: Text(
+                  'Renew Subscription',
+                  style: AppTextStyles(context)
+                      .display16W500
+                      .copyWith(color: AppColors.selextedindexcolor),
                 ),
               ),
+            ),
           )),
         ],
       ),
@@ -761,8 +758,7 @@ class VehicleSelected extends StatelessWidget {
         ? Get.find<TrackRouteController>() // Find if already registered
         : Get.put(TrackRouteController());
     bool active = true;
-    if (controller.deviceDetail.value?.displayParameters?.geoFencing ==
-        null) {
+    if (controller.deviceDetail.value?.displayParameters?.geoFencing == null) {
       active = false;
     }
     return InkWell(
@@ -1001,8 +997,7 @@ class VehicleSelected extends StatelessWidget {
 
   Widget parkingWidget(BuildContext context) {
     bool active = true;
-    if (controller.deviceDetail.value?.displayParameters?.parking ==
-        null) {
+    if (controller.deviceDetail.value?.displayParameters?.parking == null) {
       active = false;
     }
     return InkWell(

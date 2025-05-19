@@ -169,8 +169,7 @@ class TrackRouteController extends GetxController {
           if (isInactive) {
             lat = vehicle.lastLocation?.latitude;
             long = vehicle.lastLocation?.longitude;
-          }
-          else{
+          } else {
             Marker m = await createMarker(
                 imei: vehicle.imei ?? "",
                 lat: lat,
@@ -183,7 +182,6 @@ class TrackRouteController extends GetxController {
                 isInactive: isInactive);
             markers.add(m);
           }
-
         }
       }
     } else {
@@ -213,23 +211,21 @@ class TrackRouteController extends GetxController {
 
   Future<void> isShowVehicleDetails(String imei) async {
     ///init socket & store data in deviceDetails for one device
-    try{
+    try {
       developer.log("EXCEPTION");
       final controller = Get.isRegistered<DeviceController>()
           ? Get.find<DeviceController>() // Find if already registered
           : Get.put(DeviceController());
-      controller.deviceDetail.value=null;
+      controller.deviceDetail.value = null;
       controller.selectedVehicleIMEI.value = imei;
-      controller.markerIcon=null;
+      controller.markerIcon = null;
       controller.getDeviceByIMEI(zoom: true, showDialog: true);
       Get.to(() => TrackDeviceView(),
           transition: Transition.upToDown,
           duration: const Duration(milliseconds: 300));
-    }
-    catch(e,s){
+    } catch (e, s) {
       developer.log(" EXCEPTION $e $s");
     }
-
   }
 
   void showEditView(String imei) {
@@ -435,8 +431,7 @@ class TrackRouteController extends GetxController {
         if (isInactive) {
           lat = vehicle.lastLocation?.latitude;
           long = vehicle.lastLocation?.longitude;
-        }
-        else{
+        } else {
           Marker marker = await createMarker(
               id: vehicle.deviceId.toString(),
               img: vehicle.vehicletype?.icons,
@@ -449,8 +444,6 @@ class TrackRouteController extends GetxController {
               isInactive: isInactive);
           markers.add(marker);
         }
-
-
       }
     }
   }
@@ -593,39 +586,48 @@ class TrackRouteController extends GetxController {
 
   void onMarkerTapped(int index, String imei, String vehicleNo, double course,
       {double? lat, double? long}) async {
-
-      isShowVehicleDetails(imei);
-      if (lat != null && long != null) {
-        updateCameraPositionWithZoom(
-            latitude: lat, longitude: long, course: course);
-      }
-
-
+    isShowVehicleDetails(imei);
+    if (lat != null && long != null) {
+      updateCameraPositionWithZoom(
+          latitude: lat, longitude: long, course: course);
+    }
   }
 
-  void openMaps({LatLng? data}) async {
+  void openMaps({LatLng? data, String? placeType}) async {
     try {
       if (data != null) {
-        // Utils.getSnackbar("Redirecting to maps...", "Please wait for the process");
-        String appleUrl =
-            'https://maps.apple.com/?saddr=&daddr=${data.latitude},${data.longitude}&directionsmode=driving';
-        String googleUrl =
-            'https://www.google.com/maps/search/?api=1&query=${data.latitude},${data.longitude}';
+        final double lat = data.latitude;
+        final double lng = data.longitude;
+
+        String query =
+            placeType != null ? Uri.encodeComponent(placeType) : '$lat,$lng';
+
+        String appleUrl = placeType != null
+            ? 'https://maps.apple.com/?q=$query&ll=$lat,$lng'
+            : 'https://maps.apple.com/?saddr=&daddr=$lat,$lng&directionsmode=driving';
+
+        String googleUrl = placeType != null
+            ? 'https://www.google.com/maps/search/${Uri.encodeComponent(placeType)}/@$lat,$lng,14z'
+            : 'https://www.google.com/maps/search/?api=1&query=$lat,$lng';
+
         Uri appleUri = Uri.parse(appleUrl);
         Uri googleUri = Uri.parse(googleUrl);
+
+        final launchMode = placeType != null
+            ? LaunchMode.inAppBrowserView
+            : LaunchMode.externalApplication;
+
         if (Platform.isIOS) {
           if (await canLaunchUrl(appleUri)) {
-            await launchUrl(appleUri);
+            await launchUrl(appleUri, mode: launchMode);
+          } else if (await canLaunchUrl(googleUri)) {
+            await launchUrl(googleUri, mode: launchMode);
           } else {
-            if (await canLaunchUrl(googleUri)) {
-              await launchUrl(googleUri);
-            } else {
-              throw 'Could not open the map.';
-            }
+            throw 'Could not open the map.';
           }
         } else {
           if (await canLaunchUrl(googleUri)) {
-            await launchUrl(googleUri);
+            await launchUrl(googleUri, mode: launchMode);
           } else {
             throw 'Could not open the map.';
           }
@@ -637,6 +639,7 @@ class TrackRouteController extends GetxController {
       Utils.getSnackbar("Error", e.toString());
     }
   }
+
   BitmapDescriptor? inactiveIcon;
   Future<Marker> createMarker(
       {double? lat,
@@ -646,15 +649,15 @@ class TrackRouteController extends GetxController {
       required double course,
       required String imei,
       required bool isInactive,
-       bool change = true,
+      bool change = true,
       required bool isOffline,
       String? vehicleNo}) async {
     BitmapDescriptor markerIcon = BitmapDescriptor.defaultMarker;
     if (isInactive) {
-      if(inactiveIcon==null){
+      if (inactiveIcon == null) {
         inactiveIcon = await svgToBitmapDescriptorInactiveIcon();
       }
-     markerIcon = inactiveIcon ?? BitmapDescriptor.defaultMarker;
+      markerIcon = inactiveIcon ?? BitmapDescriptor.defaultMarker;
     } else {
       markerIcon = await svgToBitmapDescriptor('${ProjectUrls.imgBaseUrl}$img');
     }

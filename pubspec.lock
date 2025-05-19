@@ -451,6 +451,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.4.1"
+  flutter_google_street_view:
+    dependency: "direct main"
+    description:
+      path: flutter_google_street_view
+      ref: master
+      resolved-ref: "81bf3ad21977e58d316790cda77e147441849039"
+      url: "https://github.com/The-CodeCave/flutter_street_view_cc_fork.git"
+    source: git
+    version: "3.1.4"
   flutter_local_notifications:
     dependency: "direct main"
     description:
@@ -778,6 +787,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.8.0"
+  kotlin_scope_function:
+    dependency: transitive
+    description:
+      name: kotlin_scope_function
+      sha256: "73d53ae58e36ee44ae538411766091e8c2fb36054dc048c70d95cbf3aab3d85c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.2"
   leak_tracker:
     dependency: transitive
     description:
@@ -1343,6 +1360,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.0"
+  street_view_platform_interface:
+    dependency: transitive
+    description:
+      path: street_view_platform_interface
+      ref: master
+      resolved-ref: "81bf3ad21977e58d316790cda77e147441849039"
+      url: "https://github.com/The-CodeCave/flutter_street_view_cc_fork.git"
+    source: git
+    version: "1.0.8"
   string_scanner:
     dependency: transitive
     description:
