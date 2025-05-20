@@ -60,6 +60,7 @@ class HistoryController extends GetxController {
   Rx<NetworkStatus> networkStatus = Rx(NetworkStatus.IDLE);
   BitmapDescriptor? selectedIcon;
   BitmapDescriptor? unSelectedIcon;
+  var showMarkers = false.obs;
 
   void generateTimeList() {
     timeList.value = [];
@@ -111,14 +112,14 @@ class HistoryController extends GetxController {
         String startDate = endDateController.text;
         String endDate = endDateController.text;
         if (time1.value != null) {
-          startDate += "T" + time1.value!.name+":00.000Z";
+          startDate += "T" + time1.value!.name + ":00.000Z";
         } else {
-          startDate += "T" + "00:01"+":00.000Z";
+          startDate += "T" + "00:01" + ":00.000Z";
         }
         if (time2.value != null) {
-          endDate += "T" + time2.value!.name+":00.000Z";
+          endDate += "T" + time2.value!.name + ":00.000Z";
         } else {
-          endDate += "T" + "24:00"+":00.000Z";
+          endDate += "T" + "24:00" + ":00.000Z";
         }
 
         final body = {
@@ -130,7 +131,7 @@ class HistoryController extends GetxController {
         response = await apiService.routeHistory(body);
 
         if (response.message == "success") {
-          stopCount  = response.stopCount ?? [];
+          stopCount = response.stopCount ?? [];
           overSpeedIndex = {};
           // data.value = [];
           List<RouteHistoryResponse> vehicleList = [];
@@ -142,16 +143,16 @@ class HistoryController extends GetxController {
                   item.trackingData?.location?.longitude != null)
               .toList();
 
-          vehicleList.sort((a, b) {
-            // Assuming trackingData has a timestamp field that you want to compare
-            if (a.trackingData?.createdAt == null ||
-                b.trackingData?.createdAt == null) {
-              return 0;
-            }
-            return a.trackingData?.createdAt
-                    ?.compareTo(b.trackingData?.createdAt ?? "") ??
-                0;
-          });
+          // vehicleList.sort((a, b) {
+          //   // Assuming trackingData has a timestamp field that you want to compare
+          //   if (a.trackingData?.createdAt == null ||
+          //       b.trackingData?.createdAt == null) {
+          //     return 0;
+          //   }
+          //   return a.trackingData?.createdAt
+          //           ?.compareTo(b.trackingData?.createdAt ?? "") ??
+          //       0;
+          // });
 
           if (vehicleList.isNotEmpty) {
             showMap.value = true;
@@ -185,7 +186,7 @@ class HistoryController extends GetxController {
 
             processedData = processList(processedData);
 
-            await showMapData(processedData);
+            await showMapData(response.data);
             showLoader.value = false;
 
             /* if (vehicleList[0].trackingData?.location?.latitude != null &&
@@ -199,14 +200,14 @@ class HistoryController extends GetxController {
           } else {
             Get.snackbar("", "",
                 snackStyle: SnackStyle.FLOATING,
-                padding: EdgeInsets.fromLTRB(10,0,10,20),
+                padding: EdgeInsets.fromLTRB(10, 0, 10, 20),
                 messageText: Text(
                   "No Route History Found",
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontWeight: FontWeight.w800,
-                      color:
-                          AppColors.selextedindexcolor), // Ensure text is visible
+                      fontWeight: FontWeight.w800,
+                      color: AppColors
+                          .selextedindexcolor), // Ensure text is visible
                 ),
                 backgroundColor: AppColors.black,
                 colorText: AppColors.selextedindexcolor,
@@ -267,7 +268,7 @@ class HistoryController extends GetxController {
           processedData.add(data[i]);
         }
       }
-    } else if(data.length<=500){
+    } else if (data.length <= 500) {
       // If list length is greater than 125, show 1 in every 3 data
 
       for (int i = 0; i < data.length; i++) {
@@ -277,7 +278,7 @@ class HistoryController extends GetxController {
           processedData.add(data[i]);
         }
       }
-    }else{
+    } else {
       for (int i = 0; i < data.length; i++) {
         print("DATA ${data[i].dateFiled.toString()}");
         if (i < 25 || i % 4 == 0 || i > (data.length - 11)) {
@@ -309,9 +310,10 @@ class HistoryController extends GetxController {
           time = data[i].dateFiled?.split(" ")[1] ?? "N/A";
         }
         bool isOverSpeed = (data[i].trackingData?.currentSpeed != null ||
-                (controller.deviceDetail.value!=null) ||
+                (controller.deviceDetail.value != null) ||
                 controller.deviceDetail.value?.maxSpeed != null)
-            ? ((Utils.parseDouble(data: data[i].trackingData?.currentSpeed) ?? 0) >
+            ? ((Utils.parseDouble(data: data[i].trackingData?.currentSpeed) ??
+                    0) >
                 (controller.deviceDetail.value?.maxSpeed ?? 0))
             : false;
         if (isOverSpeed) {
@@ -346,7 +348,6 @@ class HistoryController extends GetxController {
       polylines.add(polyline);
     }
   }
-
 
   void onMapCreated(GoogleMapController controller) {
     mapController = controller;
@@ -432,7 +433,8 @@ class HistoryController extends GetxController {
     BitmapDescriptor markerIcon = await createCustomIconWithNumber(index,
         isselected: true, width: 100, height: 100, maxSpeed: maxSpeed);
     markers[index - 1] = markers[index - 1].copyWith(iconParam: markerIcon);
-    markerAddress.value = await Utils().getAddressFromLatLong(lat ?? 0, long ?? 0);
+    markerAddress.value =
+        await Utils().getAddressFromLatLong(lat ?? 0, long ?? 0);
     for (int i = 0; i < markers.length; i++) {
       if (i != index - 1) {
         BitmapDescriptor markerIconFalse = await createCustomIconWithNumber(
@@ -468,7 +470,6 @@ class HistoryController extends GetxController {
 
     return BitmapDescriptor.fromBytes(resizedBytes);
   }
-
 
   void removeRoute() {
     polylines.clear(); // Clear the polylines

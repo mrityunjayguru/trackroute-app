@@ -27,6 +27,9 @@ class ReplayController extends GetxController {
   RxBool showLoader = false.obs;
   late final LocationController locController;
   RxInt selectStopIndex = (-1).obs;
+  var showArrow = false.obs;
+  var showStops = false.obs;
+  var showButtons = false.obs;
   @override
   void onInit() {
     locController = Get.isRegistered<LocationController>()
@@ -34,6 +37,7 @@ class ReplayController extends GetxController {
         : Get.put(LocationController());
     super.onInit();
   }
+
   void setInitData(
       List<RouteHistoryResponse> data, List<StopCount> stops) async {
     showLoader.value = true;
@@ -59,9 +63,25 @@ class ReplayController extends GetxController {
     this.stops = stops;
 
     locController.loadData(vehicleListReplay);
-    selectStopIndex.value=-1;
+    selectStopIndex.value = -1;
   }
 
+  double getBearing(LatLng start, LatLng end) {
+    final lat1 = radians(start.latitude);
+    final lon1 = radians(start.longitude);
+    final lat2 = radians(end.latitude);
+    final lon2 = radians(end.longitude);
+
+    final dLon = lon2 - lon1;
+    final y = sin(dLon) * cos(lat2);
+    final x = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dLon);
+
+    final bearing = atan2(y, x);
+    return (degrees(bearing) + 360) % 360;
+  }
+
+  double radians(double degree) => degree * pi / 180;
+  double degrees(double radian) => radian * 180 / pi;
   Future<void> showMapData() async {
     polylines.value = [];
     List<TrackingData> polylineCoordinates = [];
@@ -102,7 +122,7 @@ class ReplayController extends GetxController {
     try {
       BitmapDescriptor arrowIcon = await svgAssetToBitmapDescriptor(
           "assets/images/svg/arrow-up.svg",
-          size: Size(12, 12));
+          size: Size(15, 15));
       for (int i = 0; i < vehicleListReplay.length - 1; i += step) {
         final p1 = vehicleListReplay[i];
         /*  final p2 = polylineCoordinates[i + 1];
@@ -137,30 +157,30 @@ class ReplayController extends GetxController {
   }
 
   Future<void> _addNumberStops() async {
-    List<StopCount> stopList =[];
+    List<StopCount> stopList = [];
     for (int i = 0; i < stops.length; i++) {
       if (stops[i].location?.latitude != null &&
-          stops[i].location?.longitude != null ) {
-
-        if(i>0){
-          if (stops[i].location?.latitude != null && stops[i].location?.longitude != null) {
-            if (stops[i].location?.latitude != stops[i-1].location?.latitude || stops[i].location?.longitude != stops[i-1].location?.longitude) {
-
-            stopList.add(stops[i]);
+          stops[i].location?.longitude != null) {
+        if (i > 0) {
+          if (stops[i].location?.latitude != null &&
+              stops[i].location?.longitude != null) {
+            if (stops[i].location?.latitude !=
+                    stops[i - 1].location?.latitude ||
+                stops[i].location?.longitude !=
+                    stops[i - 1].location?.longitude) {
+              stopList.add(stops[i]);
             }
           }
-        }
-        else{
+        } else {
           stopList.add(stops[i]);
         }
-
       }
     }
 
     stops = stopList;
     for (int i = 0; i < stops.length; i++) {
       if (stops[i].location?.latitude != null &&
-          stops[i].location?.longitude != null ) {
+          stops[i].location?.longitude != null) {
         String time = "";
         if (stops[i].createdAt != null) {
           DateTime timestamp = DateTime.parse(stops[i].createdAt ??
@@ -168,9 +188,8 @@ class ReplayController extends GetxController {
           time = DateFormat('HH:mm:ss').format(timestamp);
         }
 
-
         Marker m = await createMarker(
-          stopDur: stops[i].stopDuration ?? "",
+            stopDur: stops[i].stopDuration ?? "",
             index: i + 1,
             imei: stops[i].imei ?? "",
             lat: stops[i].location?.latitude,
@@ -179,7 +198,6 @@ class ReplayController extends GetxController {
             dist: stops[i].distanceFromA,
             time: time);
         markers.add(m);
-
       }
     }
   }
@@ -283,9 +301,11 @@ class ReplayController extends GetxController {
     if (!locController.isPlaying.value) {
       selectStopIndex.value = index;
       locController.setStopData(
-        stopDur: stopDur,
-        pos: LatLng(lat ?? 0, long ?? 0),
-          speedStop: speed, timeStop: time, currDistStop: dist);
+          stopDur: stopDur,
+          pos: LatLng(lat ?? 0, long ?? 0),
+          speedStop: speed,
+          timeStop: time,
+          currDistStop: dist);
       BitmapDescriptor markerIcon = await createCustomIconWithNumber(index,
           isselected: true,
           width: 100,
@@ -313,9 +333,8 @@ class ReplayController extends GetxController {
     }
   }
 
-
   void unselectStops() async {
-    if(selectStopIndex.value!=-1){
+    if (selectStopIndex.value != -1) {
       BitmapDescriptor markerIconFalse = await createCustomIconWithNumber(
           selectStopIndex.value,
           isselected: false,
@@ -325,8 +344,9 @@ class ReplayController extends GetxController {
           unselectedIcon: "assets/images/png/white_marker.png",
           width: 100,
           height: 100);
-      markers[selectStopIndex.value-1] = markers[selectStopIndex.value-1].copyWith(iconParam: markerIconFalse);
+      markers[selectStopIndex.value - 1] = markers[selectStopIndex.value - 1]
+          .copyWith(iconParam: markerIconFalse);
     }
-    selectStopIndex.value=-1;
+    selectStopIndex.value = -1;
   }
 }

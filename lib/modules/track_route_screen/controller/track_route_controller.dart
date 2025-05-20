@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer' as developer;
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -593,51 +594,67 @@ class TrackRouteController extends GetxController {
     }
   }
 
-  void openMaps({LatLng? data, String? placeType}) async {
+  void openMaps({
+    required LatLng data,
+    String? placeType,
+  }) async {
     try {
-      if (data != null) {
-        final double lat = data.latitude;
-        final double lng = data.longitude;
+      final double lat = data.latitude;
+      final double lng = data.longitude;
 
-        String query =
-            placeType != null ? Uri.encodeComponent(placeType) : '$lat,$lng';
+      String googleUrl;
 
-        String appleUrl = placeType != null
-            ? 'https://maps.apple.com/?q=$query&ll=$lat,$lng'
-            : 'https://maps.apple.com/?saddr=&daddr=$lat,$lng&directionsmode=driving';
+      if (placeType == 'streetview') {
+        final isAvailable = await checkStreetViewAvailability(lat, lng);
 
-        String googleUrl = placeType != null
-            ? 'https://www.google.com/maps/search/${Uri.encodeComponent(placeType)}/@$lat,$lng,14z'
-            : 'https://www.google.com/maps/search/?api=1&query=$lat,$lng';
-
-        Uri appleUri = Uri.parse(appleUrl);
-        Uri googleUri = Uri.parse(googleUrl);
-
-        final launchMode = placeType != null
-            ? LaunchMode.inAppBrowserView
-            : LaunchMode.externalApplication;
-
-        if (Platform.isIOS) {
-          if (await canLaunchUrl(appleUri)) {
-            await launchUrl(appleUri, mode: launchMode);
-          } else if (await canLaunchUrl(googleUri)) {
-            await launchUrl(googleUri, mode: launchMode);
-          } else {
-            throw 'Could not open the map.';
-          }
-        } else {
-          if (await canLaunchUrl(googleUri)) {
-            await launchUrl(googleUri, mode: launchMode);
-          } else {
-            throw 'Could not open the map.';
-          }
+        if (!isAvailable) {
+          Utils.getSnackbar("Street View", "Not available at this location.");
+          return;
         }
+
+        googleUrl =
+            'https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=$lat,$lng';
+      } else if (placeType != null) {
+        googleUrl =
+            'https://www.google.com/maps/search/${Uri.encodeComponent(placeType)}/@$lat,$lng,14z';
       } else {
-        throw 'Could not fetch location';
+        googleUrl = 'https://www.google.com/maps/search/?api=1&query=$lat,$lng';
+      }
+
+      final Uri googleUri = Uri.parse(googleUrl);
+      final launchMode = placeType != null
+          ? LaunchMode.inAppBrowserView
+          : LaunchMode.externalApplication;
+
+      if (await canLaunchUrl(googleUri)) {
+        await launchUrl(googleUri, mode: launchMode);
+      } else {
+        throw 'Could not open the map.';
       }
     } catch (e) {
       Utils.getSnackbar("Error", e.toString());
     }
+  }
+
+  Future<bool> checkStreetViewAvailability(double lat, double lng) async {
+    final apiKey = 'AIzaSyAhT2p2a9U5s9I_Tzmi8ilRMF37CxXz7pU';
+    final url =
+        'https://maps.googleapis.com/maps/api/streetview/metadata?location=$lat,$lng&key=$apiKey';
+
+    final dio = Dio();
+
+    try {
+      final response = await dio.get(url);
+
+      if (response.statusCode == 200) {
+        final data = response.data;
+        return data['status'] == 'OK';
+      }
+    } catch (e) {
+      debugPrint("StreetView check error: $e");
+    }
+
+    return false;
   }
 
   BitmapDescriptor? inactiveIcon;

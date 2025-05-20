@@ -14,26 +14,44 @@ class RouteHistoryMap extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(
-      () => GoogleMap(
-        zoomControlsEnabled: false,
-        mapType: MapType.normal,
-        onMapCreated: controller.onMapCreated,
-        initialCameraPosition: CameraPosition(
-          target: LatLng(28.6139, 77.2090),
-          // Latitude and Longitude of Delhi
-          zoom: 5,
-        ),
-        onTap: (val){
-          controller.showDetails.value = false;
-        },
-        markers: Set<Marker>.of(controller.markers),
-        polylines: Set<Polyline>.of(controller.polylines),
-        myLocationEnabled: true,
-        myLocationButtonEnabled: false,
-        mapToolbarEnabled: false,
-        minMaxZoomPreference: MinMaxZoomPreference(5, 20),
-      ),
-    );
+    return Obx(() => controller.showMarkers.value == true
+        ? GoogleMap(
+            zoomControlsEnabled: false,
+            mapType: MapType.normal,
+            onMapCreated: controller.onMapCreated,
+            initialCameraPosition: CameraPosition(
+              target: LatLng(28.6139, 77.2090),
+              // Latitude and Longitude of Delhi
+              zoom: 5,
+            ),
+            onTap: (val) {
+              controller.showDetails.value = false;
+            },
+            markers: Set<Marker>.of(controller.markers),
+            polylines: Set<Polyline>.of(controller.polylines),
+            myLocationEnabled: true,
+            myLocationButtonEnabled: false,
+            mapToolbarEnabled: false,
+            minMaxZoomPreference: MinMaxZoomPreference(5, 20),
+          )
+        : GoogleMap(
+            zoomControlsEnabled: false,
+            mapType: MapType.normal,
+            onMapCreated: controller.onMapCreated,
+            initialCameraPosition: CameraPosition(
+              target: LatLng(28.6139, 77.2090),
+              // Latitude and Longitude of Delhi
+              zoom: 5,
+            ),
+            onTap: (val) {
+              controller.showDetails.value = false;
+            },
+            markers: {},
+            polylines: Set<Polyline>.of(controller.polylines),
+            myLocationEnabled: true,
+            myLocationButtonEnabled: false,
+            mapToolbarEnabled: false,
+            minMaxZoomPreference: MinMaxZoomPreference(5, 20),
+          ));
   }
 }

@@ -69,35 +69,34 @@ class RouteHistoryPage extends StatelessWidget {
                       height: 1.5.h,
                     ),
                     controller.showMap.value
-                        ? (controller.showDetails.value
-                            ? Column(
-                                children: [
-                                  SizedBox(height: 1.h),
-                                  Container(
-                                    decoration: BoxDecoration(
-                                        color: AppColors.white,
-                                        borderRadius: BorderRadius.circular(
-                                            AppSizes.radius_50)),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      children: [
-                                        Stack(
-                                          alignment: Alignment.center,
+                        ? (controller.showMarkers.value
+                            ? controller.showDetails.value
+                                ? Column(
+                                    children: [
+                                      SizedBox(height: 1.h),
+                                      Container(
+                                        decoration: BoxDecoration(
+                                            color: AppColors.white,
+                                            borderRadius: BorderRadius.circular(
+                                                AppSizes.radius_50)),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
                                           children: [
-                                            SvgPicture.asset(
-                                              controller.isMaxSpeed.value
-                                                  ? 'assets/images/svg/max_speed_marker.svg'
-                                                  : 'assets/images/svg/red_marker.svg',
-                                              width: 45,
-                                              height: 45,
-                                            ),
-                                            Positioned(
-                                              top: 11,
-                                              child: Text(
-                                                  controller.markerNumber.value,
-                                                  style: AppTextStyles(context)
-                                                      .display16W600
-                                                      .copyWith(
+                                            Stack(
+                                              alignment: Alignment.center,
+                                              children: [
+                                                SvgPicture.asset(
+                                                  controller.isMaxSpeed.value
+                                                      ? 'assets/images/svg/max_speed_marker.svg'
+                                                      : 'assets/images/svg/red_marker.svg',
+                                                  width: 45,
+                                                  height: 45,
+                                                ),
+                                                Positioned(
+                                                  top: 11,
+                                                  child: Text(controller.markerNumber.value,
+                                                      style: AppTextStyles(context).display16W600.copyWith(
                                                           fontSize: controller
                                                                       .markerNumber
                                                                       .value
@@ -117,125 +116,209 @@ class RouteHistoryPage extends StatelessWidget {
                                                                   .value
                                                               ? AppColors
                                                                   .selextedindexcolor
-                                                              : AppColors.white)),
+                                                              : AppColors
+                                                                  .white)),
+                                                ),
+                                              ],
                                             ),
-                                          ],
-                                        ),
-                                        SizedBox(
-                                          width: 5,
-                                        ),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                  "${controller.isMaxSpeed.value ? "Max " : ""}Speed",
-                                                  style: AppTextStyles(context)
-                                                      .display11W500),
-                                              SizedBox(
-                                                height: 4,
-                                              ),
-                                              Text.rich(
-                                                textAlign: TextAlign.start,
-                                                TextSpan(
-                                                  children: [
-                                                    TextSpan(
-                                                      text: controller
-                                                          .selectedSpeed.value,
-                                                      style: AppTextStyles(
-                                                              context)
-                                                          .display20W600
-                                                          .copyWith(
-                                                              fontSize: MediaQuery.of(
-                                                                              context)
-                                                                          .size
-                                                                          .height <
-                                                                      670
-                                                                  ? 18
-                                                                  : 20),
-                                                    ),
-                                                    TextSpan(
-                                                      text: ' KMPH',
+                                            SizedBox(
+                                              width: 5,
+                                            ),
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                      "${controller.isMaxSpeed.value ? "Max " : ""}Speed",
                                                       style:
                                                           AppTextStyles(context)
+                                                              .display11W500),
+                                                  SizedBox(
+                                                    height: 4,
+                                                  ),
+                                                  Text.rich(
+                                                    textAlign: TextAlign.start,
+                                                    TextSpan(
+                                                      children: [
+                                                        TextSpan(
+                                                          text: controller
+                                                              .selectedSpeed
+                                                              .value,
+                                                          style: AppTextStyles(
+                                                                  context)
+                                                              .display20W600
+                                                              .copyWith(
+                                                                  fontSize:
+                                                                      MediaQuery.of(context).size.height <
+                                                                              670
+                                                                          ? 18
+                                                                          : 20),
+                                                        ),
+                                                        TextSpan(
+                                                          text: ' KMPH',
+                                                          style: AppTextStyles(
+                                                                  context)
                                                               .display14W600
                                                               .copyWith(
                                                                   color: AppColors
                                                                       .grayLight),
+                                                        ),
+                                                      ],
                                                     ),
-                                                  ],
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: 5,
-                                        ),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text("Time",
-                                                  style: AppTextStyles(context)
-                                                      .display11W500),
-                                              SizedBox(
-                                                height: 4,
+                                                  )
+                                                ],
                                               ),
-                                              Text(
-                                                controller.selectedTime.value,
-                                                style: AppTextStyles(context)
-                                                    .display20W600
-                                                    .copyWith(
-                                                        fontSize:
-                                                            MediaQuery.of(context)
+                                            ),
+                                            SizedBox(
+                                              width: 5,
+                                            ),
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text("Time",
+                                                      style:
+                                                          AppTextStyles(context)
+                                                              .display11W500),
+                                                  SizedBox(
+                                                    height: 4,
+                                                  ),
+                                                  Text(
+                                                    controller
+                                                        .selectedTime.value,
+                                                    style: AppTextStyles(
+                                                            context)
+                                                        .display20W600
+                                                        .copyWith(
+                                                            fontSize: MediaQuery.of(
+                                                                            context)
                                                                         .size
                                                                         .height <
                                                                     670
                                                                 ? 18
                                                                 : 20),
+                                                  ),
+                                                ],
                                               ),
-                                            ],
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: 5,
-                                        ),
-                                      ],
-                                    ).paddingOnly(
-                                        left: 6, bottom: 7, top: 7, right: 6),
-                                  ),
-                                  SizedBox(height: 1.5.h),
-                                  Container(
-                                    decoration: BoxDecoration(
-                                        color: AppColors.selextedindexcolor,
-                                        borderRadius: BorderRadius.circular(
-                                            AppSizes.radius_50)),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      children: [
-                                        SvgPicture.asset(
-                                            'assets/images/svg/ic_location.svg'),
-                                        Flexible(
-                                          child: Text(
-                                            controller.markerAddress.value,
-                                            style: AppTextStyles(context)
-                                                .display13W500,
-                                          ).paddingOnly(left: 5),
-                                        )
-                                      ],
-                                    ).paddingOnly(left: 6, bottom: 7, top: 7),
-                                  ),
-                                ],
-                              )
+                                            ),
+                                            SizedBox(
+                                              width: 5,
+                                            ),
+                                          ],
+                                        ).paddingOnly(
+                                            left: 6,
+                                            bottom: 7,
+                                            top: 7,
+                                            right: 6),
+                                      ),
+                                      SizedBox(height: 1.5.h),
+                                      Container(
+                                        decoration: BoxDecoration(
+                                            color: AppColors.selextedindexcolor,
+                                            borderRadius: BorderRadius.circular(
+                                                AppSizes.radius_50)),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            SvgPicture.asset(
+                                                'assets/images/svg/ic_location.svg'),
+                                            Flexible(
+                                              child: Text(
+                                                controller.markerAddress.value,
+                                                style: AppTextStyles(context)
+                                                    .display13W500,
+                                              ).paddingOnly(left: 5),
+                                            )
+                                          ],
+                                        ).paddingOnly(
+                                            left: 6, bottom: 7, top: 7),
+                                      ),
+                                    ],
+                                  )
+                                : SizedBox.shrink()
                             : SizedBox.shrink())
                         : RouteHistoryFilter(
                             name: controller.name.value,
                             date: controller.updateDate.value,
                             address: controller.address.value,
                           ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    controller.showMap.value
+                        ? Align(
+                            alignment: Alignment.centerRight,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    controller.showMarkers.value == true
+                                        ? controller.showMarkers.value = false
+                                        : controller.showMarkers.value = true;
+                                    controller.showDetails.value = false;
+                                  },
+                                  child: Container(
+                                    width: 75,
+                                    alignment: Alignment.center,
+                                    margin: EdgeInsets.only(bottom: 260),
+                                    padding: EdgeInsets.all(6),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.black,
+                                      borderRadius: BorderRadius.circular(
+                                          AppSizes.radius_20),
+                                    ),
+                                    child: Text(
+                                        controller.showMarkers.value
+                                            ? "Hide Pins"
+                                            : "Show Pins",
+                                        style: AppTextStyles(context)
+                                            .display12W500
+                                            .copyWith(
+                                                color: controller
+                                                        .showMarkers.value
+                                                    ? AppColors.white
+                                                    : AppColors
+                                                        .selextedindexcolor)),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 4,
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    controller.showMarkers.value == true
+                                        ? controller.showMarkers.value = false
+                                        : controller.showMarkers.value = true;
+                                  },
+                                  child: Container(
+                                    width: 45,
+                                    height: 45,
+                                    padding: EdgeInsets.all(10),
+                                    margin: EdgeInsets.only(bottom: 260),
+                                    decoration: BoxDecoration(
+                                      color: controller.showMarkers.value
+                                          ? AppColors.gray
+                                          : AppColors.black,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: SvgPicture.asset(
+                                      'assets/images/svg/eye.svg',
+                                      color: controller.showMarkers.value
+                                          ? AppColors.white
+                                          : AppColors.selextedindexcolor,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        : SizedBox.shrink(),
                     Spacer(),
                     if (controller.showMap.value)
                       InkWell(
@@ -244,7 +327,8 @@ class RouteHistoryPage extends StatelessWidget {
                               ? Get.find<
                                   ReplayController>() // Find if already registered
                               : Get.put(ReplayController());
-                          replayCon.setInitData(controller.vehicleListReplay, controller.stopCount);
+                          replayCon.setInitData(controller.vehicleListReplay,
+                              controller.stopCount);
                           Get.to(() => RouteReplayView(),
                               transition: Transition.upToDown,
                               duration: const Duration(milliseconds: 300));

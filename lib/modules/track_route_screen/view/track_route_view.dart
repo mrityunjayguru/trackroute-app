@@ -33,8 +33,8 @@ class TrackRouteView extends StatelessWidget {
         body: Obx(() {
           return Stack(
             children: [
-                MapViewTrackRoute(),
-                AnimatedSwitcher(
+              MapViewTrackRoute(),
+              AnimatedSwitcher(
                   duration: const Duration(milliseconds: 300),
                   transitionBuilder:
                       (Widget child, Animation<double> animation) {
@@ -46,8 +46,7 @@ class TrackRouteView extends StatelessWidget {
                       child: child,
                     );
                   },
-                  child: VehiclesList()
-                ),
+                  child: VehiclesList()),
               if (controller.showLoader.value)
                 Positioned.fill(
                   child: Container(
@@ -62,69 +61,65 @@ class TrackRouteView extends StatelessWidget {
             ],
           );
         }),
-        floatingActionButton: Obx(
-          () =>  Padding(
-                  padding: EdgeInsets.zero,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SizedBox(
-                        width: 50,
-                        height: 50,
-                        child: FloatingActionButton(
-                          heroTag: 'satellite1',
-                          child: Image.asset(
-                            !controller.isSatellite.value
-                                ? "assets/images/png/satellite.png"
-                                : "assets/images/png/default.png",
-                            fit: BoxFit.fill,
-                          ),
-                          backgroundColor: AppColors.transparent,
-                          shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(AppSizes.radius_50),
-                          ),
-                          onPressed: () {
-                            controller.isSatellite.value =
-                                !controller.isSatellite.value;
-                          },
-                        ),
-                      ).paddingOnly(bottom: 16),
-                      SizedBox(
-                        width: 50,
-                        height: 50,
-                        child: FloatingActionButton(
-                          heroTag: 'nav',
-                          child: SvgPicture.asset(
-                            Assets.images.svg.navigation1,
-                            fit: BoxFit.fill,
-                          ),
-                          backgroundColor: AppColors.selextedindexcolor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(AppSizes.radius_50),
-                          ),
-                          onPressed: () async {
-                            // Fetch the current location
-                            Position? position =
-                                await controller.getCurrentLocation();
-                            if (position != null) {
-                              controller.updateCameraPosition(
-                                  course: 0,
-                                  latitude: position.latitude,
-                                  longitude: position.longitude);
-                            } else {
-                              Utils.getSnackbar(
-                                  "Error", "Current location not available");
-                              return;
-                            }
-                          },
-                        ),
+        floatingActionButton: Obx(() => Padding(
+              padding: EdgeInsets.zero,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    width: 50,
+                    height: 50,
+                    child: FloatingActionButton(
+                      heroTag: 'satellite1',
+                      child: SvgPicture.asset(
+                        !controller.isSatellite.value
+                            ? "assets/images/svg/satellite.svg"
+                            : "assets/images/svg/default.svg",
+                        fit: BoxFit.fill,
                       ),
-                    ],
+                      backgroundColor: AppColors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(AppSizes.radius_50),
+                      ),
+                      onPressed: () {
+                        controller.isSatellite.value =
+                            !controller.isSatellite.value;
+                      },
+                    ),
+                  ).paddingOnly(bottom: 16),
+                  SizedBox(
+                    width: 50,
+                    height: 50,
+                    child: FloatingActionButton(
+                      heroTag: 'nav',
+                      child: SvgPicture.asset(
+                        Assets.images.svg.navigation1,
+                        fit: BoxFit.fill,
+                      ),
+                      backgroundColor: AppColors.selextedindexcolor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(AppSizes.radius_50),
+                      ),
+                      onPressed: () async {
+                        // Fetch the current location
+                        Position? position =
+                            await controller.getCurrentLocation();
+                        if (position != null) {
+                          controller.updateCameraPosition(
+                              course: 0,
+                              latitude: position.latitude,
+                              longitude: position.longitude);
+                        } else {
+                          Utils.getSnackbar(
+                              "Error", "Current location not available");
+                          return;
+                        }
+                      },
+                    ),
                   ),
-                )
-        ),
+                ],
+              ),
+            )),
       ),
     );
   }

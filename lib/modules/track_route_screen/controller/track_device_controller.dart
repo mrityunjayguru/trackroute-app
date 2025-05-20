@@ -24,7 +24,7 @@ import '../../route_history/controller/common.dart';
 import '../../route_history/controller/location_controller.dart';
 import '../view/widgets/device/vehicle_dialog.dart';
 
-class DeviceController extends GetxController {
+class DeviceController extends GetxController with WidgetsBindingObserver {
   final trackController = Get.isRegistered<TrackRouteController>()
       ? Get.find<TrackRouteController>() // Find if already registered
       : Get.put(TrackRouteController());
@@ -60,7 +60,7 @@ class DeviceController extends GetxController {
   void onInit() {
     super.onInit();
     isLoading.value = true;
-
+    WidgetsBinding.instance.addObserver(this);
     loadUser();
   }
 
@@ -74,10 +74,31 @@ class DeviceController extends GetxController {
   @override
   void onClose() {
     socket?.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+
     animationController.dispose();
     super.onClose();
   }
 
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // Resume animation if necessary
+      if (animationController.isAnimating == false &&
+          animationController.status == AnimationStatus.dismissed) {
+        animationController.forward(from: 0.0);
+      }
+
+      // Optionally reconnect socket if needed
+      if (socket?.connected != true) {
+        initSocket();
+      }
+    } else if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.inactive) {
+      animationController.stop();
+    }
+  }
+  
   Future<void> loadUser() async {
     String? userId = await AppPreference.getStringFromSF(Constants.userId);
     devicesOwnerID.value = userId ?? '';
@@ -176,39 +197,6 @@ class DeviceController extends GetxController {
 
   LatLng? oldLatLng;
 
-  void open({required String value}) async {
-    final coords = deviceDetail.value?.trackingData?.location;
-    if (value == 'petrol') {
-      openNearbyInGoogleMaps(
-        lat: coords!.latitude!,
-        lng: coords.longitude!,
-        placeType: 'petrol pump',
-      );
-    } else if (value == 'hotel') {
-      openNearbyInGoogleMaps(
-        lat: coords!.latitude!,
-        lng: coords.longitude!,
-        placeType: 'hotel',
-      );
-    }
-  }
-
-  Future<void> openNearbyInGoogleMaps({
-    required double lat,
-    required double lng,
-    required String placeType,
-  }) async {
-    final query = Uri.encodeComponent('$placeType near $lat,$lng');
-    final googleMapsUrl =
-        'https://www.google.com/maps/search/?api=1&query=$query';
-
-    if (await canLaunchUrl(Uri.parse(googleMapsUrl))) {
-      await launchUrl(Uri.parse(googleMapsUrl),
-          mode: LaunchMode.externalApplication);
-    } else {
-      throw 'Could not launch Google Maps';
-    }
-  }
 
   Future<void> devicesByDetails(
       {bool updateCamera = true,

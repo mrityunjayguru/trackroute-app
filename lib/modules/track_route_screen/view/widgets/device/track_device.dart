@@ -28,7 +28,7 @@ class TrackDeviceView extends StatefulWidget {
 }
 
 class _TrackDeviceViewState extends State<TrackDeviceView>
-    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
+    with SingleTickerProviderStateMixin {
   final controller = Get.isRegistered<DeviceController>()
       ? Get.find<DeviceController>() // Find if already registered
       : Get.put(DeviceController());
@@ -44,20 +44,13 @@ class _TrackDeviceViewState extends State<TrackDeviceView>
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addObserver(this);
     controller.initAnimation(this);
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {}
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -233,192 +226,152 @@ class _TrackDeviceViewState extends State<TrackDeviceView>
                     ).paddingSymmetric(horizontal: 4.w * 0.9),
                   ),
                   Spacer(),
-                  controller.showNearby.value
-                      ? Container(
-                          width: 40,
-                          height: 40,
-                          margin: EdgeInsets.only(right: 15, bottom: 180),
-                          decoration: BoxDecoration(
-                            color: Colors.black,
-                            shape: BoxShape.circle,
+                  if (!controller.expandInfo.value) ...[
+                    Obx(
+                      () => Stack(
+                        alignment: Alignment.topRight,
+                        children: [
+                          Positioned.fill(
+                            child: GestureDetector(
+                              onTap: () {
+                                controller.showNearby.value = false;
+                              },
+                              behavior: HitTestBehavior.translucent,
+                              child: Container(),
+                            ),
                           ),
-                          child: IconButton(
-                            icon: Icon(Icons.menu, color: Colors.white),
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    contentPadding: EdgeInsets.all(10),
-                                    content: SizedBox(
-                                      width: 250,
-                                      child: GridView.count(
-                                        shrinkWrap: true,
-                                        crossAxisCount: 2,
-                                        crossAxisSpacing: 10,
-                                        mainAxisSpacing: 10,
-                                        children: [
-                                          _buildMenuItem(
-                                            icon: Icons.local_gas_station,
-                                            label: 'Petrol Pump',
-                                            onTap: () {
-                                              Navigator.pop(context);
-                                              _openPlace('petrol');
-                                            },
-                                          ),
-                                          _buildMenuItem(
-                                            icon: Icons.hotel,
-                                            label: 'Hotel',
-                                            onTap: () {
-                                              Navigator.pop(context);
-                                              _openPlace('hotel');
-                                            },
-                                          ),
-                                          _buildMenuItem(
-                                            icon: Icons.map,
-                                            label: 'Restaurant',
-                                            onTap: () {
-                                              Navigator.pop(context);
-                                              _openPlace('Restaurant');
-                                            },
-                                          ),
-                                          _buildMenuItem(
-                                            icon: Icons.build,
-                                            label: 'Mechanic',
-                                            onTap: () {
-                                              Navigator.pop(context);
-                                              _openPlace('Mechanic');
-                                            },
-                                          ),
-                                          _buildMenuItem(
-                                            icon: Icons.local_police,
-                                            label: 'Police',
-                                            onTap: () {
-                                              Navigator.pop(context);
-                                              _openPlace('Police Station');
-                                            },
-                                          ),
-                                        ],
+                          controller.showNearby.value
+                              ? Container(
+                                  width: 320,
+                                  margin: EdgeInsets.only(
+                                    right: 15,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.blue,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      SizedBox(
+                                        height: 10,
                                       ),
-                                    ),
-                                  );
-                                },
-                              );
-                            },
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 10, bottom: 10),
+                                        child: Text('Nearby Places',
+                                            style: AppTextStyles(context)
+                                                .display14W600
+                                                .copyWith(color: Colors.white)),
+                                      ),
+                                      Container(
+                                        alignment: Alignment.center,
+                                        margin: EdgeInsets.only(
+                                            top: 5,
+                                            right: 10,
+                                            left: 10,
+                                            bottom: 10),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                        child: GridView.count(
+                                          padding: const EdgeInsets.all(10),
+                                          shrinkWrap: true,
+                                          physics:
+                                              NeverScrollableScrollPhysics(),
+                                          crossAxisCount: 2,
+                                          childAspectRatio: 7 / 2,
+                                          children: [
+                                            _buildMenuItem(
+                                                icon:
+                                                    'assets/images/svg/gas.svg',
+                                                label: 'Petrol Pump',
+                                                onTap: () {
+                                                  _openPlace('petrol');
+                                                }),
+                                            _buildMenuItem(
+                                                icon:
+                                                    'assets/images/svg/hospital.svg',
+                                                label: 'Hospital',
+                                                onTap: () {
+                                                  _openPlace('hospital');
+                                                }),
+                                            _buildMenuItem(
+                                                icon:
+                                                    'assets/images/svg/mechanic.svg',
+                                                label: 'Mechanic',
+                                                onTap: () {
+                                                  _openPlace('Mechanic');
+                                                }),
+                                            _buildMenuItem(
+                                                icon:
+                                                    'assets/images/svg/restaurant.svg',
+                                                label: 'Restaurant',
+                                                onTap: () {
+                                                  _openPlace('Restaurant');
+                                                }),
+                                            _buildMenuItem(
+                                                icon:
+                                                    'assets/images/svg/police.svg',
+                                                label: 'Police Station',
+                                                onTap: () {
+                                                  _openPlace('Police Station');
+                                                }),
+                                            _buildMenuItem(
+                                                icon:
+                                                    'assets/images/svg/street_view.svg',
+                                                label: 'Street View',
+                                                onTap: () {
+                                                  _openPlace('streetview');
+                                                }),
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                )
+                              : SizedBox.shrink(),
+                          Container(
+                            width: 45,
+                            height: 45,
+                            padding: EdgeInsets.all(5),
+                            margin: EdgeInsets.only(right: 15, bottom: 260),
+                            decoration: BoxDecoration(
+                              color: AppColors.blue,
+                              shape: BoxShape.circle,
+                            ),
+                            child: GestureDetector(
+                              child: SvgPicture.asset(
+                                'assets/images/svg/eye.svg',
+                              ),
+                              onTap: () {
+                                controller.showNearby.value == true
+                                    ? controller.showNearby.value = false
+                                    : controller.showNearby.value = true;
+                              },
+                            ),
                           ),
-                        )
-                      : SizedBox.shrink(),
-                  Container(
-                    width: 40,
-                    height: 40,
-                    margin: EdgeInsets.only(right: 15, bottom: 180),
-                    decoration: BoxDecoration(
-                      color: Colors.black,
-                      shape: BoxShape.circle,
-                    ),
-                    child: PopupMenuButton<String>(
-                      icon: Icon(Icons.menu, color: Colors.white),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                        ],
                       ),
-                      onSelected: (value) async {
-                        LatLng vehiclePosition = LatLng(
-                          controller.deviceDetail.value?.trackingData?.location
-                                  ?.latitude ??
-                              0.0,
-                          controller.deviceDetail.value?.trackingData?.location
-                                  ?.longitude ??
-                              0.0,
-                        );
-                        if (value == 'petrol') {
-                          trackController.openMaps(
-                              data: vehiclePosition, placeType: 'petrol pump');
-                        } else if (value == 'hotel') {
-                          trackController.openMaps(
-                              data: vehiclePosition, placeType: 'hotel');
-                        } else if (value == 'Restaurant') {
-                          trackController.openMaps(
-                              data: vehiclePosition, placeType: 'Restaurant');
-                        } else if (value == 'Mechanic') {
-                          trackController.openMaps(
-                              data: vehiclePosition, placeType: 'Mechanic');
-                        } else if (value == 'Police Station') {
-                          trackController.openMaps(
-                              data: vehiclePosition,
-                              placeType: 'Police Station');
-                        }
-                      },
-                      itemBuilder: (context) => [
-                        PopupMenuItem(
-                          value: 'petrol',
-                          child: Row(
-                            children: [
-                              Icon(Icons.local_gas_station,
-                                  color: Colors.grey[700]),
-                              SizedBox(width: 10),
-                              Text('Nearby Petrol Pumps'),
-                            ],
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: 'hotel',
-                          child: Row(
-                            children: [
-                              Icon(Icons.hotel, color: Colors.grey[700]),
-                              SizedBox(width: 10),
-                              Text('Nearby Hotels'),
-                            ],
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: 'Restaurant',
-                          child: Row(
-                            children: [
-                              Icon(Icons.map, color: Colors.grey[700]),
-                              SizedBox(width: 10),
-                              Text('Nearby Restaurants'),
-                            ],
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: 'Mechanic',
-                          child: Row(
-                            children: [
-                              Icon(Icons.hotel, color: Colors.grey[700]),
-                              SizedBox(width: 10),
-                              Text('Nearby Mechanics'),
-                            ],
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: 'Police Station',
-                          child: Row(
-                            children: [
-                              Icon(Icons.local_police, color: Colors.grey[700]),
-                              SizedBox(width: 10),
-                              Text('Nearby Police Stations'),
-                            ],
-                          ),
-                        ),
-                      ],
                     ),
-                  ),
+                  ],
+
                   if (!controller.expandInfo.value) ...[
                     SizedBox(
                       width: 45,
                       height: 45,
                       child: FloatingActionButton(
                         heroTag: 'satellite',
-                        child: Image.asset(
+                        child: SvgPicture.asset(
                           !controller.isSatellite.value
-                              ? "assets/images/png/satellite.png"
-                              : "assets/images/png/default.png",
+                              ? "assets/images/svg/satellite.svg"
+                              : "assets/images/svg/default.svg",
                           fit: BoxFit.fill,
                         ),
-                        backgroundColor: AppColors.transparent,
+                        backgroundColor: AppColors.black,
                         shape: RoundedRectangleBorder(
                           borderRadius:
                               BorderRadius.circular(AppSizes.radius_50),
@@ -666,10 +619,10 @@ class _TrackDeviceViewState extends State<TrackDeviceView>
       if (displayParameters?.gps == true)
         _buildVehicleItem(
             context,
-            'Internet',
+            'GPS',
             !trackController.checkIfOffline(
                 vehicle: controller.deviceDetail.value),
-            'assets/images/svg/new_internet.svg'),
+            'assets/images/svg/gps_icon.svg'),
       if (displayParameters?.engine == true)
         _buildVehicleItem(
             context,
@@ -928,6 +881,7 @@ class _TrackDeviceViewState extends State<TrackDeviceView>
             onTap: () {
               controller.getDeviceByIMEITripSummary();
               controller.expandInfo.value = true;
+              controller.showNearby.value = false;
             },
             child: Center(
                 child: SvgPicture.asset(
@@ -1211,30 +1165,32 @@ class _TrackDeviceViewState extends State<TrackDeviceView>
       ],
     );
   }
-    void _openPlace(String value) {
+
+  void _openPlace(String value) {
     LatLng vehiclePosition = LatLng(
       controller.deviceDetail.value?.trackingData?.location?.latitude ?? 0.0,
       controller.deviceDetail.value?.trackingData?.location?.longitude ?? 0.0,
     );
-
+    controller.showNearby.value = false;
     trackController.openMaps(data: vehiclePosition, placeType: value);
   }
 
   Widget _buildMenuItem(
-      {required IconData icon,
+      {required String icon,
       required String label,
       required VoidCallback onTap}) {
     return GestureDetector(
       onTap: onTap,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
+      child: Row(
         children: [
-          Icon(icon, color: Colors.grey[700], size: 30),
-          SizedBox(height: 5),
+          SvgPicture.asset(icon, height: 20, width: 20),
+          SizedBox(width: 5),
           Text(
             label,
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 12),
+            style: AppTextStyles(context)
+                .display14W600
+                .copyWith(color: AppColors.blue),
           ),
         ],
       ),
