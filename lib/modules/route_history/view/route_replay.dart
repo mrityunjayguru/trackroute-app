@@ -299,11 +299,11 @@ class _RouteReplayViewState extends State<RouteReplayView>
                       ],
                     ),
                     Spacer(),
-                    if (locationController.timerOn.value ||
-                        controller.selectStopIndex.value != -1)
+
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
+                        children: [ if (locationController.timerOn.value ||
+                            controller.selectStopIndex.value != -1)
                           Container(
                             height: 60,
                             constraints:

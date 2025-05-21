@@ -54,129 +54,131 @@ class _TrackDeviceViewState extends State<TrackDeviceView>
 
   @override
   Widget build(BuildContext context) {
-    return Obx(
-      () {
-        bool isActive = true;
-        if (controller.deviceDetail.value?.status?.toLowerCase() != "active") {
-          isActive = false;
-        }
+    return
+      SafeArea(child:
+      Obx(
+            () {
+          bool isActive = true;
+          if (controller.deviceDetail.value?.status?.toLowerCase() != "active") {
+            isActive = false;
+          }
 
-        bool isNotExpired = (isActive &&
-            ((controller.deviceDetail.value?.subscriptionExp) == null
-                ? isActive
-                : (DateFormat('yyyy-MM-dd')
-                            .parse((controller
-                                .deviceDetail.value?.subscriptionExp)!)
-                            .difference(DateTime.now())
-                            .inDays +
-                        1 >
-                    0)));
-        return PopScope(
-          canPop: false,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              GoogleMap(
-                buildingsEnabled: false,
-                zoomControlsEnabled: false,
-                mapType: controller.isSatellite.value
-                    ? MapType.satellite
-                    : MapType.normal,
-                circles: controller.circles.value.toSet(),
-                onMapCreated: (mapCon) {
-                  controller.mapController = mapCon;
-                  controller.isLoading.value = false;
-                },
-                initialCameraPosition: CameraPosition(
-                  target: controller.currentLocation.value,
-                  zoom: 7,
+          bool isNotExpired = (isActive &&
+              ((controller.deviceDetail.value?.subscriptionExp) == null
+                  ? isActive
+                  : (DateFormat('yyyy-MM-dd')
+                  .parse((controller
+                  .deviceDetail.value?.subscriptionExp)!)
+                  .difference(DateTime.now())
+                  .inDays +
+                  1 >
+                  0)));
+          return PopScope(
+            canPop: false,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                GoogleMap(
+                  buildingsEnabled: false,
+                  zoomControlsEnabled: false,
+                  mapType: controller.isSatellite.value
+                      ? MapType.satellite
+                      : MapType.normal,
+                  circles: controller.circles.value.toSet(),
+                  onMapCreated: (mapCon) {
+                    controller.mapController = mapCon;
+                    controller.isLoading.value = false;
+                  },
+                  initialCameraPosition: CameraPosition(
+                    target: controller.currentLocation.value,
+                    zoom: 7,
+                  ),
+                  markers: controller.markers.value,
+                  myLocationEnabled: true,
+                  myLocationButtonEnabled: false,
+                  mapToolbarEnabled: false,
+                  minMaxZoomPreference: MinMaxZoomPreference(0, 19),
                 ),
-                markers: controller.markers.value,
-                myLocationEnabled: true,
-                myLocationButtonEnabled: false,
-                mapToolbarEnabled: false,
-                minMaxZoomPreference: MinMaxZoomPreference(0, 19),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  SafeArea(
-                    child: Column(
-                      children: [
-                        Obx(
-                          () => Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(AppSizes.radius_50),
-                                  topRight: Radius.circular(AppSizes.radius_50),
-                                  bottomRight: controller.isExpanded.value
-                                      ? Radius.circular(AppSizes.radius_16)
-                                      : Radius.circular(AppSizes.radius_50),
-                                  bottomLeft: controller.isExpanded.value
-                                      ? Radius.circular(AppSizes.radius_16)
-                                      : Radius.circular(AppSizes.radius_50)),
-                              color: AppColors.whiteOff,
-                            ),
-                            child: Column(
-                              children: [
-                                GestureDetector(
-                                  behavior: HitTestBehavior.deferToChild,
-                                  onTap: () {
-                                    controller.selectedVehicleIMEI.value = "";
-                                    controller.closeSocket();
-                                    Get.back();
-                                  },
-                                  child: Container(
-                                    height:
-                                        MediaQuery.of(context).size.height < 670
-                                            ? 7.h
-                                            : 6.h,
-                                    // Increase height for smaller screens
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(
-                                          AppSizes.radius_50),
-                                      color: AppColors.black,
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Obx(
-                                          () => Image.network(
-                                              width: 25,
-                                              height: 25,
-                                              "${ProjectUrls.imgBaseUrl}${dataController.settings.value.logo}",
-                                              errorBuilder: (context, error,
-                                                      stackTrace) =>
-                                                  SvgPicture.asset(
-                                                    Assets.images.svg
-                                                        .icIsolationMode,
-                                                    color: AppColors.black,
-                                                  )).paddingSymmetric(
-                                              horizontal: 10),
-                                        ),
-                                        Expanded(
-                                          child: Text(
-                                            controller.deviceDetail.value
-                                                    ?.vehicleNo ??
-                                                "Tracking",
-                                            overflow: TextOverflow.ellipsis,
-                                            style: AppTextStyles(context)
-                                                .display20W400
-                                                .copyWith(
-                                                    color: AppColors.whiteOff),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    SafeArea(
+                      child: Column(
+                        children: [
+                          Obx(
+                                () => Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(AppSizes.radius_50),
+                                    topRight: Radius.circular(AppSizes.radius_50),
+                                    bottomRight: controller.isExpanded.value
+                                        ? Radius.circular(AppSizes.radius_16)
+                                        : Radius.circular(AppSizes.radius_50),
+                                    bottomLeft: controller.isExpanded.value
+                                        ? Radius.circular(AppSizes.radius_16)
+                                        : Radius.circular(AppSizes.radius_50)),
+                                color: AppColors.whiteOff,
+                              ),
+                              child: Column(
+                                children: [
+                                  GestureDetector(
+                                    behavior: HitTestBehavior.deferToChild,
+                                    onTap: () {
+                                      controller.selectedVehicleIMEI.value = "";
+                                      controller.closeSocket();
+                                      Get.back();
+                                    },
+                                    child: Container(
+                                      height:
+                                      MediaQuery.of(context).size.height < 670
+                                          ? 7.h
+                                          : 6.h,
+                                      // Increase height for smaller screens
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(
+                                            AppSizes.radius_50),
+                                        color: AppColors.black,
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Obx(
+                                                () => Image.network(
+                                                width: 25,
+                                                height: 25,
+                                                "${ProjectUrls.imgBaseUrl}${dataController.settings.value.logo}",
+                                                errorBuilder: (context, error,
+                                                    stackTrace) =>
+                                                    SvgPicture.asset(
+                                                      Assets.images.svg
+                                                          .icIsolationMode,
+                                                      color: AppColors.black,
+                                                    )).paddingSymmetric(
+                                                horizontal: 10),
                                           ),
-                                        ),
-                                        SvgPicture.asset(
-                                                'assets/images/svg/ic_arrow_left.svg')
-                                            .paddingOnly(right: 12, left: 7.w)
-                                      ],
-                                    ).paddingOnly(left: 8, right: 8),
+                                          Expanded(
+                                            child: Text(
+                                              controller.deviceDetail.value
+                                                  ?.vehicleNo ??
+                                                  "Tracking",
+                                              overflow: TextOverflow.ellipsis,
+                                              style: AppTextStyles(context)
+                                                  .display20W400
+                                                  .copyWith(
+                                                  color: AppColors.whiteOff),
+                                            ),
+                                          ),
+                                          SvgPicture.asset(
+                                              'assets/images/svg/ic_arrow_left.svg')
+                                              .paddingOnly(right: 12, left: 7.w)
+                                        ],
+                                      ).paddingOnly(left: 8, right: 8),
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ).paddingOnly(top: 12),
-                        ),
-                        /*StreamBuilder<bool>(
+                                ],
+                              ),
+                            ).paddingOnly(top: 12),
+                          ),
+                          /*StreamBuilder<bool>(
                           stream: controller.internetStatusStream(),
                           builder: (context, snapshot) {
                             String message = "";
@@ -222,385 +224,386 @@ class _TrackDeviceViewState extends State<TrackDeviceView>
                             );
                           },
                         )*/
-                      ],
-                    ).paddingSymmetric(horizontal: 4.w * 0.9),
-                  ),
-
-                  if (!controller.expandInfo.value) ...[
-                    Obx(
-                      () => Stack(
-                        alignment: Alignment.topRight,
-                        children: [
-                          Positioned.fill(
-                            child: GestureDetector(
-                              onTap: () {
-                                controller.showNearby.value = false;
-                              },
-                              behavior: HitTestBehavior.translucent,
-                              child: Container(),
-                            ),
-                          ),
-                          controller.showNearby.value
-                              ? Container(
-                                  width: 320,
-                                  margin: EdgeInsets.only(right: 15, top: 15),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.blue,
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            left: 10, bottom: 10),
-                                        child: Text('Nearby Places',
-                                            style: AppTextStyles(context)
-                                                .display14W600
-                                                .copyWith(color: Colors.white)),
-                                      ),
-                                      Container(
-                                        alignment: Alignment.center,
-                                        margin: EdgeInsets.only(
-                                            top: 5,
-                                            right: 10,
-                                            left: 10,
-                                            bottom: 10),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                        ),
-                                        child: GridView.count(
-                                          padding: const EdgeInsets.all(10),
-                                          shrinkWrap: true,
-                                          physics:
-                                              NeverScrollableScrollPhysics(),
-                                          crossAxisCount: 2,
-                                          childAspectRatio: 7 / 2,
-                                          children: [
-                                            _buildMenuItem(
-                                                icon:
-                                                    'assets/images/svg/gas.svg',
-                                                label: 'Petrol Pump',
-                                                onTap: () {
-                                                  _openPlace('petrol');
-                                                }),
-                                            _buildMenuItem(
-                                                icon:
-                                                    'assets/images/svg/hospital.svg',
-                                                label: 'Hospital',
-                                                onTap: () {
-                                                  _openPlace('hospital');
-                                                }),
-                                            _buildMenuItem(
-                                                icon:
-                                                    'assets/images/svg/mechanic.svg',
-                                                label: 'Mechanic',
-                                                onTap: () {
-                                                  _openPlace('Mechanic');
-                                                }),
-                                            _buildMenuItem(
-                                                icon:
-                                                    'assets/images/svg/restaurant.svg',
-                                                label: 'Restaurant',
-                                                onTap: () {
-                                                  _openPlace('Restaurant');
-                                                }),
-                                            _buildMenuItem(
-                                                icon:
-                                                    'assets/images/svg/police.svg',
-                                                label: 'Police Station',
-                                                onTap: () {
-                                                  _openPlace('Police Station');
-                                                }),
-                                            _buildMenuItem(
-                                                icon:
-                                                    'assets/images/svg/street_view.svg',
-                                                label: 'Street View',
-                                                onTap: () {
-                                                  _openPlace('streetview');
-                                                }),
-                                          ],
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                )
-                              : SizedBox.shrink(),
-                          Container(
-                            width: 45,
-                            height: MediaQuery.of(context).size.height < 670
-                                ? 7.h
-                                : 6.h,
-                            padding: EdgeInsets.all(5),
-                            margin: EdgeInsets.only(right: 15, top: 10),
-                            decoration: BoxDecoration(
-                              color: AppColors.blue,
-                              shape: BoxShape.circle,
-                            ),
-                            child: GestureDetector(
-                              child: SvgPicture.asset(
-                                'assets/images/svg/eye.svg',
-                              ),
-                              onTap: () {
-                                controller.showNearby.value == true
-                                    ? controller.showNearby.value = false
-                                    : controller.showNearby.value = true;
-                              },
-                            ),
-                          ),
                         ],
-                      ),
+                      ).paddingSymmetric(horizontal: 4.w * 0.9),
                     ),
-                  ],
-                  Spacer(),
-                  if (!controller.expandInfo.value) ...[
-                    SizedBox(
-                      width: 45,
-                      height: 45,
-                      child: FloatingActionButton(
-                        heroTag: 'satellite',
-                        child: SvgPicture.asset(
-                          !controller.isSatellite.value
-                              ? "assets/images/svg/satellite.svg"
-                              : "assets/images/svg/default.svg",
-                          fit: BoxFit.fill,
-                        ),
-                        backgroundColor: AppColors.black,
-                        shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(AppSizes.radius_50),
-                        ),
-                        onPressed: () {
-                          controller.isSatellite.value =
-                              !controller.isSatellite.value;
-                        },
-                      ),
-                    ).paddingOnly(bottom: 16, right: 4.w * 0.9),
-                    SizedBox(
-                      width: 45,
-                      height: 45,
-                      child: FloatingActionButton(
-                        heroTag: 'nav1',
-                        child: SvgPicture.asset(
-                          Assets.images.svg.navigation1,
-                          fit: BoxFit.fill,
-                        ),
-                        backgroundColor: AppColors.selextedindexcolor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(AppSizes.radius_50),
-                        ),
-                        onPressed: () async {
-                          // Fetch the current location
-                          Position? position =
-                              await trackController.getCurrentLocation();
-                          if (position != null) {
-                            controller.updateCameraPosition(
-                                course: 0,
-                                latitude: position.latitude - 1,
-                                longitude: position.longitude);
-                          } else {
-                            Utils.getSnackbar(
-                                "Error", "Current location not available");
-                          }
-                        },
-                      ),
-                    ).paddingOnly(bottom: 16, right: 4.w * 0.9),
-                    SizedBox(
-                      width: 45,
-                      height: 45,
-                      child: FloatingActionButton(
-                        heroTag: 'directions',
-                        child: Icon(
-                          Icons.directions,
-                          size: 29,
-                          color: AppColors.white,
-                        ),
-                        backgroundColor:
-                            isActive ? AppColors.blue : AppColors.grayLight,
-                        shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(AppSizes.radius_50),
-                        ),
-                        onPressed: () {
-                          if (isActive) {
-                            LatLng vehiclePosition = LatLng(
-                              controller.deviceDetail.value?.trackingData
-                                      ?.location?.latitude ??
-                                  0.0,
-                              controller.deviceDetail.value?.trackingData
-                                      ?.location?.longitude ??
-                                  0.0,
-                            );
-                            trackController.openMaps(data: vehiclePosition);
-                          }
-                        },
-                      ),
-                    ).paddingOnly(
-                      right: 4.w * 0.9,
-                      bottom: 16 + 22,
-                    ),
-                    _infoWidget(context, isNotExpired, isActive),
-                    Container(
-                      height: 24,
-                      color: Colors.black,
-                    )
-                  ] else
-                    _fullInfoWidget(context, isNotExpired, isActive)
-                  // Directions button
-                ],
-              ),
-              if (!controller.expandInfo.value) ...[
-                Positioned(
-                    bottom: MediaQuery.of(context).size.height * ((205 / 812) - 0.067) +
-                        24,
-                    child: SpeedometerWidget(
-                        color: (controller.deviceDetail.value?.trackingData?.currentSpeed ?? 0) == 0
-                            ? AppColors.color_434345
-                            : (controller.deviceDetail.value?.maxSpeed != null
-                                ? ((controller.deviceDetail.value?.trackingData
-                                                ?.currentSpeed ??
-                                            0) >
-                                        (controller.deviceDetail.value?.maxSpeed ??
-                                            0)
-                                    ? AppColors.color_ED1C24
-                                    : AppColors.selextedindexcolor)
-                                : AppColors.selextedindexcolor),
-                        speed: ((controller.deviceDetail.value?.trackingData
-                                        ?.currentSpeed ??
-                                    0)
-                                .toStringAsFixed(0) ??
-                            "N/A"),
-                        distance: controller.deviceDetail.value?.trackingData?.dailyDistance ?? 0)),
-                Positioned(
-                  bottom: (MediaQuery.of(context).size.height * ((205 / 812))),
-                  child: Container(
-                    width: context.width,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            if (isActive &&
-                                (controller.deviceDetail.value?.mobileNo
-                                        ?.isNotEmpty ??
-                                    false)) {
-                              Utils.makePhoneCall(
-                                  '${controller.deviceDetail.value?.mobileNo}');
-                            } else if (!(controller
-                                    .deviceDetail.value?.mobileNo?.isNotEmpty ??
-                                false)) {
-                              Get.snackbar(
-                                "",
-                                "",
-                                snackStyle: SnackStyle.FLOATING,
-                                padding: EdgeInsets.fromLTRB(10, 0, 10, 20),
-                                messageText: Text(
-                                  "Please add a calling number in manage device",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w800,
-                                    color: AppColors.selextedindexcolor,
+
+                    if (!controller.expandInfo.value) ...[
+                      Obx(
+                            () => Stack(
+                          alignment: Alignment.topRight,
+                          children: [
+                            Positioned.fill(
+                              child: GestureDetector(
+                                onTap: () {
+                                  controller.showNearby.value = false;
+                                },
+                                behavior: HitTestBehavior.translucent,
+                                child: Container(),
+                              ),
+                            ),
+                            controller.showNearby.value
+                                ? Container(
+                              width: 320,
+                              margin: EdgeInsets.only(right: 15, top: 15),
+                              decoration: BoxDecoration(
+                                color: AppColors.blue,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Column(
+                                crossAxisAlignment:
+                                CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(
+                                    height: 10,
                                   ),
+                                  Padding(
+                                    padding:  EdgeInsets.only(
+                                        left: 10, bottom: 1.h),
+                                    child: Text('Nearby Places',
+                                        style: AppTextStyles(context)
+                                            .display14W600
+                                            .copyWith(color: Colors.white)),
+                                  ),
+                                  Container(
+                                    alignment: Alignment.center,
+                                    margin: EdgeInsets.only(
+                                        top: 5,
+                                        right: 10,
+                                        left: 10,
+                                        bottom: 1.h),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius:
+                                      BorderRadius.circular(10),
+                                    ),
+                                    child: GridView.count(
+                                      padding: const EdgeInsets.all(10),
+                                      shrinkWrap: true,
+                                      physics:
+                                      NeverScrollableScrollPhysics(),
+                                      crossAxisCount: 2,
+                                      childAspectRatio: 7 / 2,
+                                      children: [
+                                        _buildMenuItem(
+                                            icon:
+                                            'assets/images/svg/gas.svg',
+                                            label: 'Petrol Pump',
+                                            onTap: () {
+                                              _openPlace('petrol');
+                                            }),
+                                        _buildMenuItem(
+                                            icon:
+                                            'assets/images/svg/hospital.svg',
+                                            label: 'Hospital',
+                                            onTap: () {
+                                              _openPlace('hospital');
+                                            }),
+                                        _buildMenuItem(
+                                            icon:
+                                            'assets/images/svg/mechanic.svg',
+                                            label: 'Mechanic',
+                                            onTap: () {
+                                              _openPlace('Mechanic');
+                                            }),
+                                        _buildMenuItem(
+                                            icon:
+                                            'assets/images/svg/restaurant.svg',
+                                            label: 'Restaurant',
+                                            onTap: () {
+                                              _openPlace('Restaurant');
+                                            }),
+                                        _buildMenuItem(
+                                            icon:
+                                            'assets/images/svg/police.svg',
+                                            label: 'Police Station',
+                                            onTap: () {
+                                              _openPlace('Police Station');
+                                            }),
+                                        _buildMenuItem(
+                                            icon:
+                                            'assets/images/svg/street_view.svg',
+                                            label: 'Street View',
+                                            onTap: () {
+                                              _openPlace('streetview');
+                                            }),
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              ),
+                            )
+                                : SizedBox.shrink(),
+                            Container(
+                              width: 45,
+                              height: MediaQuery.of(context).size.height < 670
+                                  ? 7.h
+                                  : 6.h,
+                              padding: EdgeInsets.all(5),
+                              margin: EdgeInsets.only(right: 15, top: 10),
+                              decoration: BoxDecoration(
+                                color: AppColors.blue,
+                                shape: BoxShape.circle,
+                              ),
+                              child: GestureDetector(
+                                child: SvgPicture.asset(
+                                  'assets/images/svg/eye.svg',
                                 ),
-                                backgroundColor: AppColors.black,
-                                colorText: AppColors.selextedindexcolor,
-                                snackPosition: SnackPosition.BOTTOM,
-                              );
+                                onTap: () {
+                                  controller.showNearby.value == true
+                                      ? controller.showNearby.value = false
+                                      : controller.showNearby.value = true;
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                    Spacer(),
+                    if (!controller.expandInfo.value) ...[
+                      SizedBox(
+                        width: 45,
+                        height: 45,
+                        child: FloatingActionButton(
+                          heroTag: 'satellite',
+                          child: SvgPicture.asset(
+                            !controller.isSatellite.value
+                                ? "assets/images/svg/satellite.svg"
+                                : "assets/images/svg/default.svg",
+                            fit: BoxFit.fill,
+                          ),
+                          backgroundColor: AppColors.black,
+                          shape: RoundedRectangleBorder(
+                            borderRadius:
+                            BorderRadius.circular(AppSizes.radius_50),
+                          ),
+                          onPressed: () {
+                            controller.isSatellite.value =
+                            !controller.isSatellite.value;
+                          },
+                        ),
+                      ).paddingOnly(bottom: 1.4.h, right: 4.w * 0.9),
+                      SizedBox(
+                        width: 45,
+                        height: 45,
+                        child: FloatingActionButton(
+                          heroTag: 'nav1',
+                          child: SvgPicture.asset(
+                            Assets.images.svg.navigation1,
+                            fit: BoxFit.fill,
+                          ),
+                          backgroundColor: AppColors.selextedindexcolor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius:
+                            BorderRadius.circular(AppSizes.radius_50),
+                          ),
+                          onPressed: () async {
+                            // Fetch the current location
+                            Position? position =
+                            await trackController.getCurrentLocation();
+                            if (position != null) {
+                              controller.updateCameraPosition(
+                                  course: 0,
+                                  latitude: position.latitude - 1,
+                                  longitude: position.longitude);
+                            } else {
+                              Utils.getSnackbar(
+                                  "Error", "Current location not available");
                             }
                           },
-                          child: Container(
-                            height: 45,
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 8),
-                            decoration: BoxDecoration(
-                              boxShadow: [
-                                BoxShadow(
-                                  blurRadius: 2,
-                                  spreadRadius: 1,
-                                  color:
-                                      const Color(0xff000000).withOpacity(0.25),
-                                  offset: Offset(0, 0),
-                                ),
-                              ],
-                              borderRadius:
-                                  BorderRadius.circular(AppSizes.radius_50),
-                              color: AppColors.black,
-                            ),
-                            child: Row(
-                              children: [
-                                SizedBox(
-                                  height: 30,
-                                  width: 30,
-                                  child: SvgPicture.asset(
-                                    "assets/images/svg/new_call_icon.svg",
-                                    colorFilter: ColorFilter.mode(
-                                        isActive
-                                            ? AppColors.selextedindexcolor
-                                            : AppColors.grayLight,
-                                        BlendMode.srcIn),
-                                  ),
-                                ),
-                                SizedBox(width: 6),
-                                Text(
-                                  'Call',
-                                  style: AppTextStyles(context)
-                                      .display14W600
-                                      .copyWith(
-                                        color: isActive
-                                            ? AppColors.selextedindexcolor
-                                            : AppColors.grayLight,
-                                      ),
-                                ).paddingOnly(left: 6, right: 12),
-                              ],
-                            ),
+                        ),
+                      ).paddingOnly(bottom: 1.6.h, right: 4.w * 0.9),
+                      SizedBox(
+                        width: 45,
+                        height: 45,
+                        child: FloatingActionButton(
+                          heroTag: 'directions',
+                          child: Icon(
+                            Icons.directions,
+                            size: 29,
+                            color: AppColors.white,
                           ),
-                        ).paddingOnly(left: 4.w * 0.9),
-                        InkWell(
+                          backgroundColor:
+                          isActive ? AppColors.blue : AppColors.grayLight,
+                          shape: RoundedRectangleBorder(
+                            borderRadius:
+                            BorderRadius.circular(AppSizes.radius_50),
+                          ),
+                          onPressed: () {
+                            if (isActive) {
+                              LatLng vehiclePosition = LatLng(
+                                controller.deviceDetail.value?.trackingData
+                                    ?.location?.latitude ??
+                                    0.0,
+                                controller.deviceDetail.value?.trackingData
+                                    ?.location?.longitude ??
+                                    0.0,
+                              );
+                              trackController.openMaps(data: vehiclePosition);
+                            }
+                          },
+                        ),
+                      ).paddingOnly(
+                        right: 4.w * 0.9,
+                        bottom: 16 + 22 ,
+                      ),
+                      _infoWidget(context, isNotExpired, isActive),
+                      Container(
+                        height: 24,
+                        color: Colors.black,
+                      )
+                    ] else
+                      _fullInfoWidget(context, isNotExpired, isActive)
+                    // Directions button
+                  ],
+                ),
+                if (!controller.expandInfo.value) ...[
+                  Positioned(
+                      bottom: MediaQuery.of(context).size.height * ((205 / 812) - 0.067) +
+                          24,
+                      child: SpeedometerWidget(
+                          color: (controller.deviceDetail.value?.trackingData?.currentSpeed ?? 0) == 0
+                              ? AppColors.color_434345
+                              : (controller.deviceDetail.value?.maxSpeed != null
+                              ? ((controller.deviceDetail.value?.trackingData
+                              ?.currentSpeed ??
+                              0) >
+                              (controller.deviceDetail.value?.maxSpeed ??
+                                  0)
+                              ? AppColors.color_ED1C24
+                              : AppColors.selextedindexcolor)
+                              : AppColors.selextedindexcolor),
+                          speed: ((controller.deviceDetail.value?.trackingData
+                              ?.currentSpeed ??
+                              0)
+                              .toStringAsFixed(0) ??
+                              "N/A"),
+                          distance: controller.deviceDetail.value?.trackingData?.dailyDistance ?? 0)),
+                  Positioned(
+                    bottom: (MediaQuery.of(context).size.height * ((215 / 812))),
+                    child: Container(
+                      width: context.width,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          InkWell(
                             onTap: () {
-                              if (isActive) {
-                                trackController.showEditView(
-                                    controller.deviceDetail.value?.imei ?? "");
-                                controller.closeSocket();
+                              if (isActive &&
+                                  (controller.deviceDetail.value?.mobileNo
+                                      ?.isNotEmpty ??
+                                      false)) {
+                                Utils.makePhoneCall(
+                                    '${controller.deviceDetail.value?.mobileNo}');
+                              } else if (!(controller
+                                  .deviceDetail.value?.mobileNo?.isNotEmpty ??
+                                  false)) {
+                                Get.snackbar(
+                                  "",
+                                  "",
+                                  snackStyle: SnackStyle.FLOATING,
+                                  padding: EdgeInsets.fromLTRB(10, 0, 10, 20),
+                                  messageText: Text(
+                                    "Please add a calling number in manage device",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w800,
+                                      color: AppColors.selextedindexcolor,
+                                    ),
+                                  ),
+                                  backgroundColor: AppColors.black,
+                                  colorText: AppColors.selextedindexcolor,
+                                  snackPosition: SnackPosition.BOTTOM,
+                                );
                               }
                             },
                             child: Container(
                               height: 45,
                               padding: EdgeInsets.symmetric(
-                                  vertical: 8, horizontal: 18),
+                                  horizontal: 10, vertical: 8),
                               decoration: BoxDecoration(
-                                  color: Colors.black,
-                                  borderRadius: BorderRadius.circular(
-                                      AppSizes.radius_50)),
-                              child: Center(
-                                child: Text(
-                                  "Manage",
-                                  style: AppTextStyles(context)
-                                      .display14W600
-                                      .copyWith(
-                                        color: isActive
-                                            ? AppColors.selextedindexcolor
-                                            : AppColors.grayLight,
-                                      ),
-                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    blurRadius: 2,
+                                    spreadRadius: 1,
+                                    color:
+                                    const Color(0xff000000).withOpacity(0.25),
+                                    offset: Offset(0, 0),
+                                  ),
+                                ],
+                                borderRadius:
+                                BorderRadius.circular(AppSizes.radius_50),
+                                color: AppColors.black,
                               ),
-                            )).paddingOnly(right: 4.w * 0.9),
-                      ],
+                              child: Row(
+                                children: [
+                                  SizedBox(
+                                    height: 30,
+                                    width: 30,
+                                    child: SvgPicture.asset(
+                                      "assets/images/svg/new_call_icon.svg",
+                                      colorFilter: ColorFilter.mode(
+                                          isActive
+                                              ? AppColors.selextedindexcolor
+                                              : AppColors.grayLight,
+                                          BlendMode.srcIn),
+                                    ),
+                                  ),
+                                  SizedBox(width: 6),
+                                  Text(
+                                    'Call',
+                                    style: AppTextStyles(context)
+                                        .display14W600
+                                        .copyWith(
+                                      color: isActive
+                                          ? AppColors.selextedindexcolor
+                                          : AppColors.grayLight,
+                                    ),
+                                  ).paddingOnly(left: 6, right: 12),
+                                ],
+                              ),
+                            ),
+                          ).paddingOnly(left: 4.w * 0.9),
+                          InkWell(
+                              onTap: () {
+                                if (isActive) {
+                                  trackController.showEditView(
+                                      controller.deviceDetail.value?.imei ?? "");
+                                  controller.closeSocket();
+                                }
+                              },
+                              child: Container(
+                                height: 45,
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 8, horizontal: 18),
+                                decoration: BoxDecoration(
+                                    color: Colors.black,
+                                    borderRadius: BorderRadius.circular(
+                                        AppSizes.radius_50)),
+                                child: Center(
+                                  child: Text(
+                                    "Manage",
+                                    style: AppTextStyles(context)
+                                        .display14W600
+                                        .copyWith(
+                                      color: isActive
+                                          ? AppColors.selextedindexcolor
+                                          : AppColors.grayLight,
+                                    ),
+                                  ),
+                                ),
+                              )).paddingOnly(right: 4.w * 0.9),
+                        ],
+                      ),
                     ),
                   ),
-                ),
+                ],
               ],
-            ],
-          ),
-        );
-      },
-    );
+            ),
+          );
+        },
+      )
+      );
   }
 
   List<Widget> _buildVehicleItems(BuildContext context) {
@@ -614,13 +617,14 @@ class _TrackDeviceViewState extends State<TrackDeviceView>
             controller.deviceDetail.value?.trackingData?.network == null
                 ? null
                 : controller.deviceDetail.value?.trackingData?.network ==
-                    "Connected",
+                "Connected",
             'assets/images/svg/ic_signal.svg'),
       if (displayParameters?.gps == true)
         _buildVehicleItem(
             context,
             'GPS',
-            controller.deviceDetail.value?.trackingData?.gps ?? false,
+            !trackController.checkIfOffline(
+                vehicle: controller.deviceDetail.value),
             'assets/images/svg/gps_icon.svg'),
       if (displayParameters?.engine == true)
         _buildVehicleItem(
@@ -676,13 +680,13 @@ class _TrackDeviceViewState extends State<TrackDeviceView>
                 backgroundColor: isActive == null
                     ? AppColors.color_f4f4f4
                     : (isActive
-                        ? AppColors.selextedindexcolor
-                        : AppColors.color_f4f4f4),
+                    ? AppColors.selextedindexcolor
+                    : AppColors.color_f4f4f4),
                 child: SvgPicture.asset(iconPath,
                     colorFilter:
-                        ColorFilter.mode(AppColors.black, BlendMode.srcIn)),
+                    ColorFilter.mode(AppColors.black, BlendMode.srcIn)),
               ),
-              SizedBox(height: 1.h),
+              SizedBox(height: 0.5.h),
               FittedBox(
                 fit: BoxFit.contain,
                 child: Text(
@@ -726,7 +730,7 @@ class _TrackDeviceViewState extends State<TrackDeviceView>
       }
     } else {
       if (controller
-              .deviceDetail.value?.trackingData?.lastUpdateTime?.isNotEmpty ??
+          .deviceDetail.value?.trackingData?.lastUpdateTime?.isNotEmpty ??
           false) {
         try {
           final lastUpdate = DateTime.tryParse(
@@ -748,7 +752,7 @@ class _TrackDeviceViewState extends State<TrackDeviceView>
 
     return Container(
       height: MediaQuery.of(context).size.height * (0.32 - 0.067),
-      padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.04),
+      // padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.04),
       decoration: BoxDecoration(
           color: AppColors.white,
           borderRadius: BorderRadius.only(
@@ -884,10 +888,10 @@ class _TrackDeviceViewState extends State<TrackDeviceView>
             },
             child: Center(
                 child: SvgPicture.asset(
-              "assets/images/svg/up_arrow_button.svg",
-              width: 24,
-              height: 24,
-            )),
+                  "assets/images/svg/up_arrow_button.svg",
+                  width: 24,
+                  height: 24,
+                )),
           )
         ],
       ).paddingSymmetric(horizontal: 4.w * 0.9),
@@ -899,12 +903,12 @@ class _TrackDeviceViewState extends State<TrackDeviceView>
     String date = 'Update unavailable';
     String time = "";
     if (controller
-            .deviceDetail.value?.trackingData?.lastUpdateTime?.isNotEmpty ??
+        .deviceDetail.value?.trackingData?.lastUpdateTime?.isNotEmpty ??
         false) {
       date =
-          '${DateFormat("dd MMM y").format(DateTime.parse(controller.deviceDetail.value?.trackingData?.lastUpdateTime ?? "").toLocal()) ?? ''}';
+      '${DateFormat("dd MMM y").format(DateTime.parse(controller.deviceDetail.value?.trackingData?.lastUpdateTime ?? "").toLocal()) ?? ''}';
       time =
-          '${DateFormat("HH:mm").format(DateTime.parse(controller.deviceDetail.value?.trackingData?.lastUpdateTime ?? "").toLocal()) ?? ''}';
+      '${DateFormat("HH:mm").format(DateTime.parse(controller.deviceDetail.value?.trackingData?.lastUpdateTime ?? "").toLocal()) ?? ''}';
     }
     return Column(
       children: [
@@ -939,7 +943,7 @@ class _TrackDeviceViewState extends State<TrackDeviceView>
                     Obx(() {
                       bool isActive = true;
                       if (controller.deviceDetail.value?.status
-                              ?.toLowerCase() !=
+                          ?.toLowerCase() !=
                           "active") {
                         isActive = false;
                       }
@@ -947,12 +951,12 @@ class _TrackDeviceViewState extends State<TrackDeviceView>
                         onTap: () {
                           if (isActive &&
                               (controller.deviceDetail.value?.mobileNo
-                                      ?.isNotEmpty ??
+                                  ?.isNotEmpty ??
                                   false)) {
                             Utils.makePhoneCall(
                                 '${controller.deviceDetail.value?.mobileNo}');
                           } else if (!(controller
-                                  .deviceDetail.value?.mobileNo?.isNotEmpty ??
+                              .deviceDetail.value?.mobileNo?.isNotEmpty ??
                               false)) {
                             Get.snackbar(
                               "",
@@ -975,23 +979,23 @@ class _TrackDeviceViewState extends State<TrackDeviceView>
                         },
                         child: Container(
                           padding:
-                              EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                          EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                           decoration: BoxDecoration(
                             border: Border.all(
                                 color: !isActive
                                     ? AppColors.grayLight
                                     : AppColors.blue),
                             borderRadius:
-                                BorderRadius.circular(AppSizes.radius_4),
+                            BorderRadius.circular(AppSizes.radius_4),
                           ),
                           child: Text(
                             'Call Driver',
                             style:
-                                AppTextStyles(context).display14W600.copyWith(
-                                      color: isActive
-                                          ? AppColors.blue
-                                          : AppColors.grayLight,
-                                    ),
+                            AppTextStyles(context).display14W600.copyWith(
+                              color: isActive
+                                  ? AppColors.blue
+                                  : AppColors.grayLight,
+                            ),
                           ),
                         ),
                       );
@@ -999,7 +1003,7 @@ class _TrackDeviceViewState extends State<TrackDeviceView>
                     Obx(() {
                       bool isActive = true;
                       if (controller.deviceDetail.value?.status
-                              ?.toLowerCase() !=
+                          ?.toLowerCase() !=
                           "active") {
                         isActive = false;
                       }
@@ -1012,23 +1016,23 @@ class _TrackDeviceViewState extends State<TrackDeviceView>
                         },
                         child: Container(
                           padding:
-                              EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                          EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                           decoration: BoxDecoration(
                             border: Border.all(
                                 color: !isActive
                                     ? AppColors.grayLight
                                     : AppColors.blue),
                             borderRadius:
-                                BorderRadius.circular(AppSizes.radius_4),
+                            BorderRadius.circular(AppSizes.radius_4),
                           ),
                           child: Text(
                             'Manage Vehicle',
                             style:
-                                AppTextStyles(context).display14W600.copyWith(
-                                      color: isActive
-                                          ? AppColors.blue
-                                          : AppColors.grayLight,
-                                    ),
+                            AppTextStyles(context).display14W600.copyWith(
+                              color: isActive
+                                  ? AppColors.blue
+                                  : AppColors.grayLight,
+                            ),
                           ),
                         ),
                       );
@@ -1036,21 +1040,21 @@ class _TrackDeviceViewState extends State<TrackDeviceView>
                   ],
                 ).paddingOnly(top: 16).paddingSymmetric(horizontal: 4.w * 0.9),
                 Obx(
-                  () => FutureBuilder<String>(
+                      () => FutureBuilder<String>(
                     future: (controller.deviceDetail.value?.trackingData
-                                    ?.location?.latitude !=
-                                null &&
-                            controller.deviceDetail.value?.trackingData
-                                    ?.location?.longitude !=
-                                null)
+                        ?.location?.latitude !=
+                        null &&
+                        controller.deviceDetail.value?.trackingData
+                            ?.location?.longitude !=
+                            null)
                         ? Utils().getAddressFromLatLong(
-                            controller.deviceDetail.value?.trackingData
-                                    ?.location?.latitude ??
-                                0.0,
-                            controller.deviceDetail.value?.trackingData
-                                    ?.location?.longitude ??
-                                0.0,
-                          )
+                      controller.deviceDetail.value?.trackingData
+                          ?.location?.latitude ??
+                          0.0,
+                      controller.deviceDetail.value?.trackingData
+                          ?.location?.longitude ??
+                          0.0,
+                    )
                         : Future.value("Address Unavailable"),
                     builder: (context, snapshot) {
                       String address = "Fetching Address...";
@@ -1067,14 +1071,15 @@ class _TrackDeviceViewState extends State<TrackDeviceView>
                       String date = 'Update unavailable';
                       String time = "";
                       if (vehicleInfo
-                              .trackingData?.lastUpdateTime?.isNotEmpty ??
+                          .trackingData?.lastUpdateTime?.isNotEmpty ??
                           false) {
                         date = date =
-                            '${DateFormat("dd MMM y").format(DateTime.parse(vehicleInfo.trackingData?.lastUpdateTime ?? "").toLocal()) ?? ''}';
+                        '${DateFormat("dd MMM y").format(DateTime.parse(vehicleInfo.trackingData?.lastUpdateTime ?? "").toLocal()) ?? ''}';
                         time =
-                            '${DateFormat("HH:mm").format(DateTime.parse(vehicleInfo.trackingData?.lastUpdateTime ?? "").toLocal()) ?? ''}';
+                        '${DateFormat("HH:mm").format(DateTime.parse(vehicleInfo.trackingData?.lastUpdateTime ?? "").toLocal()) ?? ''}';
                       }
                       return VehicleDataWidget(
+
                         isLoading: controller.isLoading,
                         summary: controller.summaryTrip,
                         expiryDate: vehicleInfo.subscriptionExp,
@@ -1084,31 +1089,31 @@ class _TrackDeviceViewState extends State<TrackDeviceView>
                         motion: (trackingData?.motion ?? "N/A").toString(),
                         bluetooth: (trackingData?.rssi ?? "").toString(),
                         extBattery:
-                            (trackingData?.externalBattery ?? "N/A").toString(),
+                        (trackingData?.externalBattery ?? "N/A").toString(),
                         intBattery:
-                            (trackingData?.internalBattery ?? "N/A").toString(),
+                        (trackingData?.internalBattery ?? "N/A").toString(),
                         displayParameters: vehicleInfo.displayParameters,
                         vehicleName: vehicleInfo.vehicleNo ?? '-',
                         address: address,
                         lastUpdate: date + " " + time,
                         odo: (vehicleInfo.trackingData?.totalDistanceCovered ??
-                                "")
+                            "")
                             .toString(),
                         fuel: controller.fuelValue.value,
                         speed: ((controller.deviceDetail.value?.trackingData
-                                        ?.currentSpeed ??
-                                    0)
-                                .toStringAsFixed(0) ??
+                            ?.currentSpeed ??
+                            0)
+                            .toStringAsFixed(0) ??
                             "N/A"),
                         deviceId: vehicleInfo.deviceId.toString() ?? '',
                         doorIsActive: vehicleInfo.trackingData?.door,
                         doorSubTitle: vehicleInfo.trackingData?.door == null
                             ? "N/A"
                             : ((vehicleInfo.trackingData!.door!)
-                                ? "OPEN"
-                                : "CLOSED"),
+                            ? "OPEN"
+                            : "CLOSED"),
                         engineIsActive:
-                            vehicleInfo.trackingData?.ignition?.status ?? false,
+                        vehicleInfo.trackingData?.ignition?.status ?? false,
                         engineSubTitle: "N/A",
                         parkingIsActive: vehicleInfo.parking,
                         parkingSubTitle: vehicleInfo.parking == null
@@ -1120,35 +1125,35 @@ class _TrackDeviceViewState extends State<TrackDeviceView>
                         immobilizerSubTitle: vehicleInfo.immobiliser == null
                             ? "N/A"
                             : ((vehicleInfo.immobiliser! == "Stop")
-                                ? "ON"
-                                : "OFF"),
+                            ? "ON"
+                            : "OFF"),
                         geofenceIsActive: vehicleInfo.locationStatus ?? false,
                         geofenceSubTitle:
-                            vehicleInfo.area != null ? "ON" : "OFF",
+                        vehicleInfo.area != null ? "ON" : "OFF",
                         gpsIsActive: !trackController.checkIfOffline(
                             vehicle: controller.deviceDetail.value),
                         gpsSubTitle: vehicleInfo.trackingData?.gps == null
                             ? "N/A"
                             : ((vehicleInfo.trackingData!.gps!) ? "ON" : "OFF"),
                         networkIsActive: vehicleInfo.trackingData?.network ==
-                                null
+                            null
                             ? null
                             : vehicleInfo.trackingData?.network == "Connected",
                         networkSubTitle: vehicleInfo.trackingData?.network ==
-                                null
+                            null
                             ? "N/A"
                             : (vehicleInfo.trackingData?.network == "Connected")
-                                ? "AVAILABLE"
-                                : "OFF",
+                            ? "AVAILABLE"
+                            : "OFF",
                         acIsActive: vehicleInfo.trackingData?.ac,
                         acSubTitle: vehicleInfo.trackingData?.ac == null
                             ? "N/A"
                             : ((vehicleInfo.trackingData!.ac!) ? "ON" : "OFF"),
                         chargingIsActive:
-                            (vehicleInfo.trackingData?.internalBattery ?? 1) <=
-                                    0
-                                ? true
-                                : false,
+                        (vehicleInfo.trackingData?.internalBattery ?? 1) <=
+                            0
+                            ? true
+                            : false,
                         chargingSubTitle: "N/A",
                         imei: vehicleInfo.imei ?? "",
                         isBottomSheet: true,
@@ -1176,8 +1181,8 @@ class _TrackDeviceViewState extends State<TrackDeviceView>
 
   Widget _buildMenuItem(
       {required String icon,
-      required String label,
-      required VoidCallback onTap}) {
+        required String label,
+        required VoidCallback onTap}) {
     return GestureDetector(
       onTap: onTap,
       child: Row(
