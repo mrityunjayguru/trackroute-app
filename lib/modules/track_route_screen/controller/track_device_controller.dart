@@ -6,6 +6,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:track_route_pro/config/theme/app_colors.dart';
 import 'package:track_route_pro/modules/track_route_screen/controller/track_route_controller.dart';
 import 'package:track_route_pro/service/model/presentation/track_route/Summary.dart';
 import 'package:track_route_pro/service/model/presentation/track_route/track_route_vehicle_list.dart';
@@ -98,7 +99,7 @@ class DeviceController extends GetxController with WidgetsBindingObserver {
       animationController.stop();
     }
   }
-  
+
   Future<void> loadUser() async {
     String? userId = await AppPreference.getStringFromSF(Constants.userId);
     devicesOwnerID.value = userId ?? '';
@@ -196,7 +197,6 @@ class DeviceController extends GetxController with WidgetsBindingObserver {
   }
 
   LatLng? oldLatLng;
-
 
   Future<void> devicesByDetails(
       {bool updateCamera = true,
@@ -314,7 +314,21 @@ class DeviceController extends GetxController with WidgetsBindingObserver {
                     ]);
                   }
                 });
-
+              circles.value = [];
+              if ((data?.locationStatus ?? false) &&
+                  (data?.location?.latitude != null &&
+                      data?.location?.longitude != null)) {
+                circles.value.add(Circle(
+                  circleId: CircleId("GEOFENCE${data?.imei}"),
+                  fillColor: AppColors.selextedindexcolor.withOpacity(0.4),
+                  strokeWidth: 2,
+                  strokeColor: AppColors.selextedindexcolor.withOpacity(0.41),
+                  center: LatLng(data?.location?.latitude ?? 0,
+                      data?.location?.longitude ?? 0),
+                  radius: Utils.parseDouble(data: data?.area),
+                ));
+                circles.value = List.from(circles);
+              }
               animationController.forward(from: 0.0);
             }
 

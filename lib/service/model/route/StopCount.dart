@@ -10,26 +10,31 @@ import 'Location.dart';
 
 class StopCount {
   StopCount({
-
     this.stopDuration,
-      this.id, 
-      this.imei, 
-      this.igitionOF, 
-      this.distanceFromA,
-      this.location,
-      this.createdAt, 
-      this.updatedAt,
-      this.v,});
+    this.id,
+    this.imei,
+    this.igitionOF,
+    this.distanceFromA,
+    this.location,
+    this.createdAt,
+    this.updatedAt,
+    this.from,
+    this.to,
+    this.v,
+  });
 
   StopCount.fromJson(dynamic json) {
     id = json['_id'];
     imei = json['imei'];
     igitionOF = json['igitionOF'];
-    location = json['location'] != null ? Location.fromJson(json['location']) : null;
+    location =
+        json['location'] != null ? Location.fromJson(json['location']) : null;
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
     distanceFromA = json['distanceFromA'].toString();
     stopDuration = json['stopDuration'].toString();
+    from = json['stopFrom'];
+    to = json['stopTo'];
     v = json['__v'];
   }
   String? id;
@@ -40,6 +45,9 @@ class StopCount {
   String? updatedAt;
   String? distanceFromA;
   String? stopDuration;
+  String? from;
+  String? to;
+
   int? v;
 
   Map<String, dynamic> toJson() {
@@ -52,8 +60,11 @@ class StopCount {
     }
     map['createdAt'] = createdAt;
     map['updatedAt'] = updatedAt;
+    map['distanceFromA'] = distanceFromA;
+    map['stopDuration'] = stopDuration;
+    map['stopFrom'] = from;
+    map['stopTo'] = to;
     map['__v'] = v;
     return map;
   }
-
 }

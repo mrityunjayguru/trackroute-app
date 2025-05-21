@@ -186,7 +186,7 @@ class HistoryController extends GetxController {
 
             processedData = processList(processedData);
 
-            await showMapData(response.data);
+            await showMapData(processedData);
             showLoader.value = false;
 
             /* if (vehicleList[0].trackingData?.location?.latitude != null &&

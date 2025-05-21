@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:track_route_pro/modules/route_history/controller/replay_controller.dart';
 
 import '../../../constants/project_urls.dart';
@@ -25,6 +26,8 @@ class LocationController extends GetxController {
   final RxString currDist = "".obs;
   final RxString address = "".obs;
   final RxString stopDuration = "".obs;
+  final RxString fromStop = "".obs;
+  final RxString toStop = "".obs;
   final RxInt currentIndex = 0.obs;
   final RxBool isPlaying = false.obs;
   final RxBool timerOn = false.obs;
@@ -42,7 +45,6 @@ class LocationController extends GetxController {
       vsync: vsync,
     );
   }
-
 
   void loadData(List<RouteHistoryResponse> data) async {
     final controller = Get.isRegistered<DeviceController>()
@@ -64,26 +66,30 @@ class LocationController extends GetxController {
     markers.value = {
       Marker(
         markerId: const MarkerId("playback_marker"),
-        position: LatLng(controller.deviceDetail.value?.trackingData?.location?.latitude ??0, controller.deviceDetail.value?.trackingData?.location?.longitude ??0),
+        position: LatLng(
+            controller.deviceDetail.value?.trackingData?.location?.latitude ??
+                0,
+            controller.deviceDetail.value?.trackingData?.location?.longitude ??
+                0),
         icon: markerIcon ?? BitmapDescriptor.defaultMarker,
         flat: true,
-        rotation: Utils.parseDouble(data: controller.deviceDetail.value?.trackingData?.course ?? "0"),
+        rotation: Utils.parseDouble(
+            data: controller.deviceDetail.value?.trackingData?.course ?? "0"),
       )
     };
     // _updateMap();
   }
 
-  void _startPlayback()  {
-
+  void _startPlayback() {
     _playbackTimer?.cancel();
 
     int interval = (baseInterval / playbackSpeed.value).round();
-    _playbackTimer = Timer.periodic(Duration(milliseconds: interval), (timer) async {
+    _playbackTimer =
+        Timer.periodic(Duration(milliseconds: interval), (timer) async {
       if (currentIndex.value < locations.length - 1) {
         if (!timerOn.value) timerOn.value = true;
         currentIndex.value++;
         _setData();
-
       } else {
         timerOn.value = false;
         isPlaying.value = false;
@@ -91,11 +97,10 @@ class LocationController extends GetxController {
         timer.cancel();
       }
 
-      if(currentIndex.value == 1){
+      if (currentIndex.value == 1) {
         log("CURR INDEX ${currentIndex.value}");
         var replayCon = Get.isRegistered<ReplayController>()
-            ? Get.find<
-            ReplayController>() // Find if already registered
+            ? Get.find<ReplayController>() // Find if already registered
             : Get.put(ReplayController());
         final data = locations[currentIndex.value];
         final lat = data.trackingData?.location?.latitude ?? 0;
@@ -112,8 +117,6 @@ class LocationController extends GetxController {
         );
       }
       _updateMap();
-
-
     });
   }
 
@@ -135,32 +138,34 @@ class LocationController extends GetxController {
 
     final position = LatLng(lat, lng);
     /*marker.value = {Marker(
-        markerId: MarkerId("playback_marker"),
-        position: position,
-        icon: markerIcon ?? BitmapDescriptor.defaultMarker,
-        flat: true,
-        rotation: Utils.parseDouble(data: data.trackingData?.course) ?? 0)};
+          markerId: MarkerId("playback_marker"),
+          position: position,
+          icon: markerIcon ?? BitmapDescriptor.defaultMarker,
+          flat: true,
+          rotation: Utils.parseDouble(data: data.trackingData?.course) ?? 0)};
 
-    markers.value = [newMarker];*/
-
+      markers.value = [newMarker];*/
   }
 
   void _updateMap() {
     var replayCon = Get.isRegistered<ReplayController>()
-        ? Get.find<
-        ReplayController>() // Find if already registered
+        ? Get.find<ReplayController>() // Find if already registered
         : Get.put(ReplayController());
     final data = locations[currentIndex.value];
     final lat = data.trackingData?.location?.latitude ?? 0;
     final lng = data.trackingData?.location?.longitude ?? 0;
     final newLatLng = LatLng(lat, lng);
-    double rotation = currentIndex.value==0? Utils.parseDouble(data: data.trackingData?.course) :Utils.parseDouble(data: locations[currentIndex.value-1].trackingData?.course) ;
+    double rotation = currentIndex.value == 0
+        ? Utils.parseDouble(data: data.trackingData?.course)
+        : Utils.parseDouble(
+            data: locations[currentIndex.value - 1].trackingData?.course);
     if (oldLatLng == null) {
       oldLatLng = newLatLng;
     }
 
     super.onInit();
-    animation = LatLngTween(begin: oldLatLng ?? newLatLng, end: newLatLng).animate(animationController)
+    animation = LatLngTween(begin: oldLatLng ?? newLatLng, end: newLatLng)
+        .animate(animationController)
       ..addListener(() {
         final position = animation!.value;
         markers.value = {
@@ -173,11 +178,10 @@ class LocationController extends GetxController {
           )
         };
 
-
         final timeDiff = DateTime.now().difference(timeStamp).inMilliseconds;
-        if(timeDiff > 1000){
+        if (timeDiff > 1000) {
           replayCon.mapController.getZoomLevel().then((currentZoom) async {
-            if(currentIndex.value!=1){
+            if (currentIndex.value != 1) {
               replayCon.mapController?.animateCamera(
                 CameraUpdate.newCameraPosition(
                   CameraPosition(
@@ -190,9 +194,7 @@ class LocationController extends GetxController {
 
             timeStamp = DateTime.now();
           });
-
         }
-
       });
 
     animationController.forward(from: 0.0);
@@ -201,7 +203,6 @@ class LocationController extends GetxController {
 
   Future<void> updateMarkers() async {
     // Get the map controller
-
   }
 
   void updateSpeed() {
@@ -226,27 +227,24 @@ class LocationController extends GetxController {
 
   void togglePlay() async {
     var replayCon = Get.isRegistered<ReplayController>()
-        ? Get.find<
-        ReplayController>() // Find if already registered
+        ? Get.find<ReplayController>() // Find if already registered
         : Get.put(ReplayController());
     isPlaying.toggle();
     if (isPlaying.value) {
       _startPlayback();
       replayCon.unselectStops();
-
     } else {
       _playbackTimer?.cancel();
-    _setAddress();
+      _setAddress();
     }
   }
 
   void onSliderChanged(double value) {
     var replayCon = Get.isRegistered<ReplayController>()
-        ? Get.find<
-        ReplayController>() // Find if already registered
+        ? Get.find<ReplayController>() // Find if already registered
         : Get.put(ReplayController());
     super.onInit();
-    if(!timerOn.value)timerOn.value = true;
+    if (!timerOn.value) timerOn.value = true;
     currentIndex.value = value.toInt();
     _setData();
     _updateMap();
@@ -254,38 +252,53 @@ class LocationController extends GetxController {
     replayCon.unselectStops();
   }
 
-  _setData(){
+  _setData() {
     time.value =
-        locations.value[currentIndex.value].dateFiled?.split(" ")[1] ??
-            "N/A";
+        locations.value[currentIndex.value].dateFiled?.split(" ")[1] ?? "N/A";
     speed.value = Utils.parseDouble(
-        data: locations
-            .value[currentIndex.value].trackingData?.currentSpeed)
+            data:
+                locations.value[currentIndex.value].trackingData?.currentSpeed)
         .toInt()
         .toString();
     currDist.value = Utils.parseDouble(
-        data: locations
-            .value[currentIndex.value].trackingData?.distanceFromA).toStringAsFixed(2);
+            data:
+                locations.value[currentIndex.value].trackingData?.distanceFromA)
+        .toStringAsFixed(2);
   }
 
-  _setAddress() async{
-    address.value = await Utils().getAddressFromLatLong(locations
-        .value[currentIndex.value].trackingData?.location?.latitude ?? 0, locations
-        .value[currentIndex.value].trackingData?.location?.longitude ?? 0);
+  _setAddress() async {
+    address.value = await Utils().getAddressFromLatLong(
+        locations.value[currentIndex.value].trackingData?.location?.latitude ??
+            0,
+        locations.value[currentIndex.value].trackingData?.location?.longitude ??
+            0);
   }
 
+  void setStopData({
+    required String speedStop,
+    required String timeStop,
+    required String currDistStop,
+    required String stopDur,
+    required String fromstop,
+    required String tostop,
+    required LatLng pos,
+  }) async {
+    final dateFormat = DateFormat.Hm(); // HH:mm format
 
-  void setStopData({required String speedStop, required String timeStop, required String currDistStop, required String stopDur, required LatLng pos}) async{
-    time.value =timeStop;
-    speed.value = Utils.parseDouble(
-        data: speedStop)
-        .toInt()
-        .toString();
-    currDist.value = Utils.parseDouble(
-        data: currDistStop).toStringAsFixed(2);
+    time.value = timeStop;
+
+    /// Format `fromstop` and `tostop` as HH:mm
+    fromStop.value = dateFormat.format(DateTime.parse(fromstop));
+    toStop.value = dateFormat.format(DateTime.parse(tostop));
+
+    speed.value = Utils.parseDouble(data: speedStop).toInt().toString();
+    currDist.value = Utils.parseDouble(data: currDistStop).toStringAsFixed(2);
     stopDuration.value = stopDur;
-    address.value = await Utils().getAddressFromLatLong(pos.latitude, pos.longitude);
 
+    address.value = await Utils().getAddressFromLatLong(
+      pos.latitude,
+      pos.longitude,
+    );
   }
 }
 
@@ -295,8 +308,7 @@ class LatLngTween extends Tween<LatLng> {
 
   @override
   LatLng lerp(double t) => LatLng(
-    begin!.latitude + (end!.latitude - begin!.latitude) * t,
-    begin!.longitude + (end!.longitude - begin!.longitude) * t,
-  );
+        begin!.latitude + (end!.latitude - begin!.latitude) * t,
+        begin!.longitude + (end!.longitude - begin!.longitude) * t,
+      );
 }
-

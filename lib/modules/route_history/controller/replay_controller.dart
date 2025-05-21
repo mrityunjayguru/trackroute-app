@@ -66,22 +66,6 @@ class ReplayController extends GetxController {
     selectStopIndex.value = -1;
   }
 
-  double getBearing(LatLng start, LatLng end) {
-    final lat1 = radians(start.latitude);
-    final lon1 = radians(start.longitude);
-    final lat2 = radians(end.latitude);
-    final lon2 = radians(end.longitude);
-
-    final dLon = lon2 - lon1;
-    final y = sin(dLon) * cos(lat2);
-    final x = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dLon);
-
-    final bearing = atan2(y, x);
-    return (degrees(bearing) + 360) % 360;
-  }
-
-  double radians(double degree) => degree * pi / 180;
-  double degrees(double radian) => radian * 180 / pi;
   Future<void> showMapData() async {
     polylines.value = [];
     List<TrackingData> polylineCoordinates = [];
@@ -122,23 +106,32 @@ class ReplayController extends GetxController {
     try {
       BitmapDescriptor arrowIcon = await svgAssetToBitmapDescriptor(
           "assets/images/svg/arrow-up.svg",
-          size: Size(15, 15));
-      for (int i = 0; i < vehicleListReplay.length - 1; i += step) {
-        final p1 = vehicleListReplay[i];
-        /*  final p2 = polylineCoordinates[i + 1];
+          size: Size(12, 12));
 
-        // Get the bearing between the two points
-        final bearing = getBearing(p1, p2);
-*/
-        // Create the arrow marker
+      for (int i = 0; i < vehicleListReplay.length - step; i += step) {
+        final current = vehicleListReplay[i];
+        final next = vehicleListReplay[i + step];
+
+        final currentLatLng = LatLng(
+          current.trackingData?.location?.latitude ?? 0.0,
+          current.trackingData?.location?.longitude ?? 0.0,
+        );
+
+        final nextLatLng = LatLng(
+          next.trackingData?.location?.latitude ?? 0.0,
+          next.trackingData?.location?.longitude ?? 0.0,
+        );
+
+        final bearing = currentLatLng != nextLatLng
+            ? getBearing(currentLatLng, nextLatLng)
+            : Utils.parseDouble(data: current.trackingData?.course);
+
         final arrowMarker = Marker(
           markerId: MarkerId('arrow_$i'),
-          position: LatLng(p1.trackingData?.location?.latitude ?? 0,
-              p1.trackingData?.location?.longitude ?? 0),
-          rotation: Utils.parseDouble(data: p1.trackingData?.course),
+          position: currentLatLng,
+          rotation: bearing, // ✅ Set correct bearing
           flat: true,
           icon: arrowIcon,
-          // Use the adjusted bearing for rotation
           anchor: const Offset(0.5, 0.5),
         );
 
@@ -154,6 +147,19 @@ class ReplayController extends GetxController {
     // await _addMarkerAtStart();
     _addNumberStops();
     _zoomToMarkers();
+  }
+
+  double getBearing(LatLng start, LatLng end) {
+    final lat1 = start.latitude * pi / 180;
+    final lon1 = start.longitude * pi / 180;
+    final lat2 = end.latitude * pi / 180;
+    final lon2 = end.longitude * pi / 180;
+
+    final dLon = lon2 - lon1;
+    final y = sin(dLon) * cos(lat2);
+    final x = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dLon);
+    final bearing = atan2(y, x);
+    return (bearing * 180 / pi + 360) % 360;
   }
 
   Future<void> _addNumberStops() async {
@@ -194,6 +200,8 @@ class ReplayController extends GetxController {
             imei: stops[i].imei ?? "",
             lat: stops[i].location?.latitude,
             long: stops[i].location?.longitude,
+            from: stops[i].from,
+            to: stops[i].to,
             speed: 0,
             dist: stops[i].distanceFromA,
             time: time);
@@ -259,6 +267,8 @@ class ReplayController extends GetxController {
       String? time,
       String? stopDur,
       String? dist,
+      String? from,
+      String? to,
       required String imei,
       required int index}) async {
     BitmapDescriptor markerIcon = await createCustomIconWithNumber(index,
@@ -287,6 +297,8 @@ class ReplayController extends GetxController {
             speed: speed.toString() ?? "0",
             dist: dist ?? "",
             long: long,
+            from: from ?? "",
+            to: to ?? "",
             lat: lat));
     return marker;
   }
@@ -297,6 +309,8 @@ class ReplayController extends GetxController {
       required String stopDur,
       required String time,
       required String dist,
+      required String from,
+      required String to,
       required String speed}) async {
     if (!locController.isPlaying.value) {
       selectStopIndex.value = index;
@@ -305,6 +319,8 @@ class ReplayController extends GetxController {
           pos: LatLng(lat ?? 0, long ?? 0),
           speedStop: speed,
           timeStop: time,
+          fromstop: from,
+          tostop: to,
           currDistStop: dist);
       BitmapDescriptor markerIcon = await createCustomIconWithNumber(index,
           isselected: true,

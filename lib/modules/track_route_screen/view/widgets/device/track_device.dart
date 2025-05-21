@@ -620,8 +620,7 @@ class _TrackDeviceViewState extends State<TrackDeviceView>
         _buildVehicleItem(
             context,
             'GPS',
-            !trackController.checkIfOffline(
-                vehicle: controller.deviceDetail.value),
+            controller.deviceDetail.value?.trackingData?.gps ?? false,
             'assets/images/svg/gps_icon.svg'),
       if (displayParameters?.engine == true)
         _buildVehicleItem(

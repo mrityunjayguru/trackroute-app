@@ -249,71 +249,28 @@ class RouteHistoryPage extends StatelessWidget {
                     controller.showMap.value
                         ? Align(
                             alignment: Alignment.centerRight,
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    controller.showMarkers.value == true
-                                        ? controller.showMarkers.value = false
-                                        : controller.showMarkers.value = true;
-                                    controller.showDetails.value = false;
-                                  },
-                                  child: Container(
-                                    width: 75,
-                                    alignment: Alignment.center,
-                                    margin: EdgeInsets.only(bottom: 260),
-                                    padding: EdgeInsets.all(6),
-                                    decoration: BoxDecoration(
-                                      color: AppColors.black,
-                                      borderRadius: BorderRadius.circular(
-                                          AppSizes.radius_20),
-                                    ),
-                                    child: Text(
-                                        controller.showMarkers.value == true
-                                            ? "Hide Pins"
-                                            : "Show Pins",
-                                        style: AppTextStyles(context)
-                                            .display12W500
-                                            .copyWith(
-                                                color: controller
-                                                        .showMarkers.value
-                                                    ? AppColors.white
-                                                    : AppColors
-                                                        .selextedindexcolor)),
-                                  ),
+                            child: GestureDetector(
+                              onTap: () {
+                                controller.showMarkers.value == true
+                                    ? controller.showMarkers.value = false
+                                    : controller.showMarkers.value = true;
+                              },
+                              child: Container(
+                                width: 45,
+                                height: 45,
+                                padding: EdgeInsets.all(10),
+                                margin: EdgeInsets.only(bottom: 260),
+                                decoration: BoxDecoration(
+                                  color: AppColors.black,
+                                  shape: BoxShape.circle,
                                 ),
-                                SizedBox(
-                                  width: 4,
+                                child: SvgPicture.asset(
+                                  controller.showMarkers.value
+                                      ? 'assets/images/svg/eye_no.svg'
+                                      : 'assets/images/svg/eye.svg',
+                                  color: AppColors.selextedindexcolor,
                                 ),
-                                GestureDetector(
-                                  onTap: () {
-                                    controller.showMarkers.value == true
-                                        ? controller.showMarkers.value = false
-                                        : controller.showMarkers.value = true;
-                                  },
-                                  child: Container(
-                                    width: 45,
-                                    height: 45,
-                                    padding: EdgeInsets.all(10),
-                                    margin: EdgeInsets.only(bottom: 260),
-                                    decoration: BoxDecoration(
-                                      color: controller.showMarkers.value
-                                          ? AppColors.gray
-                                          : AppColors.black,
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: SvgPicture.asset(
-                                      'assets/images/svg/eye.svg',
-                                      color: controller.showMarkers.value
-                                          ? AppColors.white
-                                          : AppColors.selextedindexcolor,
-                                    ),
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
                           )
                         : SizedBox.shrink(),
