@@ -339,7 +339,7 @@ class _TrackDeviceViewState extends State<TrackDeviceView>
                               height: MediaQuery.of(context).size.height < 670
                                   ? 7.h
                                   : 6.h,
-                              padding: EdgeInsets.all(5),
+                              padding: EdgeInsets.all(8),
                               margin: EdgeInsets.only(right: 15, top: 10),
                               decoration: BoxDecoration(
                                 color: AppColors.blue,
@@ -460,8 +460,11 @@ class _TrackDeviceViewState extends State<TrackDeviceView>
                 ),
                 if (!controller.expandInfo.value) ...[
                   Positioned(
-                      bottom: MediaQuery.of(context).size.height * ((205 / 812) - 0.067) +
-                          24,
+                      bottom:
+              MediaQuery.of(context).size.height < 670?
+                      MediaQuery.of(context).size.height * ((205 / 812) - 0.03) +
+                          24 : MediaQuery.of(context).size.height * ((205 / 812) - 0.067) +
+              24,
                       child: SpeedometerWidget(
                           color: (controller.deviceDetail.value?.trackingData?.currentSpeed ?? 0) == 0
                               ? AppColors.color_434345
@@ -481,7 +484,10 @@ class _TrackDeviceViewState extends State<TrackDeviceView>
                               "N/A"),
                           distance: controller.deviceDetail.value?.trackingData?.dailyDistance ?? 0)),
                   Positioned(
-                    bottom: (MediaQuery.of(context).size.height * ((215 / 812))),
+                    bottom:
+                    MediaQuery.of(context).size.height < 670 ?
+                    (MediaQuery.of(context).size.height * ((215 / 812)) + 16) :
+                    (MediaQuery.of(context).size.height * ((205 / 812))),
                     child: Container(
                       width: context.width,
                       child: Row(
@@ -612,6 +618,7 @@ class _TrackDeviceViewState extends State<TrackDeviceView>
     return [
       if (displayParameters?.network == true)
         _buildVehicleItem(
+
             context,
             'Network',
             controller.deviceDetail.value?.trackingData?.network == null
@@ -751,8 +758,8 @@ class _TrackDeviceViewState extends State<TrackDeviceView>
     }
 
     return Container(
-      height: MediaQuery.of(context).size.height * (0.32 - 0.067),
-      // padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.04),
+      height:MediaQuery.of(context).size.height < 670 ? MediaQuery.of(context).size.height * (0.32 - 0.03) :MediaQuery.of(context).size.height * (0.32 - 0.067) ,
+      padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.01),
       decoration: BoxDecoration(
           color: AppColors.white,
           borderRadius: BorderRadius.only(
@@ -768,6 +775,7 @@ class _TrackDeviceViewState extends State<TrackDeviceView>
           ]),
       child: Column(
         children: [
+          SizedBox(height: 4.h,),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -926,8 +934,8 @@ class _TrackDeviceViewState extends State<TrackDeviceView>
           color: Colors.black,
         ),
         Container(
-          height: MediaQuery.of(context).size.height * (0.74 - 0.06),
-          // padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.02),
+          height: MediaQuery.of(context).size.height * (0.74 - 0.067),
+          padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.02),
           decoration: BoxDecoration(
             color: AppColors.white,
             borderRadius: BorderRadius.only(
