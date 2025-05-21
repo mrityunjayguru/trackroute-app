@@ -27,8 +27,8 @@ class ReplayController extends GetxController {
   RxBool showLoader = false.obs;
   late final LocationController locController;
   RxInt selectStopIndex = (-1).obs;
-  var showArrow = false.obs;
-  var showStops = false.obs;
+  var showArrow = true.obs;
+  var showStops = true.obs;
   var showButtons = false.obs;
   @override
   void onInit() {

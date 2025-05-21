@@ -14,7 +14,7 @@ class RouteHistoryMap extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() => controller.showMarkers.value == true
+    return Obx(() => controller.showMarkers == true
         ? GoogleMap(
             zoomControlsEnabled: false,
             mapType: MapType.normal,

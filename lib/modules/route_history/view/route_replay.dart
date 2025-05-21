@@ -384,7 +384,7 @@ class _RouteReplayViewState extends State<RouteReplayView>
                                         : controller.showStops.value = true;
                                   },
                                   child: Container(
-                                    width: 80,
+                                    width: 100,
                                     alignment: Alignment.center,
                                     padding: EdgeInsets.all(6),
                                     decoration: BoxDecoration(
@@ -452,7 +452,7 @@ class _RouteReplayViewState extends State<RouteReplayView>
                           width: 45,
                           height: 45,
                           padding: EdgeInsets.all(10),
-                          margin: EdgeInsets.only(bottom: 50),
+                          margin: EdgeInsets.only(bottom: 30),
                           decoration: BoxDecoration(
                             color: Colors.black,
                             shape: BoxShape.circle,

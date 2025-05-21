@@ -225,7 +225,7 @@ class _TrackDeviceViewState extends State<TrackDeviceView>
                       ],
                     ).paddingSymmetric(horizontal: 4.w * 0.9),
                   ),
-                  Spacer(),
+
                   if (!controller.expandInfo.value) ...[
                     Obx(
                       () => Stack(
@@ -243,9 +243,7 @@ class _TrackDeviceViewState extends State<TrackDeviceView>
                           controller.showNearby.value
                               ? Container(
                                   width: 320,
-                                  margin: EdgeInsets.only(
-                                    right: 15,
-                                  ),
+                                  margin: EdgeInsets.only(right: 15, top: 15),
                                   decoration: BoxDecoration(
                                     color: AppColors.blue,
                                     borderRadius: BorderRadius.circular(20),
@@ -336,9 +334,11 @@ class _TrackDeviceViewState extends State<TrackDeviceView>
                               : SizedBox.shrink(),
                           Container(
                             width: 45,
-                            height: 45,
+                            height: MediaQuery.of(context).size.height < 670
+                                ? 7.h
+                                : 6.h,
                             padding: EdgeInsets.all(5),
-                            margin: EdgeInsets.only(right: 15, bottom: 260),
+                            margin: EdgeInsets.only(right: 15, top: 10),
                             decoration: BoxDecoration(
                               color: AppColors.blue,
                               shape: BoxShape.circle,
@@ -358,7 +358,7 @@ class _TrackDeviceViewState extends State<TrackDeviceView>
                       ),
                     ),
                   ],
-
+                  Spacer(),
                   if (!controller.expandInfo.value) ...[
                     SizedBox(
                       width: 45,

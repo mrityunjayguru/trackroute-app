@@ -10,8 +10,6 @@ import 'package:track_route_pro/modules/route_history/view/route_replay.dart';
 import 'package:track_route_pro/modules/route_history/view/widget/history_map.dart';
 import 'package:track_route_pro/modules/route_history/view/widget/route_history_form.dart';
 import 'package:track_route_pro/modules/track_route_screen/controller/track_device_controller.dart';
-import 'package:track_route_pro/modules/track_route_screen/controller/track_device_controller.dart';
-import 'package:track_route_pro/modules/track_route_screen/controller/track_device_controller.dart';
 import 'package:track_route_pro/utils/common_import.dart';
 
 import '../../../utils/utils.dart';
@@ -246,7 +244,7 @@ class RouteHistoryPage extends StatelessWidget {
                             address: controller.address.value,
                           ),
                     SizedBox(
-                      height: 10,
+                      height: 1.h,
                     ),
                     controller.showMap.value
                         ? Align(
@@ -274,7 +272,7 @@ class RouteHistoryPage extends StatelessWidget {
                                           AppSizes.radius_20),
                                     ),
                                     child: Text(
-                                        controller.showMarkers.value
+                                        controller.showMarkers.value == true
                                             ? "Hide Pins"
                                             : "Show Pins",
                                         style: AppTextStyles(context)

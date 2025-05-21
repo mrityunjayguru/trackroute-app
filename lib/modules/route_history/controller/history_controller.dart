@@ -60,7 +60,7 @@ class HistoryController extends GetxController {
   Rx<NetworkStatus> networkStatus = Rx(NetworkStatus.IDLE);
   BitmapDescriptor? selectedIcon;
   BitmapDescriptor? unSelectedIcon;
-  var showMarkers = false.obs;
+  RxBool showMarkers = true.obs;
 
   void generateTimeList() {
     timeList.value = [];
