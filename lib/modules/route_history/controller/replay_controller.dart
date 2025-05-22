@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:track_route_pro/config/app_sizer.dart';
 import 'package:track_route_pro/modules/route_history/controller/location_controller.dart';
 import 'package:track_route_pro/modules/track_route_screen/controller/track_route_controller.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../config/theme/app_colors.dart';
 import '../../../constants/project_urls.dart';
@@ -38,7 +39,7 @@ class ReplayController extends GetxController {
     super.onInit();
   }
 
-  void setInitData(
+  Future<void> setInitData(
       List<RouteHistoryResponse> data, List<StopCount> stops) async {
     showLoader.value = true;
     List<RouteHistoryResponse> processedData = [];
@@ -160,6 +161,38 @@ class ReplayController extends GetxController {
     final x = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dLon);
     final bearing = atan2(y, x);
     return (bearing * 180 / pi + 360) % 360;
+  }
+
+  void openMaps({
+    required LatLng data,
+    String? placeType,
+  }) async {
+    try {
+      final double lat = data.latitude;
+      final double lng = data.longitude;
+
+      String googleUrl;
+
+      if (placeType != null) {
+        googleUrl =
+            'https://www.google.com/maps/search/${Uri.encodeComponent(placeType)}/@$lat,$lng,14z';
+      } else {
+        googleUrl = 'https://www.google.com/maps/search/?api=1&query=$lat,$lng';
+      }
+
+      final Uri googleUri = Uri.parse(googleUrl);
+      final launchMode = placeType != null
+          ? LaunchMode.inAppBrowserView
+          : LaunchMode.externalApplication;
+
+      if (await canLaunchUrl(googleUri)) {
+        await launchUrl(googleUri, mode: launchMode);
+      } else {
+        throw 'Could not open the map.';
+      }
+    } catch (e) {
+      Utils.getSnackbar("Error", e.toString());
+    }
   }
 
   Future<void> _addNumberStops() async {

@@ -22,12 +22,10 @@ class _RouteReplayViewState extends State<RouteReplayView>
   @override
   void initState() {
     super.initState();
-    locationController.initAnimation(this);
   }
 
   @override
   void dispose() {
-    locationController.animationController.dispose();
     super.dispose();
   }
 
@@ -61,33 +59,29 @@ class _RouteReplayViewState extends State<RouteReplayView>
                   mapType: MapType.normal,
                   onMapCreated: (con) async {
                     controller.mapController = con;
+
                     await controller.showMapData();
 
                     controller.showLoader.value = false;
                   },
                   initialCameraPosition: CameraPosition(
-                    target: LatLng(28.6139, 77.2090),
-                    // Latitude and Longitude of Delhi,
-                  ),
+                      target: LatLng(28.6139, 77.2090),
+                      tilt: 0,
+                      zoom: 20.0, // Try 18.0 or even 19.0 for more zoom
+                      bearing: 0),
                   onTap: (val) {
-                    // controller.showDetails.value = false;
+                    // Optional
                   },
                   markers: {
-                    ...locationController.markers
-                        .toSet(), // it is for car animation
-                    ...controller.showStops.value
-                        ? {...controller.markers}
-                        : {},
-                    ...controller.showArrow.value
-                        ? {...controller.arrowMarker}
-                        : {}
+                    ...locationController.markers.toSet(),
+                    if (controller.showStops.value) ...controller.markers,
+                    if (controller.showArrow.value) ...controller.arrowMarker,
                   },
                   polylines: Set<Polyline>.of(controller.polylines),
                   myLocationEnabled: true,
                   myLocationButtonEnabled: false,
+                  buildingsEnabled: false,
                   mapToolbarEnabled: false,
-                  minMaxZoomPreference: MinMaxZoomPreference(
-                      5, !locationController.isPlaying.value ? 19 : 16.5),
                 ),
               ),
               Obx(
@@ -99,7 +93,6 @@ class _RouteReplayViewState extends State<RouteReplayView>
                         rightIcon: 'assets/images/svg/ic_arrow_left.svg',
                         onTap: () {
                           Get.back();
-                          locationController.stopPlayback();
                         },
                         name: historyController.name.value),
                     SizedBox(
@@ -298,11 +291,73 @@ class _RouteReplayViewState extends State<RouteReplayView>
                           ),
                       ],
                     ),
-                    Spacer(),
+                    SizedBox(height: 0.8.h),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: SizedBox(
+                        width: 45,
+                        height: 45,
+                        child: FloatingActionButton(
+                            heroTag: 'directions',
+                            child: Icon(
+                              Icons.directions,
+                              size: 29,
+                              color: AppColors.white,
+                            ),
+                            backgroundColor: AppColors.blue,
+                            shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.circular(AppSizes.radius_50),
+                            ),
+                            onPressed: () {
+                              LatLng vehiclePosition;
+                              LatLng current = LatLng(
+                                locationController
+                                        .locations[locationController
+                                            .currentIndex.value]
+                                        .trackingData
+                                        ?.location
+                                        ?.latitude ??
+                                    0.0,
+                                locationController
+                                        .locations[locationController
+                                            .currentIndex.value]
+                                        .trackingData
+                                        ?.location
+                                        ?.longitude ??
+                                    0.0,
+                              );
 
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [ if (locationController.timerOn.value ||
+                              controller.selectStopIndex.value > -1
+                                  ? vehiclePosition = LatLng(
+                                      controller
+                                              .stops[controller
+                                                      .selectStopIndex.value -
+                                                  1]
+                                              .location
+                                              ?.latitude ??
+                                          0.0,
+                                      controller
+                                              .stops[controller
+                                                      .selectStopIndex.value -
+                                                  1]
+                                              .location
+                                              ?.longitude ??
+                                          0.0,
+                                    )
+                                  : vehiclePosition = current;
+                              controller.openMaps(data: vehiclePosition);
+                            }),
+                      ).paddingOnly(
+                        right: 2.w * 0.9,
+                        bottom: 16 + 22,
+                      ),
+                    ),
+                    Spacer(),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        if (locationController.timerOn.value ||
                             controller.selectStopIndex.value != -1)
                           Container(
                             height: 60,
@@ -380,204 +435,99 @@ class _RouteReplayViewState extends State<RouteReplayView>
                               ],
                             ),
                           ).paddingOnly(bottom: 16),
-                          Spacer(),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              controller.showButtons.value
-                                  ? Align(
-                                      alignment: Alignment.centerRight,
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.end,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          GestureDetector(
-                                            onTap: () {
-                                              controller.showArrow.value == true
-                                                  ? controller.showArrow.value =
-                                                      false
-                                                  : controller.showArrow.value =
-                                                      true;
-                                            },
-                                            child: Container(
-                                              width: 100,
-                                              alignment: Alignment.center,
-                                              padding: EdgeInsets.all(6),
-                                              decoration: BoxDecoration(
-                                                color: AppColors.black,
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        AppSizes.radius_20),
-                                              ),
-                                              child: Text(
-                                                  controller.showArrow.value
-                                                      ? "Hide Arrows"
-                                                      : "Show Arrows",
-                                                  style: AppTextStyles(context)
-                                                      .display12W500
-                                                      .copyWith(
-                                                          color: controller
-                                                                  .showArrow
-                                                                  .value
-                                                              ? AppColors.white
-                                                              : AppColors
-                                                                  .selextedindexcolor)),
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            width: 4,
-                                          ),
-                                          GestureDetector(
-                                            onTap: () {
-                                              controller.showArrow.value == true
-                                                  ? controller.showArrow.value =
-                                                      false
-                                                  : controller.showArrow.value =
-                                                      true;
-                                            },
-                                            child: Container(
-                                              width: 45,
-                                              height: 45,
-                                              padding: EdgeInsets.all(10),
-                                              decoration: BoxDecoration(
-                                                color:
-                                                    controller.showArrow.value
-                                                        ? AppColors.gray
-                                                        : AppColors.black,
-                                                shape: BoxShape.circle,
-                                              ),
-                                              child: SvgPicture.asset(
-                                                'assets/images/svg/arrow.svg',
-                                                color:
-                                                    controller.showArrow.value
-                                                        ? AppColors.white
-                                                        : AppColors
-                                                            .selextedindexcolor,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
+                        Spacer(),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            controller.showButtons.value
+                                ? Align(
+                                    alignment: Alignment.centerRight,
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        controller.showArrow.value == true
+                                            ? controller.showArrow.value = false
+                                            : controller.showArrow.value = true;
+                                      },
+                                      child: Container(
+                                        width: 45,
+                                        height: 45,
+                                        padding: EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          color: controller.showArrow.value
+                                              ? AppColors.black
+                                              : AppColors.selextedindexcolor,
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: SvgPicture.asset(
+                                          controller.showArrow.value
+                                              ? 'assets/images/svg/hide_arrow.svg'
+                                              : 'assets/images/svg/arrow.svg',
+                                        ),
                                       ),
-                                    )
-                                  : SizedBox.shrink(),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              controller.showButtons.value
-                                  ? Align(
-                                      alignment: Alignment.centerRight,
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.end,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          GestureDetector(
-                                            onTap: () {
-                                              controller.showStops.value == true
-                                                  ? controller.showStops.value =
-                                                      false
-                                                  : controller.showStops.value =
-                                                      true;
-                                            },
-                                            child: Container(
-                                              width: 100,
-                                              alignment: Alignment.center,
-                                              padding: EdgeInsets.all(6),
-                                              decoration: BoxDecoration(
-                                                color: AppColors.black,
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        AppSizes.radius_20),
-                                              ),
-                                              child: Text(
-                                                  controller.showStops.value
-                                                      ? "Hide Stops"
-                                                      : "Show Stops",
-                                                  style: AppTextStyles(context)
-                                                      .display12W500
-                                                      .copyWith(
-                                                          color: controller
-                                                                  .showStops
-                                                                  .value
-                                                              ? AppColors.white
-                                                              : AppColors
-                                                                  .selextedindexcolor)),
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            width: 4,
-                                          ),
-                                          GestureDetector(
-                                            onTap: () {
-                                              controller.showStops.value == true
-                                                  ? controller.showStops.value =
-                                                      false
-                                                  : controller.showStops.value =
-                                                      true;
-                                            },
-                                            child: Container(
-                                              width: 45,
-                                              height: 45,
-                                              padding: EdgeInsets.all(10),
-                                              decoration: BoxDecoration(
-                                                color:
-                                                    controller.showStops.value
-                                                        ? AppColors.gray
-                                                        : AppColors.black,
-                                                shape: BoxShape.circle,
-                                              ),
-                                              child: SvgPicture.asset(
-                                                'assets/images/svg/stop.svg',
-                                                color:
-                                                    controller.showStops.value
-                                                        ? AppColors.white
-                                                        : AppColors
-                                                            .selextedindexcolor,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
+                                    ),
+                                  )
+                                : SizedBox.shrink(),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            controller.showButtons.value
+                                ? Align(
+                                    alignment: Alignment.centerRight,
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        controller.showStops.value == true
+                                            ? controller.showStops.value = false
+                                            : controller.showStops.value = true;
+                                      },
+                                      child: Container(
+                                        width: 45,
+                                        height: 45,
+                                        padding: EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          color: controller.showStops.value
+                                              ? AppColors.black
+                                              : AppColors.selextedindexcolor,
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: SvgPicture.asset(
+                                          controller.showStops.value
+                                              ? 'assets/images/svg/hide_stop.svg'
+                                              : 'assets/images/svg/stop.svg',
+                                        ),
                                       ),
-                                    )
-                                  : SizedBox.shrink(),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    controller.showButtons.value == true
-                                        ? controller.showButtons.value = false
-                                        : controller.showButtons.value = true;
-                                  },
-                                  child: Container(
-                                    width: 45,
-                                    height: 45,
-                                    padding: EdgeInsets.all(10),
-                                    margin: EdgeInsets.only(bottom: 30),
-                                    decoration: BoxDecoration(
-                                      color: Colors.black,
-                                      shape: BoxShape.circle,
                                     ),
-                                    child: SvgPicture.asset(
-                                      controller.showButtons.value
-                                          ? 'assets/images/svg/eye_no.svg'
-                                          : 'assets/images/svg/eye.svg',
-                                      color: AppColors.selextedindexcolor,
-                                    ),
+                                  )
+                                : SizedBox.shrink(),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: GestureDetector(
+                                onTap: () {
+                                  controller.showButtons.value == true
+                                      ? controller.showButtons.value = false
+                                      : controller.showButtons.value = true;
+                                },
+                                child: Container(
+                                  width: 45,
+                                  height: 45,
+                                  padding: EdgeInsets.all(10),
+                                  margin: EdgeInsets.only(bottom: 15),
+                                  decoration: BoxDecoration(
+                                    color: Colors.black,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: SvgPicture.asset(
+                                    'assets/images/svg/eye_mix.svg',
                                   ),
                                 ),
                               ),
-                            ],
-                          ),
-                        ],
-                      ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                     Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(500),

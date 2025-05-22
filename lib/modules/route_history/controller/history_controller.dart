@@ -17,6 +17,7 @@ import 'package:track_route_pro/service/api_service/api_service.dart';
 import 'package:track_route_pro/utils/common_import.dart';
 import 'package:track_route_pro/utils/enums.dart';
 import 'package:track_route_pro/utils/utils.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../config/theme/app_colors.dart';
 import '../../../constants/project_urls.dart';
 import 'package:geocoding/geocoding.dart';
@@ -61,6 +62,8 @@ class HistoryController extends GetxController {
   BitmapDescriptor? selectedIcon;
   BitmapDescriptor? unSelectedIcon;
   RxBool showMarkers = true.obs;
+  RxString latitude = "".obs;
+  RxString longitude = "".obs;
 
   void generateTimeList() {
     timeList.value = [];
@@ -412,6 +415,38 @@ class HistoryController extends GetxController {
     return marker;
   }
 
+  void openMaps({
+    required LatLng data,
+    String? placeType,
+  }) async {
+    try {
+      final double lat = data.latitude;
+      final double lng = data.longitude;
+
+      String googleUrl;
+
+      if (placeType != null) {
+        googleUrl =
+            'https://www.google.com/maps/search/${Uri.encodeComponent(placeType)}/@$lat,$lng,14z';
+      } else {
+        googleUrl = 'https://www.google.com/maps/search/?api=1&query=$lat,$lng';
+      }
+
+      final Uri googleUri = Uri.parse(googleUrl);
+      final launchMode = placeType != null
+          ? LaunchMode.inAppBrowserView
+          : LaunchMode.externalApplication;
+
+      if (await canLaunchUrl(googleUri)) {
+        await launchUrl(googleUri, mode: launchMode);
+      } else {
+        throw 'Could not open the map.';
+      }
+    } catch (e) {
+      Utils.getSnackbar("Error", e.toString());
+    }
+  }
+
   void _onMarkerTapped(int index, bool maxSpeed,
       {double? lat,
       double? long,
@@ -422,6 +457,8 @@ class HistoryController extends GetxController {
     selectedSpeed.value = speed;
     isMaxSpeed.value = maxSpeed;
     markerNumber.value = index.toString();
+    latitude.value = lat.toString();
+    longitude.value = long.toString();
 
     /*if(Platform.isIOS){
 

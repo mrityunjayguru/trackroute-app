@@ -126,7 +126,7 @@ Future<Uint8List> getBytesFromAsset(String path, int width) async {
 
 
 Future<BitmapDescriptor> svgToBitmapDescriptor(String url,
-    {Size size = const Size(50, 50)}) async {
+    {Size size = const Size(70, 70)}) async {
   try {
     BitmapDescriptor selectedIcon = await SvgPicture.network(
       url,

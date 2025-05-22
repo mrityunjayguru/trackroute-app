@@ -71,13 +71,13 @@ class TrackRouteView extends StatelessWidget {
                     height: 50,
                     child: FloatingActionButton(
                       heroTag: 'satellite1',
-                      child: SvgPicture.asset(
+                      child: Image.asset(
                         !controller.isSatellite.value
-                            ? "assets/images/svg/satellite.svg"
-                            : "assets/images/svg/default.svg",
-                        fit: BoxFit.fill,
+                            ? "assets/images/png/satellite.png"
+                            : "assets/images/png/default.png",
+                        fit: BoxFit.cover,
                       ),
-                      backgroundColor: AppColors.black,
+                      backgroundColor: AppColors.transparent,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(AppSizes.radius_50),
                       ),

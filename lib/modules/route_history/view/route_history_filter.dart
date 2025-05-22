@@ -1,4 +1,5 @@
 import 'package:flutter_svg/svg.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:sizer/sizer.dart';
 import 'package:track_route_pro/config/app_sizer.dart';
@@ -10,6 +11,8 @@ import 'package:track_route_pro/modules/route_history/view/route_replay.dart';
 import 'package:track_route_pro/modules/route_history/view/widget/history_map.dart';
 import 'package:track_route_pro/modules/route_history/view/widget/route_history_form.dart';
 import 'package:track_route_pro/modules/track_route_screen/controller/track_device_controller.dart';
+import 'package:track_route_pro/service/model/alerts/TrackingData.dart';
+import 'package:track_route_pro/service/model/route/Data.dart';
 import 'package:track_route_pro/utils/common_import.dart';
 
 import '../../../utils/utils.dart';
@@ -244,7 +247,7 @@ class RouteHistoryPage extends StatelessWidget {
                             address: controller.address.value,
                           ),
                     SizedBox(
-                      height: 1.h,
+                      height: 0.5.h,
                     ),
                     controller.showMap.value
                         ? Align(
@@ -259,7 +262,6 @@ class RouteHistoryPage extends StatelessWidget {
                                 width: 45,
                                 height: 45,
                                 padding: EdgeInsets.all(10),
-                                margin: EdgeInsets.only(bottom: 260),
                                 decoration: BoxDecoration(
                                   color: AppColors.black,
                                   shape: BoxShape.circle,
@@ -274,16 +276,54 @@ class RouteHistoryPage extends StatelessWidget {
                             ),
                           )
                         : SizedBox.shrink(),
+                    SizedBox(
+                      height: 1.2.h,
+                    ),
+                    if (controller.showMap.value)
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            if (controller.latitude.value.isNotEmpty &&
+                                controller.longitude.value.isNotEmpty) {
+                              LatLng vehiclePosition = LatLng(
+                                double.parse(controller.latitude.value),
+                                double.parse(controller.longitude.value),
+                              );
+                              controller.openMaps(data: vehiclePosition);
+                            }
+                          },
+                          child: Container(
+                            height: 45,
+                            width: 45,
+                            margin: EdgeInsets.only(bottom: 260),
+                            child: Icon(
+                              Icons.directions,
+                              size: 29,
+                              color: AppColors.white,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.blue,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        ),
+                      ),
                     Spacer(),
                     if (controller.showMap.value)
                       InkWell(
-                        onTap: () {
+                        onTap: () async {
                           final replayCon = Get.isRegistered<ReplayController>()
                               ? Get.find<
                                   ReplayController>() // Find if already registered
                               : Get.put(ReplayController());
-                          replayCon.setInitData(controller.vehicleListReplay,
+                          await replayCon.setInitData(
+                              controller.vehicleListReplay,
                               controller.stopCount);
+                          final trackingPoints = controller.vehicleListReplay
+                              .where((e) => e.trackingData != null)
+                              .map((e) => e.trackingData!)
+                              .toList();
                           Get.to(() => RouteReplayView(),
                               transition: Transition.upToDown,
                               duration: const Duration(milliseconds: 300));

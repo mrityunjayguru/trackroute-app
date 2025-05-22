@@ -1,6 +1,7 @@
 import 'dart:async';
-import 'dart:developer';
+import 'dart:math';
 
+import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
@@ -15,12 +16,11 @@ import '../../track_route_screen/controller/track_route_controller.dart';
 import 'common.dart';
 
 class LocationController extends GetxController {
-  int baseInterval = 2050;
-  late AnimationController animationController;
-  Animation<LatLng>? animation;
-  LatLng? oldLatLng;
-  DateTime timeStamp = DateTime.now();
   final RxList<RouteHistoryResponse> locations = <RouteHistoryResponse>[].obs;
+
+  final RxInt currentIndex = 0.obs;
+  final RxBool isPlaying = false.obs;
+  final RxBool timerOn = false.obs;
   final RxString speed = "".obs;
   final RxString time = "".obs;
   final RxString currDist = "".obs;
@@ -28,250 +28,180 @@ class LocationController extends GetxController {
   final RxString stopDuration = "".obs;
   final RxString fromStop = "".obs;
   final RxString toStop = "".obs;
-  final RxInt currentIndex = 0.obs;
-  final RxBool isPlaying = false.obs;
-  final RxBool timerOn = false.obs;
-  RxSet<Marker> markers = <Marker>{}.obs;
+  final RxSet<Marker> markers = <Marker>{}.obs;
 
-  final RxDouble playbackSpeed = 1.0.obs; // 1x, 2x, etc.
-  // final Rx<Marker?> currentMarker = Rx<Marker?>(null);
+  final RxInt playbackSpeed = 1.obs;
 
   Timer? _playbackTimer;
+  Timer? _animationTimer;
+
+  LatLng? _interpolatedPosition;
+  LatLng? _animationStartPosition;
+  LatLng? _targetPosition;
+  DateTime? _animationStart;
+
+  DateTime timeStamp = DateTime.now();
   BitmapDescriptor? markerIcon;
 
-  void initAnimation(TickerProvider vsync) {
-    animationController = AnimationController(
-      duration: Duration(milliseconds: getDurationFromSpeed(1)),
-      vsync: vsync,
-    );
-  }
+  final Duration _animationDuration = const Duration(milliseconds: 600);
+  double bearing = 0.0;
 
   void loadData(List<RouteHistoryResponse> data) async {
-    final controller = Get.isRegistered<DeviceController>()
-        ? Get.find<DeviceController>() // Find if already registered
-        : Get.put(DeviceController());
     locations.assignAll(data);
-    playbackSpeed.value = 1.0;
+    final controller = Get.put(DeviceController());
+    playbackSpeed.value = 1;
     timerOn.value = false;
     isPlaying.value = false;
     currentIndex.value = 0;
-    speed.value = "";
-    time.value = "";
-    currDist.value = "";
-    address.value = "";
-    stopDuration.value = "";
+    _interpolatedPosition = _latLngFromIndex(0);
+
     markerIcon = await svgToBitmapDescriptor(
-        '${ProjectUrls.imgBaseUrl}${controller.deviceDetail.value?.vehicletype?.icons ?? ""}',
-        size: Size(30, 30));
-    markers.value = {
-      Marker(
-        markerId: const MarkerId("playback_marker"),
-        position: LatLng(
-            controller.deviceDetail.value?.trackingData?.location?.latitude ??
-                0,
-            controller.deviceDetail.value?.trackingData?.location?.longitude ??
-                0),
-        icon: markerIcon ?? BitmapDescriptor.defaultMarker,
-        flat: true,
-        rotation: Utils.parseDouble(
-            data: controller.deviceDetail.value?.trackingData?.course ?? "0"),
-      )
-    };
-    // _updateMap();
+      '${ProjectUrls.imgBaseUrl}${controller.deviceDetail.value?.vehicletype?.icons ?? ""}',
+      size: const Size(30, 30),
+    );
+
+    _updateMarker(_interpolatedPosition!, 0.0);
+  }
+
+  LatLng _latLngFromIndex(int index) {
+    final data = locations[index];
+    return LatLng(
+      data.trackingData?.location?.latitude ?? 0,
+      data.trackingData?.location?.longitude ?? 0,
+    );
+  }
+
+  void togglePlay() {
+    isPlaying.toggle();
+    if (isPlaying.value) {
+      _startPlayback();
+    } else {
+      _playbackTimer?.cancel();
+      _animationTimer?.cancel();
+      _setAddress();
+    }
   }
 
   void _startPlayback() {
     _playbackTimer?.cancel();
 
-    int interval = (baseInterval / playbackSpeed.value).round();
-    _playbackTimer =
-        Timer.periodic(Duration(milliseconds: interval), (timer) async {
-      if (currentIndex.value < locations.length - 1) {
-        if (!timerOn.value) timerOn.value = true;
-        currentIndex.value++;
-        _setData();
-      } else {
-        timerOn.value = false;
-        isPlaying.value = false;
-        currentIndex.value = 0;
-        timer.cancel();
-      }
+    _playbackTimer = Timer.periodic(
+      Duration(milliseconds: (2050 / playbackSpeed.value).round()),
+      (timer) {
+        if (currentIndex.value < locations.length - 1) {
+          if (!timerOn.value) timerOn.value = true;
+          currentIndex.value++;
+          _setData();
+          _startMarkerAnimation(_latLngFromIndex(currentIndex.value));
+        } else {
+          timerOn.value = false;
+          isPlaying.value = false;
+          currentIndex.value = 0;
+          timer.cancel();
+        }
+      },
+    );
+  }
 
-      if (currentIndex.value == 1) {
-        log("CURR INDEX ${currentIndex.value}");
-        var replayCon = Get.isRegistered<ReplayController>()
-            ? Get.find<ReplayController>() // Find if already registered
-            : Get.put(ReplayController());
-        final data = locations[currentIndex.value];
-        final lat = data.trackingData?.location?.latitude ?? 0;
-        final lng = data.trackingData?.location?.longitude ?? 0;
+  void _startMarkerAnimation(LatLng target) {
+    _animationTimer?.cancel();
 
-        final position = LatLng(lat, lng);
-        replayCon.mapController?.animateCamera(
-          CameraUpdate.newCameraPosition(
-            CameraPosition(
-              target: position,
-              zoom: 16.5,
-            ),
-          ),
-        );
-      }
-      _updateMap();
+    _animationStart = DateTime.now();
+    _animationStartPosition = _interpolatedPosition;
+    _targetPosition = target;
+
+    bearing = _calculateBearing(_animationStartPosition!, target);
+
+    _animationTimer = Timer.periodic(const Duration(milliseconds: 16), (timer) {
+      final elapsed =
+          DateTime.now().difference(_animationStart!).inMilliseconds;
+      final t = (elapsed / _animationDuration.inMilliseconds).clamp(0.0, 1.0);
+
+      final lat = _lerp(_animationStartPosition!.latitude, target.latitude, t);
+      final lng =
+          _lerp(_animationStartPosition!.longitude, target.longitude, t);
+      _interpolatedPosition = LatLng(lat, lng);
+
+      _updateMarker(_interpolatedPosition!, bearing);
+      _animateCamera(_interpolatedPosition!);
+
+      if (t >= 1.0) timer.cancel();
     });
   }
 
-  void stopPlayback() {
-    _playbackTimer?.cancel();
+  void _updateMarker(LatLng position, double rotation) {
+    markers.value = {
+      Marker(
+        markerId: const MarkerId("playback_marker"),
+        position: position,
+        icon: markerIcon ?? BitmapDescriptor.defaultMarker,
+        flat: true,
+        rotation: rotation,
+        
+      )
+    };
   }
 
-  @override
-  void onClose() {
-    stopPlayback();
-    super.onClose();
-  }
+  void _animateCamera(LatLng position) {
+    final replayCon = Get.find<ReplayController>();
+    final diff = DateTime.now().difference(timeStamp).inMilliseconds;
 
-  void _updateMapNoAni() {
-    debugPrint("CURR INDEX ==> ${currentIndex.value}  ");
-    final data = locations[currentIndex.value];
-    final lat = data.trackingData?.location?.latitude ?? 0;
-    final lng = data.trackingData?.location?.longitude ?? 0;
-
-    final position = LatLng(lat, lng);
-    /*marker.value = {Marker(
-          markerId: MarkerId("playback_marker"),
-          position: position,
-          icon: markerIcon ?? BitmapDescriptor.defaultMarker,
-          flat: true,
-          rotation: Utils.parseDouble(data: data.trackingData?.course) ?? 0)};
-
-      markers.value = [newMarker];*/
-  }
-
-  void _updateMap() {
-    var replayCon = Get.isRegistered<ReplayController>()
-        ? Get.find<ReplayController>() // Find if already registered
-        : Get.put(ReplayController());
-    final data = locations[currentIndex.value];
-    final lat = data.trackingData?.location?.latitude ?? 0;
-    final lng = data.trackingData?.location?.longitude ?? 0;
-    final newLatLng = LatLng(lat, lng);
-    double rotation = currentIndex.value == 0
-        ? Utils.parseDouble(data: data.trackingData?.course)
-        : Utils.parseDouble(
-            data: locations[currentIndex.value - 1].trackingData?.course);
-    if (oldLatLng == null) {
-      oldLatLng = newLatLng;
-    }
-
-    super.onInit();
-    animation = LatLngTween(begin: oldLatLng ?? newLatLng, end: newLatLng)
-        .animate(animationController)
-      ..addListener(() {
-        final position = animation!.value;
-        markers.value = {
-          Marker(
-            markerId: const MarkerId("playback_marker"),
-            position: position,
-            icon: markerIcon ?? BitmapDescriptor.defaultMarker,
-            flat: true,
-            rotation: rotation,
-          )
-        };
-
-        final timeDiff = DateTime.now().difference(timeStamp).inMilliseconds;
-        if (timeDiff > 1000) {
-          replayCon.mapController.getZoomLevel().then((currentZoom) async {
-            if (currentIndex.value != 1) {
-              replayCon.mapController?.animateCamera(
-                CameraUpdate.newCameraPosition(
-                  CameraPosition(
-                    target: position,
-                    zoom: currentZoom,
-                  ),
-                ),
-              );
-            }
-
-            timeStamp = DateTime.now();
-          });
-        }
+    if (diff > 1000) {
+      replayCon.mapController.getZoomLevel().then((zoom) {
+        replayCon.mapController?.animateCamera(
+          CameraUpdate.newCameraPosition(
+              CameraPosition(target: position, zoom: 18, tilt: 0, bearing: 0)),
+        );
+        timeStamp = DateTime.now();
       });
-
-    animationController.forward(from: 0.0);
-    oldLatLng = newLatLng;
-  }
-
-  Future<void> updateMarkers() async {
-    // Get the map controller
-  }
-
-  void updateSpeed() {
-    final List<double> speeds = [1, 2, 3, 4];
-    int currentIndex = speeds.indexOf(playbackSpeed.value);
-
-    // Move to next speed in the list (loop back to start)
-    int nextIndex = (currentIndex + 1) % speeds.length;
-    playbackSpeed.value = speeds[nextIndex];
-    animationController.duration = Duration(
-      milliseconds: getDurationFromSpeed(playbackSpeed.value),
-    );
-    animationController.reset();
-    if (_playbackTimer != null && _playbackTimer!.isActive) {
-      _startPlayback();
     }
   }
 
-  int getDurationFromSpeed(double speedMultiplier) {
-    return (baseInterval / speedMultiplier).round();
-  }
+  double _lerp(double start, double end, double t) => start + (end - start) * t;
 
-  void togglePlay() async {
-    var replayCon = Get.isRegistered<ReplayController>()
-        ? Get.find<ReplayController>() // Find if already registered
-        : Get.put(ReplayController());
-    isPlaying.toggle();
-    if (isPlaying.value) {
-      _startPlayback();
-      replayCon.unselectStops();
-    } else {
-      _playbackTimer?.cancel();
-      _setAddress();
-    }
+  double _calculateBearing(LatLng start, LatLng end) {
+    final lat1 = start.latitude * pi / 180;
+    final lon1 = start.longitude * pi / 180;
+    final lat2 = end.latitude * pi / 180;
+    final lon2 = end.longitude * pi / 180;
+
+    final dLon = lon2 - lon1;
+    final y = sin(dLon) * cos(lat2);
+    final x = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dLon);
+    final bearing = atan2(y, x) * 180 / pi;
+    return (bearing + 360) % 360;
   }
 
   void onSliderChanged(double value) {
-    var replayCon = Get.isRegistered<ReplayController>()
-        ? Get.find<ReplayController>() // Find if already registered
-        : Get.put(ReplayController());
-    super.onInit();
-    if (!timerOn.value) timerOn.value = true;
     currentIndex.value = value.toInt();
     _setData();
-    _updateMap();
+    _startMarkerAnimation(_latLngFromIndex(currentIndex.value));
     _setAddress();
-    replayCon.unselectStops();
   }
 
-  _setData() {
-    time.value =
-        locations.value[currentIndex.value].dateFiled?.split(" ")[1] ?? "N/A";
-    speed.value = Utils.parseDouble(
-            data:
-                locations.value[currentIndex.value].trackingData?.currentSpeed)
+  void _setData() {
+    final data = locations[currentIndex.value];
+    time.value = data.dateFiled?.split(" ")[1] ?? "N/A";
+    speed.value = Utils.parseDouble(data: data.trackingData?.currentSpeed)
         .toInt()
         .toString();
-    currDist.value = Utils.parseDouble(
-            data:
-                locations.value[currentIndex.value].trackingData?.distanceFromA)
+    currDist.value = Utils.parseDouble(data: data.trackingData?.distanceFromA)
         .toStringAsFixed(2);
   }
 
-  _setAddress() async {
-    address.value = await Utils().getAddressFromLatLong(
-        locations.value[currentIndex.value].trackingData?.location?.latitude ??
-            0,
-        locations.value[currentIndex.value].trackingData?.location?.longitude ??
-            0);
+  Future<void> _setAddress() async {
+    final lat =
+        locations[currentIndex.value].trackingData?.location?.latitude ?? 0;
+    final lng =
+        locations[currentIndex.value].trackingData?.location?.longitude ?? 0;
+    address.value = await Utils().getAddressFromLatLong(lat, lng);
+  }
+
+  void updateSpeed() {
+    final speeds = [1, 2, 3, 4];
+    int currentIdx = speeds.indexOf(playbackSpeed.value);
+    int nextIdx = (currentIdx + 1) % speeds.length;
+    playbackSpeed.value = speeds[nextIdx];
   }
 
   void setStopData({
@@ -283,32 +213,21 @@ class LocationController extends GetxController {
     required String tostop,
     required LatLng pos,
   }) async {
-    final dateFormat = DateFormat.Hm(); // HH:mm format
-
+    final dateFormat = DateFormat.Hm();
     time.value = timeStop;
-
-    /// Format `fromstop` and `tostop` as HH:mm
     fromStop.value = dateFormat.format(DateTime.parse(fromstop));
     toStop.value = dateFormat.format(DateTime.parse(tostop));
-
     speed.value = Utils.parseDouble(data: speedStop).toInt().toString();
     currDist.value = Utils.parseDouble(data: currDistStop).toStringAsFixed(2);
     stopDuration.value = stopDur;
-
-    address.value = await Utils().getAddressFromLatLong(
-      pos.latitude,
-      pos.longitude,
-    );
+    address.value =
+        await Utils().getAddressFromLatLong(pos.latitude, pos.longitude);
   }
-}
-
-class LatLngTween extends Tween<LatLng> {
-  LatLngTween({required LatLng begin, required LatLng end})
-      : super(begin: begin, end: end);
 
   @override
-  LatLng lerp(double t) => LatLng(
-        begin!.latitude + (end!.latitude - begin!.latitude) * t,
-        begin!.longitude + (end!.longitude - begin!.longitude) * t,
-      );
+  void onClose() {
+    _playbackTimer?.cancel();
+    _animationTimer?.cancel();
+    super.onClose();
+  }
 }

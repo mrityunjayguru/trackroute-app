@@ -325,7 +325,7 @@ class DeviceController extends GetxController with WidgetsBindingObserver {
                   strokeColor: AppColors.selextedindexcolor.withOpacity(0.41),
                   center: LatLng(data?.location?.latitude ?? 0,
                       data?.location?.longitude ?? 0),
-                  radius: Utils.parseDouble(data: data?.area),
+                  radius: Utils.parseDouble(data: data?.area) * 60 / 100,
                 ));
                 circles.value = List.from(circles);
               }
@@ -740,3 +740,15 @@ class DeviceController extends GetxController with WidgetsBindingObserver {
     return marker;
   }
 }
+
+class LatLngTween extends Tween<LatLng> {
+  LatLngTween({required LatLng begin, required LatLng end})
+      : super(begin: begin, end: end);
+
+  @override
+  LatLng lerp(double t) => LatLng(
+        begin!.latitude + (end!.latitude - begin!.latitude) * t,
+        begin!.longitude + (end!.longitude - begin!.longitude) * t,
+      );
+}
+
