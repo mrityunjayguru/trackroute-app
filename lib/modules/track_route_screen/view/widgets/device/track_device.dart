@@ -55,7 +55,7 @@ class _TrackDeviceViewState extends State<TrackDeviceView>
   @override
   Widget build(BuildContext context) {
     return
-      SafeArea(child:
+
       Obx(
             () {
           bool isActive = true;
@@ -98,6 +98,14 @@ class _TrackDeviceViewState extends State<TrackDeviceView>
                   myLocationButtonEnabled: false,
                   mapToolbarEnabled: false,
                   minMaxZoomPreference: MinMaxZoomPreference(0, 19),
+                ),    Positioned.fill(
+                  child: GestureDetector(
+                    onTap: () {
+                      controller.showNearby.value = false;
+                    },
+                    behavior: HitTestBehavior.translucent,
+                    child: Container(),
+                  ),
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -233,15 +241,7 @@ class _TrackDeviceViewState extends State<TrackDeviceView>
                             () => Stack(
                           alignment: Alignment.topRight,
                           children: [
-                            Positioned.fill(
-                              child: GestureDetector(
-                                onTap: () {
-                                  controller.showNearby.value = false;
-                                },
-                                behavior: HitTestBehavior.translucent,
-                                child: Container(),
-                              ),
-                            ),
+
                             controller.showNearby.value
                                 ? Container(
                               width: 320,
@@ -268,7 +268,7 @@ class _TrackDeviceViewState extends State<TrackDeviceView>
                                   Container(
                                     alignment: Alignment.center,
                                     margin: EdgeInsets.only(
-                                        top: 5,
+                                        top: 0.5.h,
                                         right: 10,
                                         left: 10,
                                         bottom: 1.h),
@@ -278,12 +278,12 @@ class _TrackDeviceViewState extends State<TrackDeviceView>
                                       BorderRadius.circular(10),
                                     ),
                                     child: GridView.count(
-                                      padding: const EdgeInsets.all(10),
+                                      padding: const EdgeInsets.all(5),
                                       shrinkWrap: true,
                                       physics:
                                       NeverScrollableScrollPhysics(),
                                       crossAxisCount: 2,
-                                      childAspectRatio: 7 / 2,
+                                      childAspectRatio: 9/ 2,
                                       children: [
                                         _buildMenuItem(
                                             icon:
@@ -609,7 +609,7 @@ class _TrackDeviceViewState extends State<TrackDeviceView>
           );
         },
       )
-      );
+      ;
   }
 
   List<Widget> _buildVehicleItems(BuildContext context) {
