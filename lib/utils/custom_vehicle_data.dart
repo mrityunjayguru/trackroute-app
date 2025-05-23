@@ -862,7 +862,7 @@ class VehicleDataWidget extends StatelessWidget {
                                   // height: 6.h,
                                   // constraints: BoxConstraints(maxHeight: 9.h),
                                   padding: EdgeInsets.symmetric(
-                                      vertical: 6, horizontal: 8),
+                                      vertical: 6, horizontal: 6),
                                   decoration: BoxDecoration(
                                     color: AppColors.white,
                                     borderRadius: BorderRadius.circular(10),
@@ -1376,7 +1376,7 @@ class VehicleDataWidget extends StatelessWidget {
                     flex: 1,
                     child: Container(
                       padding:
-                          EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                          EdgeInsets.symmetric(horizontal: 6, vertical: 10),
                       margin: EdgeInsets.only(bottom: 16),
                       decoration: BoxDecoration(
                         color: AppColors.color_e5e7f3,

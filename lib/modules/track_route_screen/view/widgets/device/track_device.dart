@@ -877,7 +877,7 @@ class _TrackDeviceViewState extends State<TrackDeviceView>
           Align(
             alignment: Alignment.centerLeft,
             child: SizedBox(
-              height: 7.h,
+              height: 8.5.h,
               child: ListView(
                 shrinkWrap: true,
                 scrollDirection: Axis.horizontal,
@@ -896,8 +896,8 @@ class _TrackDeviceViewState extends State<TrackDeviceView>
               child: Center(
                   child: SvgPicture.asset(
                 "assets/images/svg/up_arrow_button.svg",
-                width: 28,
-                height: 28,
+                width: 24,
+                height: 24,
               )),
             ),
           )
