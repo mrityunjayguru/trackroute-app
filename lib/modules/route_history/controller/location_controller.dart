@@ -1,11 +1,10 @@
-import 'dart:async';
 import 'dart:math';
-
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:track_route_pro/modules/route_history/controller/replay_controller.dart';
+import 'package:get/get.dart';
 
 import '../../../constants/project_urls.dart';
 import '../../../service/model/route/Data.dart';
@@ -14,6 +13,7 @@ import '../../../utils/utils.dart';
 import '../../track_route_screen/controller/track_device_controller.dart';
 import '../../track_route_screen/controller/track_route_controller.dart';
 import 'common.dart';
+import 'package:track_route_pro/modules/route_history/controller/replay_controller.dart';
 
 class LocationController extends GetxController {
   final RxList<RouteHistoryResponse> locations = <RouteHistoryResponse>[].obs;
@@ -32,21 +32,29 @@ class LocationController extends GetxController {
 
   final RxInt playbackSpeed = 1.obs;
 
-  Timer? _playbackTimer;
-  Timer? _animationTimer;
+  Ticker? _ticker;
 
   LatLng? _interpolatedPosition;
   LatLng? _animationStartPosition;
   LatLng? _targetPosition;
   DateTime? _animationStart;
 
-  DateTime timeStamp = DateTime.now();
   BitmapDescriptor? markerIcon;
-
   final Duration _animationDuration = const Duration(milliseconds: 600);
   double bearing = 0.0;
+  DateTime timeStamp = DateTime.now();
 
-  void loadData(List<RouteHistoryResponse> data) async {
+  void initTicker(Ticker ticker) {
+    _ticker = ticker;
+  }
+
+  @override
+  void onClose() {
+    _ticker?.dispose();
+    super.onClose();
+  }
+
+  Future<void> loadData(List<RouteHistoryResponse> data) async {
     locations.assignAll(data);
     final controller = Get.put(DeviceController());
     playbackSpeed.value = 1;
@@ -57,7 +65,7 @@ class LocationController extends GetxController {
 
     markerIcon = await svgToBitmapDescriptor(
       '${ProjectUrls.imgBaseUrl}${controller.deviceDetail.value?.vehicletype?.icons ?? ""}',
-      size: const Size(30, 30),
+      size: const Size(50, 50),
     );
 
     _updateMarker(_interpolatedPosition!, 0.0);
@@ -74,59 +82,57 @@ class LocationController extends GetxController {
   void togglePlay() {
     isPlaying.toggle();
     if (isPlaying.value) {
-      _startPlayback();
+      timerOn.value = true;
+      _startTicker();
     } else {
-      _playbackTimer?.cancel();
-      _animationTimer?.cancel();
+      timerOn.value = false;
+      _ticker?.stop();
       _setAddress();
     }
   }
 
-  void _startPlayback() {
-    _playbackTimer?.cancel();
-
-    _playbackTimer = Timer.periodic(
-      Duration(milliseconds: (2050 / playbackSpeed.value).round()),
-      (timer) {
-        if (currentIndex.value < locations.length - 1) {
-          if (!timerOn.value) timerOn.value = true;
-          currentIndex.value++;
-          _setData();
-          _startMarkerAnimation(_latLngFromIndex(currentIndex.value));
-        } else {
-          timerOn.value = false;
-          isPlaying.value = false;
-          currentIndex.value = 0;
-          timer.cancel();
-        }
-      },
-    );
-  }
-
-  void _startMarkerAnimation(LatLng target) {
-    _animationTimer?.cancel();
+  void _startTicker() {
+    if (_ticker == null) return;
 
     _animationStart = DateTime.now();
-    _animationStartPosition = _interpolatedPosition;
-    _targetPosition = target;
+    _animationStartPosition = _latLngFromIndex(currentIndex.value);
+    _targetPosition = _latLngFromIndex(currentIndex.value + 1);
+    bearing = _calculateBearing(_animationStartPosition!, _targetPosition!);
+    _ticker!.start();
+  }
 
-    bearing = _calculateBearing(_animationStartPosition!, target);
+  void onTick(Duration elapsed) {
+    if (_animationStart == null ||
+        _animationStartPosition == null ||
+        _targetPosition == null) return;
 
-    _animationTimer = Timer.periodic(const Duration(milliseconds: 16), (timer) {
-      final elapsed =
-          DateTime.now().difference(_animationStart!).inMilliseconds;
-      final t = (elapsed / _animationDuration.inMilliseconds).clamp(0.0, 1.0);
+    final t = (DateTime.now().difference(_animationStart!).inMilliseconds /
+            _animationDuration.inMilliseconds)
+        .clamp(0.0, 1.0);
 
-      final lat = _lerp(_animationStartPosition!.latitude, target.latitude, t);
-      final lng =
-          _lerp(_animationStartPosition!.longitude, target.longitude, t);
-      _interpolatedPosition = LatLng(lat, lng);
+    final lat =
+        _lerp(_animationStartPosition!.latitude, _targetPosition!.latitude, t);
+    final lng = _lerp(
+        _animationStartPosition!.longitude, _targetPosition!.longitude, t);
+    _interpolatedPosition = LatLng(lat, lng);
+    _updateMarker(_interpolatedPosition!, bearing);
+    _animateCamera(_interpolatedPosition!);
 
-      _updateMarker(_interpolatedPosition!, bearing);
-      _animateCamera(_interpolatedPosition!);
-
-      if (t >= 1.0) timer.cancel();
-    });
+    if (t >= 1.0) {
+      if (currentIndex.value < locations.length - 2) {
+        currentIndex.value++;
+        _setData();
+        _animationStart = DateTime.now();
+        _animationStartPosition = _latLngFromIndex(currentIndex.value);
+        _targetPosition = _latLngFromIndex(currentIndex.value + 1);
+        bearing = _calculateBearing(_animationStartPosition!, _targetPosition!);
+      } else {
+        timerOn.value = false;
+        isPlaying.value = false;
+        _ticker?.stop();
+        _setAddress();
+      }
+    }
   }
 
   void _updateMarker(LatLng position, double rotation) {
@@ -137,7 +143,6 @@ class LocationController extends GetxController {
         icon: markerIcon ?? BitmapDescriptor.defaultMarker,
         flat: true,
         rotation: rotation,
-        
       )
     };
   }
@@ -145,38 +150,16 @@ class LocationController extends GetxController {
   void _animateCamera(LatLng position) {
     final replayCon = Get.find<ReplayController>();
     final diff = DateTime.now().difference(timeStamp).inMilliseconds;
-
     if (diff > 1000) {
       replayCon.mapController.getZoomLevel().then((zoom) {
-        replayCon.mapController?.animateCamera(
+        replayCon.mapController.animateCamera(
           CameraUpdate.newCameraPosition(
-              CameraPosition(target: position, zoom: 18, tilt: 0, bearing: 0)),
+            CameraPosition(target: position, zoom: 18, tilt: 0, bearing: 0),
+          ),
         );
         timeStamp = DateTime.now();
       });
     }
-  }
-
-  double _lerp(double start, double end, double t) => start + (end - start) * t;
-
-  double _calculateBearing(LatLng start, LatLng end) {
-    final lat1 = start.latitude * pi / 180;
-    final lon1 = start.longitude * pi / 180;
-    final lat2 = end.latitude * pi / 180;
-    final lon2 = end.longitude * pi / 180;
-
-    final dLon = lon2 - lon1;
-    final y = sin(dLon) * cos(lat2);
-    final x = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dLon);
-    final bearing = atan2(y, x) * 180 / pi;
-    return (bearing + 360) % 360;
-  }
-
-  void onSliderChanged(double value) {
-    currentIndex.value = value.toInt();
-    _setData();
-    _startMarkerAnimation(_latLngFromIndex(currentIndex.value));
-    _setAddress();
   }
 
   void _setData() {
@@ -204,6 +187,13 @@ class LocationController extends GetxController {
     playbackSpeed.value = speeds[nextIdx];
   }
 
+  void onSliderChanged(double value) {
+    currentIndex.value = value.toInt();
+    _setData();
+    _updateMarker(_latLngFromIndex(currentIndex.value), 0);
+    _setAddress();
+  }
+
   void setStopData({
     required String speedStop,
     required String timeStop,
@@ -224,10 +214,17 @@ class LocationController extends GetxController {
         await Utils().getAddressFromLatLong(pos.latitude, pos.longitude);
   }
 
-  @override
-  void onClose() {
-    _playbackTimer?.cancel();
-    _animationTimer?.cancel();
-    super.onClose();
+  double _lerp(double start, double end, double t) => start + (end - start) * t;
+
+  double _calculateBearing(LatLng start, LatLng end) {
+    final lat1 = start.latitude * pi / 180;
+    final lon1 = start.longitude * pi / 180;
+    final lat2 = end.latitude * pi / 180;
+    final lon2 = end.longitude * pi / 180;
+
+    final dLon = lon2 - lon1;
+    final y = sin(dLon) * cos(lat2);
+    final x = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dLon);
+    return (atan2(y, x) * 180 / pi + 360) % 360;
   }
 }

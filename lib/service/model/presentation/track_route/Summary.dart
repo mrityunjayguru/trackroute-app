@@ -13,27 +13,47 @@ import 'MaxSpeedLocation.dart';
 
 class Summary {
   Summary({
-      this.latestTripKm, 
-      this.latestTripTime, 
-      this.maxSpeed, 
-      this.maxSpeedTime, 
-      this.maxSpeedLocation, 
-      this.avgSpeed, 
-      this.total_travel_km,
-      this.totalTravelTime,});
+    this.latestTripKm,
+    this.latestTripTime,
+    this.maxSpeed,
+    this.maxSpeedTime,
+    this.maxSpeedLocation,
+    this.avgSpeed,
+    this.idelTime,
+    this.motionTime,
+    this.total_travel_km,
+    this.totalTravelTime,
+    this.tripStartTime,
+    this.preTrip,
+  });
 
   Summary.fromJson(dynamic json) {
-    latestTripKm = json['latest_trip_km'] != null ? json['latest_trip_km'].toString() : null;
-    latestTripTime = json['latest_trip_time'] != null ? json['latest_trip_time'].toString() : null;
+    latestTripKm = json['latest_trip_km'] != null
+        ? json['latest_trip_km'].toString()
+        : null;
+    latestTripTime = json['latest_trip_time'] != null
+        ? json['latest_trip_time'].toString()
+        : null;
     maxSpeed = json['max_speed'] != null ? json['max_speed'].toString() : null;
-    total_travel_km = json['total_travel_km'] != null ? json['total_travel_km'].toString() : null;
-    maxSpeedTime = json['max_speed_time'] != null ? json['max_speed_time'].toString() : null;
+    total_travel_km = json['total_travel_km'] != null
+        ? json['total_travel_km'].toString()
+        : null;
+    maxSpeedTime = json['max_speed_time'] != null
+        ? json['max_speed_time'].toString()
+        : null;
     maxSpeedLocation = json['max_speed_location'] != null
         ? MaxSpeedLocation.fromJson(json['max_speed_location'])
         : null;
     avgSpeed = json['avg_speed'] != null ? json['avg_speed'].toString() : null;
-    totalTravelTime = json['total_travel_time'] != null ? json['total_travel_time'].toString() : null;
-
+    totalTravelTime = json['total_travel_time'] != null
+        ? json['total_travel_time'].toString()
+        : null;
+    motionTime =
+        json['MotionTime'] != null ? json['MotionTime'].toString() : null;
+    idelTime = json['idelTime'] != null ? json['idelTime'].toString() : null;
+    tripStartTime =
+        json['lastesTripTime'] != null ? json['lastesTripTime'] : null;
+    preTrip = json['pre_trip'] != null ? json['pre_trip'] : null;
   }
   String? latestTripKm;
   String? latestTripTime;
@@ -41,7 +61,12 @@ class Summary {
   String? maxSpeedTime;
   MaxSpeedLocation? maxSpeedLocation;
   String? avgSpeed;
+  String? motionTime;
+  String? idelTime;
+
   String? totalTravelTime;
+  String? tripStartTime;
+  String? preTrip;
   String? total_travel_km;
 
   Map<String, dynamic> toJson() {
@@ -55,8 +80,10 @@ class Summary {
     }
     map['avg_speed'] = avgSpeed;
     map['total_travel_time'] = totalTravelTime;
+    map['MotionTime'] = motionTime;
+    map['idelTime'] = idelTime;
+    map['lastesTripTime'] = tripStartTime;
+    map['pre_trip'] = preTrip;
     return map;
   }
-
-
 }

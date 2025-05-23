@@ -33,10 +33,10 @@ class ReplayController extends GetxController {
   var showButtons = false.obs;
   @override
   void onInit() {
+    super.onInit();
     locController = Get.isRegistered<LocationController>()
         ? Get.find<LocationController>() // Find if already registered
         : Get.put(LocationController());
-    super.onInit();
   }
 
   Future<void> setInitData(

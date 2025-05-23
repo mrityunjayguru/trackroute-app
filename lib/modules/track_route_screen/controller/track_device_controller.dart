@@ -10,6 +10,7 @@ import 'package:track_route_pro/config/theme/app_colors.dart';
 import 'package:track_route_pro/modules/track_route_screen/controller/track_route_controller.dart';
 import 'package:track_route_pro/service/model/presentation/track_route/Summary.dart';
 import 'package:track_route_pro/service/model/presentation/track_route/track_route_vehicle_list.dart';
+import 'package:track_route_pro/service/model/relay/RelayStatusResponse.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../constants/constant.dart';
@@ -325,7 +326,7 @@ class DeviceController extends GetxController with WidgetsBindingObserver {
                   strokeColor: AppColors.selextedindexcolor.withOpacity(0.41),
                   center: LatLng(data?.location?.latitude ?? 0,
                       data?.location?.longitude ?? 0),
-                  radius: Utils.parseDouble(data: data?.area) * 60 / 100,
+                  radius: Utils.parseDouble(data: data?.area) * 50 / 100,
                 ));
                 circles.value = List.from(circles);
               }
@@ -533,23 +534,25 @@ class DeviceController extends GetxController with WidgetsBindingObserver {
   RxString relayStatus = "".obs;
 
   Future<void> checkRelayStatus(String imei) async {
-    var response;
     try {
       networkStatus.value =
           NetworkStatus.LOADING; // Set network status to loading
       final body = {"imei": imei};
-      // log("CHECK RELAY $body");
-      response = await apiService.relayStatus(body);
-      // debugPrint("RESPONSE $response");
-      if (response.data.status != null && response.data.status == "success") {
-        relayStatus.value = response.data.response.type;
+
+      final response = await apiService.relayStatus(body);
+
+      final parsed = RelayStatusResponse.fromJson(response);
+
+      if (parsed.data?.immobiliser != null) {
+        relayStatus.value = parsed.data!.immobiliser!;
         networkStatus.value = NetworkStatus.SUCCESS;
       } else {
-        Utils.getSnackbar("Engine Status", response.data.message);
+        Utils.getSnackbar("Engine Status", parsed.message ?? "Unknown error");
+        networkStatus.value = NetworkStatus.ERROR;
       }
     } catch (e) {
-      // debugPrint("EXCEPTION $e");
       networkStatus.value = NetworkStatus.ERROR;
+      Utils.getSnackbar("Engine Status", "Failed to fetch status");
     }
   }
 
@@ -751,4 +754,3 @@ class LatLngTween extends Tween<LatLng> {
         begin!.longitude + (end!.longitude - begin!.longitude) * t,
       );
 }
-

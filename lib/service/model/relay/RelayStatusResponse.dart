@@ -5,14 +5,16 @@ import 'Data.dart';
 
 class RelayStatusResponse {
   RelayStatusResponse({
-      this.data, 
-      this.message,});
+    this.data,
+    this.message,
+  });
 
   RelayStatusResponse.fromJson(dynamic json) {
-    data = json['data'] != null ? Data.fromJson(json['data']) : null;
+    data = json['data'] != null ? DataStatus.fromJson(json['data']) : null;
     message = json['message'];
   }
-  Data? data;
+
+  DataStatus? data;
   String? message;
 
   Map<String, dynamic> toJson() {
@@ -23,5 +25,26 @@ class RelayStatusResponse {
     map['message'] = message;
     return map;
   }
+}
 
+class DataStatus {
+  DataStatus({
+    this.imei,
+    this.immobiliser,
+  });
+
+  DataStatus.fromJson(dynamic json) {
+    imei = json['imei'];
+    immobiliser = json['immobiliser'];
+  }
+
+  String? imei;
+  String? immobiliser;
+
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    map['imei'] = imei;
+    map['immobiliser'] = immobiliser;
+    return map;
+  }
 }

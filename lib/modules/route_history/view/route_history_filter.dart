@@ -279,7 +279,9 @@ class RouteHistoryPage extends StatelessWidget {
                     SizedBox(
                       height: 1.2.h,
                     ),
-                    if (controller.showMap.value)
+                    if (controller.showMap.value &&
+                        controller.showMarkers.value &&
+                        controller.showDetails.value)
                       Align(
                         alignment: Alignment.centerRight,
                         child: GestureDetector(

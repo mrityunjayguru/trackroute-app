@@ -85,7 +85,7 @@ class TrackRouteBindings extends Bindings {
       () => TrackRouteController(),
     );
     Get.lazyPut<DeviceController>(
-          () => DeviceController(),
+      () => DeviceController(),
     );
   }
 }
@@ -130,7 +130,7 @@ class DataBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut<DataController>(
-          () => DataController(),
+      () => DataController(),
     );
   }
 }
@@ -139,13 +139,13 @@ class HistoryBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut<HistoryController>(
-          () => HistoryController(),
-    );
-    Get.lazyPut<ReplayController>(
-          () => ReplayController(),
+      () => HistoryController(),
     );
     Get.lazyPut<LocationController>(
-          () => LocationController(),
+      () => LocationController(),
+    );
+    Get.lazyPut<ReplayController>(
+      () => ReplayController(),
     );
   }
 }
@@ -154,7 +154,7 @@ class PrivacyPolicyBindings extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut<PrivacyPolicyController>(
-          () => PrivacyPolicyController(),
+      () => PrivacyPolicyController(),
     );
   }
 }
@@ -163,7 +163,7 @@ class ReportsBindings extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut<ReportsController>(
-          () => ReportsController(),
+      () => ReportsController(),
     );
   }
 }
@@ -172,7 +172,7 @@ class RegisterUserBindings extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut<RegisterController>(
-          () => RegisterController(),
+      () => RegisterController(),
     );
   }
 }

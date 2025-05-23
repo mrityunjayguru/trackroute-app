@@ -19,20 +19,6 @@ class RouteReplayView extends StatefulWidget {
 
 class _RouteReplayViewState extends State<RouteReplayView>
     with TickerProviderStateMixin {
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  final locationController = Get.isRegistered<LocationController>()
-      ? Get.find<LocationController>() // Find if already registered
-      : Get.put(LocationController());
-
   final controller = Get.isRegistered<ReplayController>()
       ? Get.find<ReplayController>() // Find if already registered
       : Get.put(ReplayController());
@@ -41,7 +27,21 @@ class _RouteReplayViewState extends State<RouteReplayView>
       ? Get.find<HistoryController>() // Find if already registered
       : Get.put(HistoryController());
 
+  final LocationController locationController = Get.put(LocationController());
+
   var scrollController = ScrollController();
+  @override
+  void initState() {
+    super.initState();
+    final ticker = createTicker(locationController.onTick);
+    locationController.initTicker(ticker);
+  }
+
+  @override
+  void dispose() {
+    locationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -93,6 +93,7 @@ class _RouteReplayViewState extends State<RouteReplayView>
                         rightIcon: 'assets/images/svg/ic_arrow_left.svg',
                         onTap: () {
                           Get.back();
+                          locationController.dispose();
                         },
                         name: historyController.name.value),
                     SizedBox(
@@ -144,7 +145,7 @@ class _RouteReplayViewState extends State<RouteReplayView>
                                 ),
                               ),
                               SizedBox(
-                                width: 2.5,
+                                width: 2,
                               ),
                               Expanded(
                                 child: Column(
@@ -292,67 +293,75 @@ class _RouteReplayViewState extends State<RouteReplayView>
                       ],
                     ),
                     SizedBox(height: 0.8.h),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: SizedBox(
-                        width: 45,
-                        height: 45,
-                        child: FloatingActionButton(
-                            heroTag: 'directions',
-                            child: Icon(
-                              Icons.directions,
-                              size: 29,
-                              color: AppColors.white,
-                            ),
-                            backgroundColor: AppColors.blue,
-                            shape: RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.circular(AppSizes.radius_50),
-                            ),
-                            onPressed: () {
-                              LatLng vehiclePosition;
-                              LatLng current = LatLng(
-                                locationController
-                                        .locations[locationController
-                                            .currentIndex.value]
-                                        .trackingData
-                                        ?.location
-                                        ?.latitude ??
-                                    0.0,
-                                locationController
-                                        .locations[locationController
-                                            .currentIndex.value]
-                                        .trackingData
-                                        ?.location
-                                        ?.longitude ??
-                                    0.0,
-                              );
-
-                              controller.selectStopIndex.value > -1
-                                  ? vehiclePosition = LatLng(
-                                      controller
-                                              .stops[controller
-                                                      .selectStopIndex.value -
-                                                  1]
-                                              .location
+                    ((!locationController.isPlaying.value &&
+                                    locationController.timerOn.value) ||
+                                controller.selectStopIndex.value != -1) ||
+                            (locationController.currentIndex.value > 1 &&
+                                locationController.isPlaying == false)
+                        ? Align(
+                            alignment: Alignment.centerRight,
+                            child: SizedBox(
+                              width: 45,
+                              height: 45,
+                              child: FloatingActionButton(
+                                  heroTag: 'directions',
+                                  child: Icon(
+                                    Icons.directions,
+                                    size: 29,
+                                    color: AppColors.white,
+                                  ),
+                                  backgroundColor: AppColors.blue,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                        AppSizes.radius_50),
+                                  ),
+                                  onPressed: () {
+                                    LatLng vehiclePosition;
+                                    LatLng current = LatLng(
+                                      locationController
+                                              .locations[locationController
+                                                  .currentIndex.value]
+                                              .trackingData
+                                              ?.location
                                               ?.latitude ??
                                           0.0,
-                                      controller
-                                              .stops[controller
-                                                      .selectStopIndex.value -
-                                                  1]
-                                              .location
+                                      locationController
+                                              .locations[locationController
+                                                  .currentIndex.value]
+                                              .trackingData
+                                              ?.location
                                               ?.longitude ??
                                           0.0,
-                                    )
-                                  : vehiclePosition = current;
-                              controller.openMaps(data: vehiclePosition);
-                            }),
-                      ).paddingOnly(
-                        right: 2.w * 0.9,
-                        bottom: 16 + 22,
-                      ),
-                    ),
+                                    );
+
+                                    controller.selectStopIndex.value > -1
+                                        ? vehiclePosition = LatLng(
+                                            controller
+                                                    .stops[controller
+                                                            .selectStopIndex
+                                                            .value -
+                                                        1]
+                                                    .location
+                                                    ?.latitude ??
+                                                0.0,
+                                            controller
+                                                    .stops[controller
+                                                            .selectStopIndex
+                                                            .value -
+                                                        1]
+                                                    .location
+                                                    ?.longitude ??
+                                                0.0,
+                                          )
+                                        : vehiclePosition = current;
+                                    controller.openMaps(data: vehiclePosition);
+                                  }),
+                            ).paddingOnly(
+                              right: 2.w * 0.9,
+                              bottom: 16 + 22,
+                            ),
+                          )
+                        : SizedBox.shrink(),
                     Spacer(),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.end,
